@@ -24,23 +24,23 @@ def rs_statistic(series):
     return R / S
 
 
-def compute_S_modified(r_aapl):
-    T = len(r_aapl)  # Nombre d'observations
-    mean_Y = np.mean(r_aapl)  # Moyenne de la série
-    rho_1 = np.corrcoef(r_aapl[:-1], r_aapl[1:])[0, 1]  # Autocorrélation de premier ordre
+def compute_S_modified(r):
+    T = len(r)  # Nombre d'observations
+    mean_Y = np.mean(r)  # Moyenne de la série
+    rho_1 = np.abs(np.corrcoef(r[:-1], r[1:])[0, 1])  # Autocorrélation de premier ordre
 
     # Calcul de q selon Andrews (1991)
     q = ((3 * T) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - rho_1)) ** (2 / 3)
     q = int(np.floor(q))  # On garde la partie entière de q
 
     # Premier terme : variance classique
-    var_term = np.sum((r_aapl - mean_Y) ** 2) / T
+    var_term = np.sum((r - mean_Y) ** 2) / T
 
     # Deuxième terme : somme pondérée des autocovariances
     auto_cov_term = 0
     for j in range(1, q + 1):  # j varie de 1 à q
         w_j = 1 - (j / (q + 1))  # Poids Newey-West
-        sum_cov = np.sum((r_aapl[:-j] - mean_Y) * (r_aapl[j:] - mean_Y))  # Autocovariance décalée
+        sum_cov = np.sum((r[:-j] - mean_Y) * (r[j:] - mean_Y))  # Autocovariance décalée
         auto_cov_term += w_j * sum_cov
 
     auto_cov_term = (2 / T) * auto_cov_term  # Appliquer le coefficient 2/T
@@ -67,7 +67,9 @@ if __name__ == "__main__":
 
     tickers = ["^GSPC", "^FTSE", "^SBF250", "^TOPX", "^GSPTSE"]
     for ticker in tickers:
-        p = yf.download(ticker, start="1968-01-02", end="1996-06-10", progress=False)['Close']
+        # 1968-01-02, 1996-06-10 TOPX True
+        # 1995-01-02, 2024-12-31 GSPC True
+        p = yf.download(ticker, start="1995-01-02", end="2024-12-31", progress=False)['Close']
         log_p = np.log(p.values)
         r = np.diff(log_p.ravel())
 
@@ -87,7 +89,7 @@ if __name__ == "__main__":
 
         h_true = bool(critical_value > 1.620) # critical value (10,5,0.5) are 1.620, 1.747 2.098
 
-        print(f"Ticker: {ticker}")
+        print(f"Ticker: {ticker }")
         print(f"Statistique R/S : {rs_value}")
         print(f"Statistique R/S modifiée : {rs_modified_value}")
         print(f"Exposant de Hurst : {hurst_rs}")
@@ -109,7 +111,7 @@ if __name__ == "__main__":
         all_results = pd.concat([all_results, df_results])
 
 
-all_results.to_csv("data/hurst_results.csv", index=False)
+# all_results.to_csv("data/hurst_results.csv", index=False)
 print(all_results)
 
 
