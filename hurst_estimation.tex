@@ -1,0 +1,228 @@
+\documentclass[11pt]{extarticle}
+
+\usepackage[english,french]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{url}
+\usepackage[T1]{fontenc}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{pifont}
+\usepackage{makecell}
+\setcellgapes{1pt}
+\usepackage{placeins}
+\usepackage{subcaption}
+\usepackage{pgfplots}
+\usetikzlibrary{calc}
+\pgfplotsset{compat=1.18}
+\usepackage[margin=1in]{geometry}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{amsmath}
+\usepackage{pgfplotstable}
+\usetikzlibrary{backgrounds}
+
+\title{
+    \hspace*{-12cm}
+    \includegraphics[width=0.3\textwidth]{img/logo_kanopy}\\
+    \vspace*{1cm}
+    Kanopy Research Analysis\protect\\
+    \vspace*{1cm}
+    \textbf{Long Term Memory Processes Using Hurst Estimation}
+}
+
+\author{Remiat Alexandre}
+
+\date{\today}
+
+\graphicspath{{img/}}
+
+\xdefinecolor{kblue}{RGB}{0,38,69}
+\xdefinecolor{korange}{RGB}{255,128,89}
+\xdefinecolor{kgray}{RGB}{47,108,130}
+\xdefinecolor{kgreen}{RGB}{102,143,72}
+
+
+\begin{document}
+
+\selectlanguage{english}
+
+\maketitle
+
+\vspace{1.5cm}
+{
+  \hypersetup{linkcolor=black}
+  \tableofcontents
+  % \listoffigures
+}
+
+\newpage
+
+
+\section*{Abstract}
+
+This paper presents a study on long-term memory processes in financial time series using Hurst estimation methods, specifically the traditional R/S statistic and the Modified R/S statistic.
+We analyze the long-term memory properties of five major stock market indices: S\&P 500 (\^GSPC), FTSE 100 (\^FTSE), SBF 250 (\^SBF250), TOPIX (\^TOPX), and Toronto Stock Exchange 300 (\^GSPTSE) using daily returns data spanning from January 2, 1968, to June 10, 1996.
+
+The R/S statistic and the Modified R/S statistic are computed to determine the presence of long-range dependence in the time series data. The Hurst exponent, derived from both statistics, is used to characterize the memory behavior of the series.
+
+The results indicate that, except for TOPIX, all indices exhibit short-term memory or randomness with Hurst exponents below the critical threshold of 1.620.
+Specifically, the Hurst exponent for the TOPIX index exceeds 1.620, indicating the presence of long-term memory (persistent behavior).
+These findings suggest that certain stock markets, like the Japanese market represented by TOPIX, may exhibit more pronounced long-term memory effects compared to others.
+
+
+\newpage
+
+\section{Introduction}
+
+The Hurst exponent is a key measure in the study of time series data, used primarily to analyze the long-term memory and self-similarity of stochastic processes. First introduced by the British hydrologist Harold Hurst in the 1950s to study river flow data, the Hurst exponent has since found widespread application in various fields, including finance, physics, and environmental science. The exponent provides insights into the persistence or mean-reversion behavior of a time series: a value greater than 0.5 indicates long-range dependence and persistence, while a value less than 0.5 suggests mean-reverting behavior.
+
+The most commonly used method to estimate the Hurst exponent is the Rescaled Range (R/S) analysis, introduced by Hurst and later refined by Mandelbrot. However, the traditional R/S statistic has limitations, particularly in its sensitivity to short-term memory effects, which can obscure long-range dependence in the data. To address these issues, Lo (1991) proposed the Modified R/S statistic, which improves the estimation of the Hurst exponent by accounting for short-term autocorrelation.
+
+This paper presents an analysis of time series data using both the traditional R/S statistic and the Modified R/S statistic, with a focus on their ability to detect long memory in financial data. We apply these methods to a range of stock market indices and examine the significance of the Hurst exponent in characterizing market dynamics. Additionally, we discuss the critical values for the Modified R/S test, based on Lo’s (1991) table, to help identify whether a series exhibits long memory behavior.
+
+Through this analysis, we aim to highlight the advantages of the Modified R/S statistic in overcoming the limitations of the traditional R/S method, providing a more robust framework for studying time series with long memory. This is particularly valuable in the context of financial markets, where long memory and fractal-like behavior are often observed.
+
+
+
+\section{Methods}
+
+
+
+\section*{Hurst Exponent Calculation}
+\subsection*{R/S and Modified R/S Analysis}
+The R/S analysis, introduced by Hurst and developed in various works by Mandelbrot, is certainly the most well-known method for estimating the Hurst exponent $H$. This statistic is defined as the range of the partial sums of deviations from the mean of a time series divided by its standard deviation. Consider a time series $Y_t$, $t = 1, ..., T$, with mean $\bar{Y}$. The range $R$ is defined as:
+
+\[
+R = \max_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right) - \min_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right)
+\]
+
+The R/S statistic is then computed by dividing the range by the standard deviation $s_T$ of the series:
+
+\[
+Q_T = \frac{R}{s_T} = \frac{\max_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right) - \min_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right)}{s_T}
+\]
+
+The R/S statistic, $Q_T$, is always positive. In various papers, Mandelbrot and Wallis (1969e), Mandelbrot (1973), and Mandelbrot and Taqqu (1979) have emphasized the superiority of R/S analysis over more traditional methods of detecting long memory, such as autocorrelation studies, variance ratio tests, and spectral analysis. Mandelbrot and Wallis (1968) show that R/S analysis can detect long memory even in highly non-Gaussian time series. Mandelbrot and Wallis (1969d) further note that, unlike spectral analysis which only detects periodic cycles, the R/S statistic can detect non-periodic cycles. Finally, Mandelbrot and Wallis (1969e) demonstrate that the R/S statistic is independent of the marginal distribution.
+
+The R/S analysis leads to the Hurst exponent, where $T$ is the number of observations in the series.
+
+\subsection*{Modified R/S Analysis}
+The Modified R/S statistic, denoted by $Q_T$, is defined as:
+
+\[
+Q_T = \frac{R}{\hat{\sigma}_T(q)}
+\]
+
+where
+
+\[
+\hat{\sigma}_T(q) = \sqrt{\frac{1}{T} \sum_{j=1}^{T} (Y_j - \bar{Y})^2 + 2 \sum_{q=1}^{T} w(q) \left[ \sum_{i=q+1}^{T} (Y_i - \bar{Y})(Y_{i-q} - \bar{Y}) \right]}
+\]
+
+and
+
+\[
+w(q) = 1 - \frac{j}{q+1}
+\]
+
+This statistic differs from the traditional R/S statistic only by its denominator. In the presence of autocorrelation, the denominator does not only represent the sum of the variances of the individual terms, but also includes autocovariances.
+These are weighted according to lags $q$, with the weights $w(q)$ suggested by Newey and West (1987). Moreover, Andrews (1991) proposed a rule for choosing $q$:
+
+\[
+q = \left[ kT \right] \quad \text{where} \quad kT = \left( \frac{3T}{2} \right)^{1/3} \left( \frac{2 \rho_1}{1 - \rho_1} \right)^{2/3}
+\]
+
+where $[kT]$ is the integer part of $kT$, and $\rho_1$ is the first-order autocorrelation coefficient.
+
+Unlike the classical R/S analysis, the limiting distribution of the Modified R/S statistic is known, and the statistic $V$, defined by
+
+\[
+V = \frac{Q_T}{\sqrt{T}},
+\]
+
+converges to the range of a Brownian bridge over the unit interval. It is therefore possible to perform a statistical test for the null hypothesis of short memory against the alternative hypothesis of long memory by referring to the critical value table provided by Lo (1991).
+
+\section*{Critical Value Table from Lo (1991)}
+The critical values for the Modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the Modified R/S statistic.
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Significance Level} & \textbf{Critical Value (Modified R/S Statistic)} \\
+\hline
+0.005 & 2.098\\
+0.05 & 1.747\\
+0.10 & 1.620\\
+
+\hline
+\end{tabular}
+\caption{Critical values for the Modified R/S Statistic (Lo, 1991)}
+\end{table}
+
+\subsection{Data}
+
+The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (\^GSPC), FTSE 100 (\^FTSE), SBF 250 (\^SBF250), TOPIX (\^TOPX), and the Toronto Stock Exchange 300 (\^GSPTSE).
+The data spans the period from January 2, 1968, to June 10, 1996, and was downloaded from Yahoo Finance.
+
+For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log returns.
+These log returns were then used to calculate the R/S and Modified R/S statistics and estimate the Hurst exponent.
+The purpose of using this data is to evaluate the long-term memory properties of financial markets, which can indicate persistence or mean-reversion in market behavior.
+
+
+\section{Results}
+
+
+The following table summarizes the results of the R/S statistic, Modified R/S statistic, and the estimated Hurst exponents for each of the five indices analyzed: \\
+
+\begin{table}[h!]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=comma,
+        header=true,
+        string type,
+        every head row/.style={before row=\hline, after row=\hline},
+        every last row/.style={after row=\hline},
+        columns/Ticker/.style={column name=Ticker, string type},
+        columns/R/S Statistic/.style={column name=R/S Statistic, fixed, precision=2},
+        columns/Hurst Exponent (RS)/.style={column name=Hurst Exponent (RS), fixed, precision=3},
+        columns/Modified Hurst Exponent/.style={column name=Modified Hurst Exponent, fixed, precision=3},
+        columns/Critical Value/.style={column name=Critical Value, fixed, precision=3},
+        columns/Long Memory/.style={column name=Long Memory}
+    ] {data/hurst_results.csv}
+    \caption{Results for R/S and Modified R/S Statistics, Hurst Exponent, and Long Memory 10\%.}
+    \label{tab:hurst_results}
+\end{table}
+
+
+Based on the results obtained from applying the traditional R/S method, all the series appear to exhibit long-term memory,
+as the Hurst exponents are consistently greater than 0.5. However, the asymptotic distribution of this statistic is unknown,
+which prevents us from determining whether the estimated Hurst exponent is significantly greater than 0.5. This issue can be
+addressed by using the modified R/S method. In this case, we simply compare the estimated values of the statistic VV to the
+critical values provided by Lo (1991), which are 1.620 and 1.747 for the 10\% and 5\% significance levels, respectively,
+in the case of a one-tailed test. It is observed that only one serie actually exhibit persistence: the returns of the TOPX stock indices (japan).
+For all other series, despite the Hurst exponent being greater than 0.5, the null hypothesis
+of short memory cannot be rejected.
+
+
+
+\section{Discussion}
+
+
+
+\section{References}
+
+\begin{thebibliography}{9}
+
+\bibitem{lo1991}
+Lo, A.W., \textit{http://www.e-m-h.org/Lo\_\_91.pdf\href{Long-Term Memory in Stock Market Prices}}, {\texttt{Lo 1991}}.
+
+\bibitem{mignon2003}
+Mignon, V., \textit{\href{https://www.persee.fr/doc/ecop_0249-4744_1998_num_132_1_5909}{Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières}}, \textit{Économie \& Prévision}, 2003.
+
+\end{thebibliography}
+
+
+\section*{Appendix}
+
+\end{document}
