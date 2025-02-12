@@ -1,6 +1,6 @@
 Ticker,R/S,Hurst Exponent,Modified Hurst Exponent,Critical Value,Long Memory
-GSPC,109.38,0.53,0.52,1.22,False
-FTSE,65.04,0.52,0.51,1.09,False
-SBF250,51.23,0.54,0.54,1.34,False
-TOPX,78.95,0.57,0.57,1.65,True
-GSPTSE,97.9,0.55,0.52,1.18,False
+GSPC,132.48,0.55,0.56,1.71,True
+FTSE,88.03,0.5,0.5,1.04,False
+SBF250,100.12,0.54,0.54,1.36,False
+TOPX,78.3,0.5,0.5,0.98,False
+GSPTSE,110.99,0.53,0.53,1.3,False

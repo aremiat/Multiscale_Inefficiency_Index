@@ -1,7 +1,12 @@
 import numpy as np
 import yfinance as yf
+from esg.esg_ratings import DATA_PATH
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
+import os
+
+
+DATA_PATH = os.path.dirname(__file__) + "/../data"
 
 # Test de Dickey-Fuller
 def adf_test(series):
@@ -31,7 +36,7 @@ def compute_S_modified(r):
 
     # Calcul de q selon Andrews (1991)
     q = ((3 * T) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - rho_1)) ** (2 / 3)
-    q = int(np.floor(q))  # On garde la partie entière de q
+    q = int(np.floor(q))
 
     # Premier terme : variance classique
     var_term = np.sum((r - mean_Y) ** 2) / T
@@ -43,7 +48,7 @@ def compute_S_modified(r):
         sum_cov = np.sum((r[:-j] - mean_Y) * (r[j:] - mean_Y))  # Autocovariance décalée
         auto_cov_term += w_j * sum_cov
 
-    auto_cov_term = (2 / T) * auto_cov_term  # Appliquer le coefficient 2/T
+    auto_cov_term = (2 / T) * auto_cov_term
 
     S_squared = var_term + auto_cov_term
     return S_squared
@@ -77,7 +82,6 @@ if __name__ == "__main__":
         adf_test(r)
 
         rs_modified = rs_modified_statistic(r)
-        # Exemple d'utilisation avec les rendements de AAPL
         S_modified = compute_S_modified(r)
 
         rs_value = rs_statistic(r)
@@ -111,7 +115,7 @@ if __name__ == "__main__":
         all_results = pd.concat([all_results, df_results])
 
 
-# all_results.to_csv("data/hurst_results.csv", index=False)
+all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
 print(all_results)
 
 
