@@ -1,6 +1,5 @@
 import numpy as np
 import yfinance as yf
-from esg.esg_ratings import DATA_PATH
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 import os
@@ -8,18 +7,18 @@ import os
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
-# Test de Dickey-Fuller
+# Dickey-Fuller Test
 def adf_test(series):
     result = adfuller(series, autolag='AIC')
     print('ADF Statistic: %f' % result[0])
     print('p-value: %f' % result[1])
     if result[1] < 0.05:
-        print("La série est stationnaire")
+        print("The series is stationary")
     else:
-        print("La série n'est pas stationnaire, différenciation recommandée")
+        print("The series is not stationary, differencing recommended")
 
 
-# Fonction pour calculer la statistique R/S
+# Function to calculate the R/S statistic
 def rs_statistic(series):
     T = len(series)
     mean = np.mean(series)
@@ -30,22 +29,22 @@ def rs_statistic(series):
 
 
 def compute_S_modified(r):
-    T = len(r)  # Nombre d'observations
-    mean_Y = np.mean(r)  # Moyenne de la série
-    rho_1 = np.abs(np.corrcoef(r[:-1], r[1:])[0, 1])  # Autocorrélation de premier ordre
+    T = len(r)  # Number of observations
+    mean_Y = np.mean(r)  # Mean of the series
+    rho_1 = np.abs(np.corrcoef(r[:-1], r[1:])[0, 1])  # First-order autocorrelation
 
-    # Calcul de q selon Andrews (1991)
+    # Calculate q according to Andrews (1991)
     q = ((3 * T) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - rho_1)) ** (2 / 3)
     q = int(np.floor(q))
 
-    # Premier terme : variance classique
+    # First term: classical variance
     var_term = np.sum((r - mean_Y) ** 2) / T
 
-    # Deuxième terme : somme pondérée des autocovariances
+    # Second term: weighted sum of autocovariances
     auto_cov_term = 0
-    for j in range(1, q + 1):  # j varie de 1 à q
-        w_j = 1 - (j / (q + 1))  # Poids Newey-West
-        sum_cov = np.sum((r[:-j] - mean_Y) * (r[j:] - mean_Y))  # Autocovariance décalée
+    for j in range(1, q + 1):  # j ranges from 1 to q
+        w_j = 1 - (j / (q + 1))  # Newey-West weights
+        sum_cov = np.sum((r[:-j] - mean_Y) * (r[j:] - mean_Y))  # Lagged autocovariance
         auto_cov_term += w_j * sum_cov
 
     auto_cov_term = (2 / T) * auto_cov_term
@@ -54,7 +53,7 @@ def compute_S_modified(r):
     return S_squared
 
 
-# Fonction pour calculer la statistique R/S modifiée
+# Function to calculate the modified R/S statistic
 def rs_modified_statistic(series):
     T = len(series)
     mean = np.mean(series)
@@ -74,11 +73,11 @@ if __name__ == "__main__":
     for ticker in tickers:
         # 1968-01-02, 1996-06-10 TOPX True
         # 1995-01-02, 2024-12-31 GSPC True
-        p = yf.download(ticker, start="1995-01-02", end="2024-12-31", progress=False)['Close']
+        p = yf.download(ticker, start="2023-12-31", end="2024-12-31", progress=False)['Close']
         log_p = np.log(p.values)
         r = np.diff(log_p.ravel())
 
-        # Test de la stationnarité de la série (Dickey-Fuller)
+        # Stationarity test of the series (Dickey-Fuller)
         adf_test(r)
 
         rs_modified = rs_modified_statistic(r)
@@ -91,14 +90,14 @@ if __name__ == "__main__":
         hurst_rs_modified = np.log(rs_modified_value) / np.log(len(r))
         critical_value = rs_modified_value / np.sqrt(len(r))
 
-        h_true = bool(critical_value > 1.620) # critical value (10,5,0.5) are 1.620, 1.747 2.098
+        h_true = bool(critical_value > 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
 
-        print(f"Ticker: {ticker }")
-        print(f"Statistique R/S : {rs_value}")
-        print(f"Statistique R/S modifiée : {rs_modified_value}")
-        print(f"Exposant de Hurst : {hurst_rs}")
-        print(f"Exposant de Hurst modifié : {hurst_rs_modified}")
-        print(f"Valeur critique de l'exposant de Hurst modifié: {critical_value}")
+        print(f"Ticker: {ticker}")
+        print(f"R/S Statistic: {rs_value}")
+        print(f"Modified R/S Statistic: {rs_modified_value}")
+        print(f"Hurst Exponent: {hurst_rs}")
+        print(f"Modified Hurst Exponent: {hurst_rs_modified}")
+        print(f"Critical Value of the Modified Hurst Exponent: {critical_value}")
         print("Long memory: ", h_true)
 
         ticker = ticker.replace("^", "")
@@ -117,5 +116,3 @@ if __name__ == "__main__":
 
 all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
 print(all_results)
-
-
