@@ -52,7 +52,7 @@ To simulate Fractional Brownian Motion (fBm) with different Hurst exponents:
 Results and Discussion
 Hurst Exponent and Momentum Strategies
 
-Based on the results, only the TOPX stock index showed statistical persistence, with the Hurst exponent being greater than 0.5. This implies that for most financial time series, despite the apparent long-term memory, momentum strategies may not be reliable unless validated by more robust statistical methods.
+Based on the results, only the GSPC (S&P500) stock index showed statistical persistence, with the Hurst exponent being greater than 0.5. This implies that for most financial time series, despite the apparent long-term memory, momentum strategies may not be reliable unless validated by more robust statistical methods.
 Fractional Brownian Motion
 
 Fractional Brownian Motion models are useful for simulating market behaviors with varying degrees of long-term dependence. The results provide insights into the behavior of financial assets under different Hurst exponent values.
@@ -61,6 +61,6 @@ Contributing
 Feel free to fork the repository, create branches, and submit pull requests for any improvements or bug fixes.
 References
 
-    Lo, A.W., "Long-Term Memory in Stock Market Prices" (PDF Link)
+    Lo, A.W., "Long-Term Memory in Stock Market Prices" 
     Mignon, V., "Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières", Économie & Prévision, 2003.
-    Suhonen, A., Lennkh, M., and Perez, F., "Quantifying Backtest Overfitting in Alternative Beta Strategies", The Journal of Portfolio Management, 2017.
+
