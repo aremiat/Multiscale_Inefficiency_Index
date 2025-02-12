@@ -19,6 +19,7 @@
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{amsmath}
 \usepackage{pgfplotstable}
+\usepackage{amsfonts}
 \usetikzlibrary{backgrounds}
 
 \title{
@@ -86,10 +87,80 @@ Through this analysis, we aim to highlight the advantages of the Modified R/S st
 
 \section{Methods}
 
+\subsection{Fractional Brownian Motion}
+
+Fractional Brownian motion (fBm) is a generalization of standard Brownian motion that introduces dependence in increments, making it suitable for modeling processes with memory effects. It is a continuous-time Gaussian process \( X_H(t) \) with the following properties:
+
+\begin{itemize}
+    \item \( X_H(0) = 0 \).
+    \item The increments \( X_H(t) - X_H(s) \) follow a normal distribution with mean zero and variance:
+    \begin{equation}
+        \mathbb{E} \left[ (X_H(t) - X_H(s))^2 \right] = |t - s|^{2H},
+    \end{equation}
+    where \( H \) is the Hurst exponent.
+    \item The process exhibits self-similarity, meaning that for any scaling factor \( c \), the rescaled process satisfies:
+    \begin{equation}
+        X_H(ct) \overset{d}{=} c^H X_H(t).
+    \end{equation}
+    \item When \( H = 0.5 \), fBm reduces to classical Brownian motion.
+    \item For \( H > 0.5 \), the process exhibits long-term positive autocorrelation, meaning that an increase in the past tends to be followed by further increases.
+    \item For \( H < 0.5 \), the process has anti-persistent behavior, where an increase in the past is more likely to be followed by a decrease.
+\end{itemize}
+
+The covariance function of fBm is given by:
+
+\begin{equation}
+    C_H(t_1, t_2) = \frac{1}{2} \left( t_1^{2H} + t_2^{2H} - |t_1 - t_2|^{2H} \right),
+\end{equation}
+
+which accounts for the dependence structure of the process. The Hurst exponent \( H \) plays a critical role in determining the smoothness and correlation properties of fBm:
+
+\begin{itemize}
+    \item \textbf{For small \( H \) values} (\( H < 0.5 \)), the process is highly erratic, with rapid changes and weak memory effects.
+    \item \textbf{For large \( H \) values} (\( H > 0.5 \)), the trajectory becomes smoother, and the process exhibits long-range dependence.
+\end{itemize}
+
+Fractional Brownian motion is widely used in finance, telecommunications, and physics to model phenomena exhibiting memory effects and self-similarity, such as stock market fluctuations, internet traffic, and geological formations.
 
 
-\section*{Hurst Exponent Calculation}
-\subsection*{R/S and Modified R/S Analysis}
+\subsection{Simulation of Fractional Brownian Motion}
+
+To generate the fractional Brownian motion (fBm), we use a Cholesky decomposition-based approach. The covariance matrix of fBm is given by:
+
+\begin{equation}
+C(t_1, t_2) = \frac{1}{2} \left( t_1^{2H} + t_2^{2H} - |t_1 - t_2|^{2H} \right),
+\end{equation}
+
+where \( H \) is the Hurst exponent, which determines the degree of long-term dependence in the process.
+
+The steps of the simulation are as follows:
+\begin{enumerate}
+    \item Define a time grid of \( N \) points between \( 0 \) and \( T \).
+    \item Compute the covariance matrix using the formula above.
+    \item Apply Cholesky decomposition to obtain a lower triangular matrix \( L \).
+    \item Generate a vector \( W \) of standard normal random variables.
+    \item Obtain the fBm path by computing \( X = L W \).
+\end{enumerate}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/fdm_autocorr}
+    \caption{Simulation of Fractional Brownian Motion with different Hurst exponentand and its autocorrelation function.}
+    \label{fig:fbm_autocorr}
+\end{figure}
+
+\FloatBarrier
+
+The behavior of the fractional Brownian motion (fBm) varies significantly with the Hurst exponent \( H \).
+
+When \( H \) is small (close to 0.5), the fBm exhibits high local variability, resulting in a highly granular trajectory with frequent fluctuations. The autocorrelation of increments decays rapidly, indicating that future values are weakly influenced by past values. This suggests a short-memory process, similar to standard Brownian motion.
+
+As \( H \) increases, the autocorrelation decays more slowly, meaning that past values have a more significant impact on future values. This introduces a form of long-term dependence, where the process exhibits persistent trends. Consequently, the fBm trajectory appears smoother, with larger coherent movements and fewer abrupt changes.
+
+In summary, a lower \( H \) leads to a more irregular and noisy path, characteristic of short-memory processes, while a higher \( H \) results in a smoother trajectory with stronger persistence.
+
+\subsection{Hurst Exponent Calculation}
+\subsection{R/S and Modified R/S Analysis}
 The R/S analysis, introduced by Hurst and developed in various works by Mandelbrot, is certainly the most well-known method for estimating the Hurst exponent $H$. This statistic is defined as the range of the partial sums of deviations from the mean of a time series divided by its standard deviation. Consider a time series $Y_t$, $t = 1, ..., T$, with mean $\bar{Y}$. The range $R$ is defined as:
 
 \[
@@ -106,7 +177,7 @@ The R/S statistic, $Q_T$, is always positive. In various papers, Mandelbrot and 
 
 The R/S analysis leads to the Hurst exponent, where $T$ is the number of observations in the series.
 
-\subsection*{Modified R/S Analysis}
+\subsection{Modified R/S Analysis}
 The Modified R/S statistic, denoted by $Q_T$, is defined as:
 
 \[
@@ -145,7 +216,7 @@ converges to the range of a Brownian bridge over the unit interval. It is theref
 \section*{Critical Value Table from Lo (1991)}
 The critical values for the Modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the Modified R/S statistic.
 
-\begin{table}[h!]
+\begin{table}[ht!]
 \centering
 \begin{tabular}{|c|c|c|}
 \hline
@@ -159,6 +230,8 @@ The critical values for the Modified R/S test are provided in the table below. T
 \end{tabular}
 \caption{Critical values for the Modified R/S Statistic (Lo, 1991)}
 \end{table}
+
+
 
 \subsection{Data}
 
@@ -193,6 +266,8 @@ The following table summarizes the results of the R/S statistic, Modified R/S st
     \caption{Results for R/S and Modified R/S Statistics, Hurst Exponent, and Long Memory 10\%.}
     \label{tab:hurst_results}
 \end{table}
+
+\FloatBarrier
 
 
 Based on the results obtained from applying the traditional R/S method, all the series appear to exhibit long-term memory,
