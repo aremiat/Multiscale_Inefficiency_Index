@@ -1,0 +1,19 @@
+
+# Virtual environments
+/*/venv
+
+# Strategies' results directories
+/*/code/results
+
+# Output directories
+/*/out
+
+# Environment files
+.env
+.env_local
+envfile
+envfile_local
+
+# Pycharm and Linux direcories and files
+.idea
+__pycache__
