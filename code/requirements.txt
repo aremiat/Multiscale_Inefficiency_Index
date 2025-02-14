@@ -5,4 +5,7 @@ pytest
 seaborn
 yfinance
 kaleido
+statsmodels
+scipy
+plotly
 
