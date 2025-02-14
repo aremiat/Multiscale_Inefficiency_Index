@@ -4,7 +4,19 @@ import numpy as np
 
 class RSStatisticCalculator:
     @staticmethod
-    def rs_statistic(series):
+    def rs_statistic(series: np.ndarray) -> float:
+        """
+        Calculates the RS Statistic for a given time series.
+
+        The RS Statistic is the range of the cumulative sum of the deviations from the mean,
+        divided by the standard deviation of the series.
+
+        Args:
+            series (np.ndarray): The input time series data.
+
+        Returns:
+            float: The RS statistic value.
+        """
         T = len(series)
         mean = np.mean(series)
         Y = series - mean
@@ -13,7 +25,18 @@ class RSStatisticCalculator:
         return R / S
 
     @staticmethod
-    def compute_S_modified(r):
+    def compute_S_modified(r: np.ndarray) -> float:
+        """
+        Computes a modified version of the variance for a given time series, considering autocovariance.
+
+        The modification includes an autocovariance term based on the series' lagged values.
+
+        Args:
+            r (np.ndarray): The input time series data.
+
+        Returns:
+            float: The modified variance of the series.
+        """
         T = len(r)
         mean_Y = np.mean(r)
         rho_1 = np.abs(np.corrcoef(r[:-1], r[1:])[0, 1])
@@ -32,7 +55,19 @@ class RSStatisticCalculator:
         return var_term + auto_cov_term
 
     @staticmethod
-    def rs_modified_statistic(series):
+    def rs_modified_statistic(series: np.ndarray) -> float:
+        """
+        Calculates the modified RS Statistic for a given time series.
+
+        This is similar to the regular RS Statistic, but with a modified standard deviation
+        that accounts for autocovariance.
+
+        Args:
+            series (np.ndarray): The input time series data.
+
+        Returns:
+            float: The modified RS statistic value.
+        """
         T = len(series)
         mean = np.mean(series)
         Y = series - mean
