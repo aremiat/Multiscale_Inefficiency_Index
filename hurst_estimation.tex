@@ -94,9 +94,9 @@ Fractional Brownian motion (fBm) is a generalization of standard Brownian motion
     \item \( X_H(0) = 0 \).
     \item The increments \( X_H(t) - X_H(s) \) follow a normal distribution with mean zero and variance:
     \begin{equation}
-        \mathbb{E} \left[ (X_H(t) - X_H(s))^2 \right] = |t - s|^{2H},
+        \mathbb{E} \left[ (X_H(t) - X_H(s))^2 \right] = \sigma^2|t - s|^{2H},
     \end{equation}
-    where \( H \) is the Hurst exponent, and \( \sigma^2 = 1 \).
+    where \( H \) is the Hurst exponent.
     \item The process exhibits self-similarity, meaning that for any scaling factor \( c \), the rescaled process satisfies:
     \begin{equation}
         X_H(ct) \overset{d}{=} c^H X_H(t).
@@ -109,11 +109,11 @@ Fractional Brownian motion (fBm) is a generalization of standard Brownian motion
 The covariance function of fBm is given by:
 
 \begin{equation}
-    C_H(t_1, t_2) = \frac{1}{2} \left( t_1^{2H} + t_2^{2H} - |t_1 - t_2|^{2H} \right),
+    C_H(t_1, t_2) = \frac{\sigma^2}{2} \left( t_1^{2H} + t_2^{2H} - |t_1 - t_2|^{2H} \right),
     \label{eq:fbm_covariance}
 \end{equation}
 
-which accounts for the dependence structure of the process, with \( \sigma^2 = 1 \). The Hurst exponent \( H \) plays a critical role in determining the smoothness and correlation properties of fBm:
+which accounts for the dependence structure of the process. The Hurst exponent \( H \) plays a critical role in determining the smoothness and correlation properties of fBm:
 
 \begin{itemize}
     \item \textbf{For small \( H \) values} (\( H < 0.5 \)), the process is highly erratic, with rapid changes and weak memory effects.
