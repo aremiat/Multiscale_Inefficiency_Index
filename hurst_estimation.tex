@@ -60,14 +60,14 @@
 
 \section*{Abstract}
 
-This paper presents a study on long-term memory processes in financial time series using Hurst estimation methods, specifically the traditional R/S statistic and the Modified R/S statistic.
+This paper presents a study on long-term memory processes in financial time series using Hurst estimation methods, specifically the traditional R/S statistic (Rescaled Range analysis) and the Modified R/S statistic.
 We analyze the long-term memory properties of five major stock market indices: S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and Toronto Stock Exchange 300 (GSPTSE) using daily returns data spanning from January 2, 1995, to December 31, 2024.
 
 The R/S statistic and the Modified R/S statistic are computed to determine the presence of long-range dependence in the time series data. The Hurst exponent, derived from both statistics, is used to characterize the memory behavior of the series.
 
 The results indicate that, except for GSPC, all indices exhibit short-term memory or randomness with Hurst exponents below the critical threshold of 1.620.
 Specifically, the Hurst exponent for the GSPC index exceeds 1.620, indicating the presence of long-term memory (persistent behavior).
-These findings suggest that certain stock markets, like the us stock market represented by GSPC, may exhibit more pronounced long-term memory effects compared to others.
+These findings suggest that certain stock markets, like the US stock market represented by GSPC, may exhibit more pronounced long-term memory effects compared to others.
 
 
 \newpage
@@ -88,7 +88,9 @@ Through this analysis, we aim to highlight the advantages of the Modified R/S st
 
 \subsection{Fractional Brownian Motion}
 
-Fractional Brownian motion (fBm) is a generalization of standard Brownian motion that introduces dependence in increments, making it suitable for modeling processes with memory effects. It is a continuous-time Gaussian process \( X_H(t) \) with the following properties:
+Fractional Brownian motion (fBm) is a generalization of standard Brownian motion that introduces dependence in increments,
+making it suitable for modeling processes with memory effects. It is a continuous-time Gaussian process \( X_H(t) \) H corresponds
+to the Hurst exponent and \( H \in [0, 1] \) with the following properties:
 
 \begin{itemize}
     \item \( X_H(0) = 0 \).
@@ -97,7 +99,7 @@ Fractional Brownian motion (fBm) is a generalization of standard Brownian motion
         \mathbb{E} \left[ (X_H(t) - X_H(s))^2 \right] = \sigma^2|t - s|^{2H},
     \end{equation}
     where \( H \) is the Hurst exponent.
-    \item The process exhibits self-similarity, meaning that for any scaling factor \( c \), the rescaled process satisfies:
+    \item The process exhibits self-similarity, meaning that for any scaling factor \( c \), \( c \in \mathbb{R}^+ \), the rescaled process satisfies:
     \begin{equation}
         X_H(ct) \overset{d}{=} c^H X_H(t).
     \end{equation}
@@ -125,13 +127,9 @@ Fractional Brownian motion is widely used in finance, telecommunications, and ph
 
 \subsection{Simulation of Fractional Brownian Motion}
 
-To generate the fractional Brownian motion (fBm), we use a Cholesky decomposition-based approach. The covariance matrix of fBm is given by:
+To generate the fractional Brownian motion (fBm), we use a Cholesky decomposition-based approach. The covariance matrix of fBm is given by \eqref{eq:fbm_covariance}:
 
-\begin{equation}
-C(t_1, t_2) = \eqref{eq:fbm_covariance}.
-\end{equation}
-
-where \( H \) is the Hurst exponent, which determines the degree of long-term dependence in the process, and \( \sigma^2 = 1 \).
+where \( H \) is the Hurst exponent, which determines the degree of long-term dependence in the process.
 
 The steps of the simulation are as follows:
 \begin{enumerate}
@@ -141,6 +139,8 @@ The steps of the simulation are as follows:
     \item Generate a vector \( W \) of standard normal random variables.
     \item Obtain the fBm path by computing \( X = L W \).
 \end{enumerate}
+
+The params used for this simulation are N = 1000, T = 1, and Hurst exponents \( H = 0.2, 0.3, 0.5, 0.6, 0.8 \).
 
 \begin{figure}[!ht]
     \centering
@@ -153,7 +153,7 @@ The steps of the simulation are as follows:
 
 The behavior of the fractional Brownian motion (fBm) varies significantly with the Hurst exponent \( H \).
 
-When \( H \) is small (close to 0.5), the fBm exhibits high local variability, resulting in a highly granular trajectory with frequent fluctuations. The autocorrelation of increments decays rapidly, indicating that future values are weakly influenced by past values. This suggests a short-memory process, similar to standard Brownian motion.
+When \( H \) is small (close to 0), the fBm exhibits high local variability, resulting in a highly granular trajectory with frequent fluctuations. The autocorrelation of increments decays rapidly, indicating that future values are weakly influenced by past values. This suggests a short-memory process, similar to standard Brownian motion.
 
 As \( H \) increases, the autocorrelation decays more slowly, meaning that past values have a more significant impact on future values. This introduces a form of long-term dependence, where the process exhibits persistent trends. Consequently, the fBm trajectory appears smoother, with larger coherent movements and fewer abrupt changes.
 
@@ -161,7 +161,7 @@ In summary, a lower \( H \) leads to a more irregular and noisy path, characteri
 
 \subsection{Hurst Exponent Calculation}
 \subsection{R/S and Modified R/S Analysis}
-The R/S analysis, introduced by Hurst and developed in various works by Mandelbrot, is certainly the most well-known method for estimating the Hurst exponent $H$. This statistic is defined as the range of the partial sums of deviations from the mean of a time series divided by its standard deviation. Consider a time series $Y_t$, $t = 1, ..., T$, with mean $\bar{Y}$. The range $R$ is defined as:
+The R/S (Rescaled Range ) analysis , introduced by Hurst and developed in various works by Mandelbrot, is certainly the most well-known method for estimating the Hurst exponent $H$. This statistic is defined as the range of the partial sums of deviations from the mean of a time series divided by its standard deviation. Consider a time series $Y_t$, $t = 1, ..., T$, with mean $\bar{Y}$. The range $R$ is defined as:
 
 \[
 R = \max_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right) - \min_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right)
@@ -178,42 +178,42 @@ The R/S statistic, $Q_T$, is always positive. In various papers, Mandelbrot and 
 The R/S analysis leads to the Hurst exponent, where $T$ is the number of observations in the series.
 
 \subsection{Modified R/S Analysis}
-The Modified R/S statistic, denoted by $Q_T$, is defined as:
+The Modified R/S statistic, denoted by $\tilde{Q}_T$, is defined as:
 
 \[
-Q_T = \frac{R}{\hat{\sigma}_T(q)}
+\tilde{Q}_T = \frac{R}{\hat{\sigma}_T(q)}
 \]
 
 where
 
 \[
-\hat{\sigma}_T(q) = \sqrt{\frac{1}{T} \sum_{j=1}^{T} (Y_j - \bar{Y})^2 + \frac{2}{T} \sum_{j=1}^{T} w(q) \left[ \sum_{i=j+1}^{T} (Y_i - \bar{Y})(Y_{i-j} - \bar{Y}) \right]}
+\hat{\sigma}_T(q) = \sqrt{\frac{1}{T} \sum_{j=1}^{T} (Y_j - \bar{Y})^2 + \frac{2}{T} \sum_{j=1}^{T} w_j(q) \left[ \sum_{i=j+1}^{T} (Y_i - \bar{Y})(Y_{i-j} - \bar{Y}) \right]}
 \]
 
 and
 
 \[
-w(q) = 1 - \frac{j}{q+1}
+w_j(q) = 1 - \frac{j}{q + 1}
 \]
 
 This statistic differs from the traditional R/S statistic only by its denominator. In the presence of autocorrelation, the denominator does not only represent the sum of the variances of the individual terms, but also includes autocovariances.
 These are weighted according to lags $q$, with the weights $w(q)$ suggested by Newey and West (1987). Moreover, Andrews (1991) proposed a rule for choosing $q$:
 
 \[
-q = \left[ kT \right] \quad \text{where} \quad kT = \left( \frac{3T}{2} \right)^{1/3} \left( \frac{2 \rho_1}{1 - \rho_1} \right)^{2/3}
+q = \left[ k_T \right] \quad \text{where} \quad k_T = \left( \frac{3T}{2} \right)^{1/3} \left( \frac{2 \rho_1}{1 - \rho_1} \right)^{2/3}
 \]
 
-where $[kT]$ is the integer part of $kT$, and $\rho_1$ is the first-order autocorrelation coefficient.
+where $[k_T]$ is the integer part of $k_T$, and $\rho_1$ is the first-order autocorrelation coefficient.
 
 Unlike the classical R/S analysis, the limiting distribution of the Modified R/S statistic is known, and the statistic $V$, defined by
 
 \[
-V = \frac{Q_T}{\sqrt{T}},
+V = \frac{\tilde{Q}_T}{\sqrt{T}},
 \]
 
 converges to the range of a Brownian bridge over the unit interval. It is therefore possible to perform a statistical test for the null hypothesis of short memory against the alternative hypothesis of long memory by referring to the critical value table provided by Lo (1991).
 
-\section*{Critical Value Table from Lo (1991)}
+\subsection{Critical Value Table from Lo (1991)}
 The critical values for the Modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the Modified R/S statistic.
 
 \begin{table}[ht!]
@@ -233,7 +233,7 @@ The critical values for the Modified R/S test are provided in the table below. T
 
 
 
-\subsection{Data}
+\section{Data}
 
 The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and the Toronto Stock Exchange 300 (GSPTSE).
 The data spans the period from January 2, 1995, to December 31, 2024, and was downloaded from Yahoo Finance.
@@ -305,7 +305,24 @@ Small changes in the selected period can lead to different conclusions regarding
 Therefore, readers should be cautious when interpreting these results and take into account the impact of the evaluation period in their analyses.
 To ensure robust conclusions, it is recommended to test multiple timeframes and assess the stability of the findings across different periods.
 
+\section{Appendix}
 
+\begin{table}[h!]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=comma,
+        header=true,
+        string type,
+        every head row/.style={before row=\hline, after row=\hline},
+        every last row/.style={after row=\hline},
+        columns/Ticker/.style={column name=Ticker, string type},
+        columns/P-Value of prices/.style={column name=P-Value of Prices, fixed, precision=3},
+        columns/P-Value of log differentiated return/.style={column name=P-Value of Log Differentiated Return, fixed, precision=3}
+    ] {data/adf_results.csv}
+    \caption{P-values from the Augmented Dickey-Fuller (ADF) test for stationarity. The P-value of prices refers to the Augmented Dickey Fuller test (ADF) on the original series,
+     while the P-value of log-differentiated returns indicates the ADF test on log-differentiated returns. The null hypothesis is non-stationarity.}
+    \label{tab:adf_results}
+\end{table}
 
 \section{References}
 
@@ -313,8 +330,6 @@ Lo, A.W. (1991). \textit{\href{http://www.e-m-h.org/Lo\_\_91.pdf}{Long-Term Memo
 
 Mignon, V. (2003). \textit{\href{https://www.persee.fr/doc/ecop_0249-4744_1998_num_132_1_5909}{Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières}}, Économie \& Prévision.
 
-\href{https://www.mdpi.com/1911-8074/16/5/272}{MDPI Article: \textit{Modeling Financial Contagion with Systemic Risk Factors}}. Journal of Risk and Financial Management, 2023.
-
-
+Andrews, D.W.K. (1991). \textit{\href{https://www.jstor.org/stable/2938229}{Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation}}. \textit{Econometrica}, 59(3), 817-858.
 
 \end{document}
