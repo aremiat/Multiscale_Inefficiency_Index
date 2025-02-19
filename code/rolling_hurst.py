@@ -42,20 +42,38 @@ def rs_modified_statistic(series):
     return R / sigma
 
 
-
+tickers = [
+    "AAPL",      # Apple Inc. (USA - Technologie)
+    "VOW3.DE",   # Volkswagen AG (Allemagne - Automobile)
+    "RELIANCE.NS",  # Reliance Industries (Inde - Énergie & Télécom)
+    "SHOP",      # Shopify Inc. (Canada - E-commerce)
+    "ABEV",      # Ambev S.A. (Brésil - Boissons)
+    "0700.HK",   # Tencent Holdings (Hong Kong - Technologie & Divertissement)
+    "NESN.SW",   # Nestlé SA (Suisse - Alimentation & Boissons)
+    "NPN.JO",    # Naspers Ltd (Afrique du Sud - Médias & Investissements)
+    "9602.T",    # Toho Co. Ltd (Japon - Cinéma & Divertissement)
+    "BHP.AX"     # BHP Group Ltd (Australie - Matières premières)
+]
 
 if __name__ == "__main__":
 
-    ticker = "^GSPC"
+    ticker = "MSFT"
     adf_data = pd.DataFrame()
     # 1968-01-02, 1996-06-10 TOPX True
     # 1995-01-02, 2024-12-31 GSPC True
-    p = yf.download(ticker, start="1995-01-02", end="2024-12-31", progress=False)['Close']
+    # p = yf.download(ticker, start="1995-01-02", end="2024-12-31", progress=False)['Close']
+    dates = pd.date_range(start="1995-01-02", end="2024-12-31", freq="B")
+    p = pd.read_csv("Loader/sp500_prices_1995_2024_final.csv", index_col=0, parse_dates=True)
+    p = p[ticker].dropna()
+    p = p.iloc[1:]
+    p = p.astype(float)
+    p.index = pd.to_datetime(p.index, format='%d/%m/%Y')
+    p = p.loc['2005-01-02':'2010-12-31']
     ticker = ticker.replace("^", "")
 
     window_size = 252
-    log_p = np.log(p.values)
-    r = np.diff(log_p.ravel())
+    log_p = np.log(p) # .values
+    r = np.diff(log_p) # .ravel()
 
     hurst_values = []
     critical_values = []
@@ -80,10 +98,10 @@ if __name__ == "__main__":
 
     # 📊 Création des sous-graphiques interactifs
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                        subplot_titles=("S&P 500 Price Evolution", "Rolling Critical Value"))
+                        subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
 
     # 1️⃣ Graphique du prix du S&P 500
-    fig.add_trace(go.Scatter(x=p.index, y=p, mode='lines', name='S&P 500 Price', line=dict(color='black')), row=1,
+    fig.add_trace(go.Scatter(x=p.index, y=p, mode='lines', name=f'{ticker} Price', line=dict(color='black')), row=1,
                   col=1)
 
     # 2️⃣ Graphique de la valeur critique
@@ -92,16 +110,16 @@ if __name__ == "__main__":
 
     # Ajout de la ligne de seuil H = 0.5
     fig.add_trace(
-        go.Scatter(x=critical_series.index, y=[0.5] * len(critical_series), mode='lines', name='Threshold (H=0.5)',
+        go.Scatter(x=critical_series.index, y=[1.620] * len(critical_series), mode='lines', name='Threshold (V=1.620)',
                    line=dict(color='red', dash='dash')), row=2, col=1)
 
     # 📌 Mise en forme du graphique
-    fig.update_layout(title_text=f"S&P 500 Analysis ({ticker})", height=800, width=1000, showlegend=True)
+    fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
 
     # 📅 Formatage des axes
     fig.update_xaxes(title_text="Date")
     fig.update_yaxes(title_text="Price ($)", row=1, col=1)
-    fig.update_yaxes(title_text="Critical Value", row=2, col=1)
+    fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
 
     # 📊 Affichage interactif
     fig.show()
