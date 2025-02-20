@@ -324,6 +324,29 @@ To ensure robust conclusions, it is recommended to test multiple timeframes and 
     \label{tab:adf_results}
 \end{table}
 
+\pgfplotstableread[col sep=comma]{
+Ticker, Count, Mean, Std, Min, 25, 50, 75, Max
+AAPL,7299.0,1.192,0.228,0.654,1.017,1.178,1.336,1.876
+JPM,7299.0,1.134,0.208,0.656,0.986,1.116,1.261,1.835
+JNJ,7299.0,1.092,0.198,0.637,0.944,1.084,1.222,1.846
+XOM,7299.0,1.082,0.215,0.587,0.936,1.056,1.174,1.816
+WMT,7299.0,1.113,0.171,0.614,1.003,1.105,1.215,1.752
+BA,7299.0,1.128,0.181,0.588,0.993,1.145,1.261,2.079
+DIS,7299.0,1.184,0.238,0.633,1.008,1.159,1.362,1.979
+LIN,7299.0,1.025,0.197,0.534,0.88,0.999,1.168,1.74
+NEE,7299.0,1.104,0.193,0.595,0.973,1.106,1.235,1.761
+SPG,7299.0,1.113,0.204,0.63,0.951,1.096,1.275,1.784
+}\datatable
+
+% Typeset the table
+\pgfplotstabletypeset[
+    every head row/.style={before row=\toprule, after row=\midrule},
+    every last row/.style={after row=\bottomrule},
+    columns/Ticker/.style={string type}, % Treat Ticker as strings
+    % You can add additional styling for numeric columns as needed
+]{\datatable}
+
+
 \section{References}
 
 Lo, A.W. (1991). \textit{\href{http://www.e-m-h.org/Lo\_\_91.pdf}{Long-Term Memory in Stock Market Prices}}. \\
@@ -331,5 +354,15 @@ Lo, A.W. (1991). \textit{\href{http://www.e-m-h.org/Lo\_\_91.pdf}{Long-Term Memo
 Mignon, V. (2003). \textit{\href{https://www.persee.fr/doc/ecop_0249-4744_1998_num_132_1_5909}{Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières}}, Économie \& Prévision.
 
 Andrews, D.W.K. (1991). \textit{\href{https://www.jstor.org/stable/2938229}{Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation}}. \textit{Econometrica}, 59(3), 817-858.
+
+Mandelbrot, B.B. and Wallis, J.R. (1968). "Noah, Joseph, and Operational Hydrology", \textit{Water Resources Research}, vol. 4, pp. 909--918.
+
+Mandelbrot, B.B. (1973). "Le problème de la réalité des cycles lents et le syndrome de Joseph", \textit{Economie Appliquée}, vol. 26, pp. 349--365.
+
+Mandelbrot, B.B. and Wallis, J.R. (1969d). "Some Long-Run Properties of Geophysical Records", \textit{Water Resources Research}, vol. 5, pp. 321--340.
+
+Mandelbrot, B.B. and Wallis, J.R. (1969e). "Robustness of the Rescaled Range R/S in the Measurement of Noncyclic Long-Run Statistical Dependence", \textit{Water Resources Research}, vol. 5, pp. 967--988.
+
+Mandelbrot, B.B. and Taqqu, M.S. (1979). "Robust R/S Analysis of Long-Run Serial Correlation", \textit{Bulletin of the International Statistical Institute}, vol. 48, pp. 69--104.
 
 \end{document}
