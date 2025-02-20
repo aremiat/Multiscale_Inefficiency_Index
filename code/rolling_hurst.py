@@ -1,125 +1,90 @@
 import numpy as np
-import yfinance as yf
-from statsmodels.tsa.stattools import adfuller
 import pandas as pd
-import os
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-def compute_S_modified(r):
-    T = len(r)  # Number of observations
-    mean_Y = np.mean(r)  # Mean of the series
-    rho_1 = np.abs(np.corrcoef(r[:-1], r[1:])[0, 1])  # First-order autocorrelation
-
-    # Calculate q according to Andrews (1991)
-    q = ((3 * T) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - rho_1)) ** (2 / 3)
-    q = int(np.floor(q))
-
-    # First term: classical variance
-    var_term = np.sum((r - mean_Y) ** 2) / T
-
-    # Second term: weighted sum of autocovariances
-    auto_cov_term = 0
-    for j in range(1, q + 1):  # j ranges from 1 to q
-        w_j = 1 - (j / (q + 1))  # Newey-West weights
-        sum_cov = np.sum((r[:-j] - mean_Y) * (r[j:] - mean_Y))  # Lagged autocovariance
-        auto_cov_term += w_j * sum_cov
-
-    auto_cov_term = (2 / T) * auto_cov_term
-
-    S_squared = var_term + auto_cov_term
-    return S_squared
-
-def rs_modified_statistic(series):
-    T = len(series)
-    mean = np.mean(series)
-    Y = series - mean
-    cum_sum = np.cumsum(Y)
-    R = np.max(cum_sum) - np.min(cum_sum)
-
-    sigma = np.sqrt(compute_S_modified(series))
-
-    return R / sigma
+from utils.utils import ComputeRS
 
 
 tickers = [
-    "AAPL",      # Apple Inc. (USA - Technologie)
-    "VOW3.DE",   # Volkswagen AG (Allemagne - Automobile)
-    "RELIANCE.NS",  # Reliance Industries (Inde - Énergie & Télécom)
-    "SHOP",      # Shopify Inc. (Canada - E-commerce)
-    "ABEV",      # Ambev S.A. (Brésil - Boissons)
-    "0700.HK",   # Tencent Holdings (Hong Kong - Technologie & Divertissement)
-    "NESN.SW",   # Nestlé SA (Suisse - Alimentation & Boissons)
-    "NPN.JO",    # Naspers Ltd (Afrique du Sud - Médias & Investissements)
-    "9602.T",    # Toho Co. Ltd (Japon - Cinéma & Divertissement)
-    "BHP.AX"     # BHP Group Ltd (Australie - Matières premières)
+    "AAPL",  # Technologie (méga-cap)
+    "JPM",   # Financier
+    "JNJ",   # Santé
+    "XOM",   # Énergie
+    "WMT",   # Consommation de base
+    "BA",    # Industriel (aéronautique)
+    "DIS",   # Communication/Divertissement
+    "LIN",   # Matériaux (chimie)
+    "NEE",   # Utilitaires
+    "SPG"    # Immobilier (REIT)
 ]
 
 if __name__ == "__main__":
 
-    ticker = "MSFT"
-    adf_data = pd.DataFrame()
+    # ticker = "MSFT"
+    # adf_data = pd.DataFrame()
     # 1968-01-02, 1996-06-10 TOPX True
     # 1995-01-02, 2024-12-31 GSPC True
     # p = yf.download(ticker, start="1995-01-02", end="2024-12-31", progress=False)['Close']
-    dates = pd.date_range(start="1995-01-02", end="2024-12-31", freq="B")
+
     p = pd.read_csv("Loader/sp500_prices_1995_2024_final.csv", index_col=0, parse_dates=True)
-    p = p[ticker].dropna()
-    p = p.iloc[1:]
-    p = p.astype(float)
-    p.index = pd.to_datetime(p.index, format='%d/%m/%Y')
-    p = p.loc['2005-01-02':'2010-12-31']
-    ticker = ticker.replace("^", "")
 
-    window_size = 252
-    log_p = np.log(p) # .values
-    r = np.diff(log_p) # .ravel()
+    for ticker in tickers:
+        p_ticker = p[ticker].dropna()
+        p_ticker = p_ticker.iloc[1:]
+        p_ticker = p_ticker.astype(float)
+        p_ticker.index = pd.to_datetime(p_ticker.index, format='%d/%m/%Y')
+        # ticker = ticker.replace("^", "")
+        # p_ticker = p_ticker.loc['2018-12-31':'2024-12-31']
 
-    hurst_values = []
-    critical_values = []
+        window_size = 252
+        log_p = np.log(p_ticker) # .values
+        r = np.diff(log_p) # .ravel()
 
-    for i in range(len(r) - window_size + 1):
-        window_data = r[i:i + window_size]
-        rs_value = rs_modified_statistic(window_data)
+        hurst_values = []
+        critical_values = []
 
-        if rs_value is not np.nan and rs_value > 0:
-            hurst_value = np.log(rs_value) / np.log(len(window_data))
-            critical_value = rs_value / np.sqrt(len(window_data))
-        else:
-            hurst_value = np.nan
-            critical_value = np.nan
+        for i in range(len(r) - window_size + 1):
+            window_data = r[i:i + window_size]
+            rs_value = ComputeRS.rs_modified_statistic(window_data)
 
-        hurst_values.append(hurst_value)
-        critical_values.append(critical_value)
+            if rs_value is not np.nan and rs_value > 0:
+                hurst_value = np.log(rs_value) / np.log(len(window_data))
+                critical_value = rs_value / np.sqrt(len(window_data))
+            else:
+                hurst_value = np.nan
+                critical_value = np.nan
 
-    # Créer une série temporelle
-    hurst_series = pd.Series(hurst_values, index=p.index[window_size:])
-    critical_series = pd.Series(critical_values, index=p.index[window_size:])
+            hurst_values.append(hurst_value)
+            critical_values.append(critical_value)
 
-    # 📊 Création des sous-graphiques interactifs
-    fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-                        subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
+        # Créer une série temporelle
+        hurst_series = pd.Series(hurst_values, index=p_ticker.index[window_size:])
+        critical_series = pd.Series(critical_values, index=p_ticker.index[window_size:])
 
-    # 1️⃣ Graphique du prix du S&P 500
-    fig.add_trace(go.Scatter(x=p.index, y=p, mode='lines', name=f'{ticker} Price', line=dict(color='black')), row=1,
-                  col=1)
+        # 📊 Création des sous-graphiques interactifs
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                            subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
 
-    # 2️⃣ Graphique de la valeur critique
-    fig.add_trace(go.Scatter(x=critical_series.index, y=critical_series, mode='lines', name='Rolling Critical Value',
-                             line=dict(color='green')), row=2, col=1)
+        # 1️⃣ Graphique du prix du S&P 500
+        fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker, mode='lines', name=f'{ticker} Price', line=dict(color='black')), row=1,
+                      col=1)
 
-    # Ajout de la ligne de seuil H = 0.5
-    fig.add_trace(
-        go.Scatter(x=critical_series.index, y=[1.620] * len(critical_series), mode='lines', name='Threshold (V=1.620)',
-                   line=dict(color='red', dash='dash')), row=2, col=1)
+        # 2️⃣ Graphique de la valeur critique
+        fig.add_trace(go.Scatter(x=critical_series.index, y=critical_series, mode='lines', name='Rolling Critical Value',
+                                 line=dict(color='green')), row=2, col=1)
 
-    # 📌 Mise en forme du graphique
-    fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
+        # Ajout de la ligne de seuil H = 0.5
+        fig.add_trace(
+            go.Scatter(x=critical_series.index, y=[1.620] * len(critical_series), mode='lines', name='Threshold (V=1.620)',
+                       line=dict(color='red', dash='dash')), row=2, col=1)
 
-    # 📅 Formatage des axes
-    fig.update_xaxes(title_text="Date")
-    fig.update_yaxes(title_text="Price ($)", row=1, col=1)
-    fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+        # 📌 Mise en forme du graphique
+        fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
 
-    # 📊 Affichage interactif
-    fig.show()
+        # 📅 Formatage des axes
+        fig.update_xaxes(title_text="Date")
+        fig.update_yaxes(title_text="Price ($)", row=1, col=1)
+        fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+
+        # 📊 Affichage interactif
+        fig.show()
