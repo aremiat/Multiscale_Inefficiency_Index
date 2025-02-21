@@ -7,7 +7,10 @@
 \contentsline {subsection}{\numberline {2.3}Hurst Exponent Calculation}{6}{subsection.2.3}%
 \contentsline {subsection}{\numberline {2.4}R/S and Modified R/S Analysis}{6}{subsection.2.4}%
 \contentsline {subsection}{\numberline {2.5}Modified R/S Analysis}{6}{subsection.2.5}%
-\contentsline {subsection}{\numberline {2.6}Data}{7}{subsection.2.6}%
-\contentsline {section}{\numberline {3}Results}{7}{section.3}%
-\contentsline {section}{\numberline {4}Discussion}{8}{section.4}%
-\contentsline {section}{\numberline {5}References}{8}{section.5}%
+\contentsline {subsection}{\numberline {2.6}Critical Value Table from Lo (1991)}{7}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Data}{7}{section.3}%
+\contentsline {section}{\numberline {4}Results}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Adaptive trading strategy}{8}{subsection.4.1}%
+\contentsline {section}{\numberline {5}Discussion}{8}{section.5}%
+\contentsline {section}{\numberline {6}Appendix}{9}{section.6}%
+\contentsline {section}{\numberline {7}References}{9}{section.7}%

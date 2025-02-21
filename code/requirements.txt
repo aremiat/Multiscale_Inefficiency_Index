@@ -4,8 +4,8 @@ pandas
 pytest
 seaborn
 yfinance
-kaleido
+kaleido==0.1.0.post1
 statsmodels
 scipy
 plotly
-
+pandas_datareader

@@ -6,6 +6,7 @@ from utils.RS import ComputeRS
 import os
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
+IMG_PATH = os.path.dirname(__file__) + "/../img"
 
 tickers = [
     "AAPL",  # Technologie (méga-cap)
@@ -78,17 +79,22 @@ if __name__ == "__main__":
         results = pd.concat([results, ticker_stats], ignore_index=True)
 
         # (Optionnel) Affichage ou sauvegarde de graphiques pour chaque ticker
-        # fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
-        #                     subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
-        # fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker, mode='lines', name=f'{ticker} Price', line=dict(color='black')), row=1, col=1)
-        # fig.add_trace(go.Scatter(x=critical_series.index, y=critical_series, mode='lines', name='Rolling Critical Value', line=dict(color='green')), row=2, col=1)
-        # fig.add_trace(go.Scatter(x=critical_series.index, y=[1.620] * len(critical_series), mode='lines', name='Threshold (V=1.620)', line=dict(color='red', dash='dash')), row=2, col=1)
-        # fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
-        # fig.update_xaxes(title_text="Date")
-        # fig.update_yaxes(title_text="Price ($)", row=1, col=1)
-        # fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                            subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
+        fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker, mode='lines', name=f'{ticker} Price', line=dict(color='black')), row=1, col=1)
+        fig.add_trace(go.Scatter(x=critical_series.index, y=critical_series, mode='lines', name='Rolling Critical Value', line=dict(color='green')), row=2, col=1)
+        fig.add_trace(go.Scatter(x=critical_series.index, y=[1.620] * len(critical_series), mode='lines', name='Threshold (V=1.620)', line=dict(color='red', dash='dash')), row=2, col=1)
+        fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
+        fig.update_xaxes(title_text="Date")
+        fig.update_yaxes(title_text="Price ($)", row=1, col=1)
+        fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
         # fig.show()
 
+        output_filename = os.path.join(IMG_PATH, f"rolling_critical_value_{ticker}.png")
+        fig.write_image(output_filename)
+        print(f"Graphique sauvegardé sous : {output_filename}")
+
+
     # Sauvegarde des résultats
-    results.to_csv(f"{DATA_PATH}/statistical_hurst_results.csv", index=False)
-    print(results)
+    # results.to_csv(f"{DATA_PATH}/statistical_hurst_results.csv", index=False)
+    # print(results)

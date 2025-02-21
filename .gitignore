@@ -1,7 +1,7 @@
 
 # Virtual environments
 /*/venv
-
+venv
 # Strategies' results directories
 /*/code/results
 
