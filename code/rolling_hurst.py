@@ -9,6 +9,7 @@ DATA_PATH = os.path.dirname(__file__) + "/../data"
 IMG_PATH = os.path.dirname(__file__) + "/../img"
 
 tickers = [
+    "NVDA",  # Technologie (méga-cap)
     "AAPL",  # Technologie (méga-cap)
     "JPM",   # Financier
     "JNJ",   # Santé
@@ -88,8 +89,8 @@ if __name__ == "__main__":
         fig.update_xaxes(title_text="Date")
         fig.update_yaxes(title_text="Price ($)", row=1, col=1)
         fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
-        # fig.show()
-
+        fig.show()
+        #
         output_filename = os.path.join(IMG_PATH, f"rolling_critical_value_{ticker}.png")
         fig.write_image(output_filename)
         print(f"Graphique sauvegardé sous : {output_filename}")

@@ -19,6 +19,7 @@ class ComputeRS:
     def compute_S_modified(series):
         t = len(series)  # Number of observations
         mean_y = np.mean(series)  # Mean of the series
+        # s = series.squeeze()
         rho_1 = np.abs(np.corrcoef(series[:-1], series[1:])[0, 1])  # First-order autocorrelation
 
         # Calculate q according to Andrews (1991)

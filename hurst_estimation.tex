@@ -325,7 +325,13 @@ To ensure robust conclusions, it is recommended to test multiple timeframes and 
     \label{tab:adf_results}
 \end{table}
 
-\pgfplotstableread[col sep=comma]{
+
+
+
+\begin{table}[ht]
+    \centering
+    \caption{Hurst Statistics for ticker}
+    \pgfplotstableread[col sep=comma]{
 Ticker, Count, Mean, Std, Min, 25, 50, 75, Max
 AAPL,7299.0,1.192,0.228,0.654,1.017,1.178,1.336,1.876
 JPM,7299.0,1.134,0.208,0.656,0.986,1.116,1.261,1.835
@@ -337,15 +343,14 @@ DIS,7299.0,1.184,0.238,0.633,1.008,1.159,1.362,1.979
 LIN,7299.0,1.025,0.197,0.534,0.88,0.999,1.168,1.74
 NEE,7299.0,1.104,0.193,0.595,0.973,1.106,1.235,1.761
 SPG,7299.0,1.113,0.204,0.63,0.951,1.096,1.275,1.784
-}\datatable
+    }\datatable
 
-% Typeset the table
-\pgfplotstabletypeset[
-    every head row/.style={before row=\toprule, after row=\midrule},
-    every last row/.style={after row=\bottomrule},
-    columns/Ticker/.style={string type}, % Treat Ticker as strings
-    % You can add additional styling for numeric columns as needed
-]{\datatable}
+    \pgfplotstabletypeset[
+        every head row/.style={before row=\toprule, after row=\midrule},
+        every last row/.style={after row=\bottomrule},
+        columns/Ticker/.style={string type}
+    ]{\datatable}
+\end{table}
 
 
 \section{References}
