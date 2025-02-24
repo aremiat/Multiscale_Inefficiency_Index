@@ -38,13 +38,15 @@ if __name__ == "__main__":
     for ticker in tickers:
         p = yf.download(ticker, start="1968-01-02", end="2024-12-31", progress=False)['Close']
         ticker = ticker.replace("^", "")
-        p_val_before = adf_test(p)
+        # p_val_before = adf_test(p)
 
         log_p = np.log(p)
         r = log_p.diff().dropna()
-        #
-        # Stationarity test of the series (Dickey-Fuller)
-        p_val_after = adf_test(r)
+
+
+        # #
+        # # Stationarity test of the series (Dickey-Fuller)
+        # p_val_after = adf_test(r)
 
         # adf_data = pd.concat([adf_data, pd.DataFrame({
         #     "Ticker": [ticker],

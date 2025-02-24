@@ -16,24 +16,38 @@ class ComputeRS:
         return r / s
 
     @staticmethod
-    def compute_S_modified(series):
-        t = len(series)  # Number of observations
-        mean_y = np.mean(series)  # Mean of the series
-        # s = series.squeeze()
-        rho_1 = np.abs(np.corrcoef(series[:-1], series[1:])[0, 1])  # First-order autocorrelation
+    def compute_S_modified(s):
+        t = len(s)  # Number of observations
+        mean_y = np.mean(s)  # Mean of the series
+        s = s.squeeze()
+
+        rho_1 = np.abs(np.corrcoef(s[:-1], s[1:])[0, 1])  # First-order autocorrelation
+
+        # import statsmodels.api as sm
+        # import pandas as pd
+        # df = pd.DataFrame({'r': s})
+        # df['r_lag'] = df['r'].shift(1)
+        # df = df.dropna()
+
+        # # Définir la matrice des régresseurs (ajout d'une constante)
+        # X = sm.add_constant(df['r_lag'])
+        # y = df['r']
+        #
+        # # Estimer le modèle AR(1) par OLS
+        # model = sm.OLS(y, X).fit()
 
         # Calculate q according to Andrews (1991)
-        q = ((3 * t) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - rho_1)) ** (2 / 3)
+        q = ((3 * t) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - (rho_1**2))) ** (2 / 3)
         q = int(np.floor(q))
 
         # First term: classical variance
-        var_term = np.sum((series - mean_y) ** 2) / t
+        var_term = np.sum((s - mean_y) ** 2) / t
 
         # Second term: weighted sum of autocovariances
         auto_cov_term = 0
         for j in range(1, q + 1):  # j ranges from 1 to q
             w_j = 1 - (j / (q + 1))  # Newey-West weights
-            sum_cov = np.sum((series[:-j] - mean_y) * (series[j:] - mean_y))  # Lagged autocovariance
+            sum_cov = np.sum((s[:-j] - mean_y) * (s[j:] - mean_y))  # Lagged autocovariance
             auto_cov_term += w_j * sum_cov
 
         auto_cov_term = (2 / t) * auto_cov_term
