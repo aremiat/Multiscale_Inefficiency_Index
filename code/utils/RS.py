@@ -7,37 +7,35 @@ class ComputeRS:
         pass
 
     @staticmethod
-    def rs_statistic(series):
-        t = len(series)
-        mean = np.mean(series)
-        y = series - mean
+    def rs_statistic(series, window_size=0):
+        if window_size < len(series):
+            window_size = len(series)
+        s = series.iloc[len(series) - window_size: len(series)]
+        mean = np.mean(s)
+        y = s - mean
         r = np.max(np.cumsum(y)) - np.min(np.cumsum(y))
-        s = np.std(series)
-        return r / s
+        sigma = np.std(s)
+        return r / sigma
 
     @staticmethod
-    def compute_S_modified(s):
+    def compute_S_modified(series, chin=False):
+        s = series
         t = len(s)  # Number of observations
         mean_y = np.mean(s)  # Mean of the series
         s = s.squeeze()
 
-        rho_1 = np.abs(np.corrcoef(s[:-1], s[1:])[0, 1])  # First-order autocorrelation
+        if not chin:
+            rho_1 = np.corrcoef(s[:-1], s[1:])[0, 1] # First-order autocorrelation
 
-        # import statsmodels.api as sm
-        # import pandas as pd
-        # df = pd.DataFrame({'r': s})
-        # df['r_lag'] = df['r'].shift(1)
-        # df = df.dropna()
+            if rho_1 < 0:
+                return np.sum((s - mean_y) ** 2) / t
 
-        # # Définir la matrice des régresseurs (ajout d'une constante)
-        # X = sm.add_constant(df['r_lag'])
-        # y = df['r']
-        #
-        # # Estimer le modèle AR(1) par OLS
-        # model = sm.OLS(y, X).fit()
+            # Calculate q according to Andrews (1991)
+            q = ((3 * t) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - (rho_1**2))) ** (2 / 3)
+        else:
+            q = 4*(t/100)**(2/9)
 
-        # Calculate q according to Andrews (1991)
-        q = ((3 * t) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - (rho_1**2))) ** (2 / 3)
+        # lower bound for q
         q = int(np.floor(q))
 
         # First term: classical variance
@@ -56,12 +54,14 @@ class ComputeRS:
         return s_quared
 
     @staticmethod
-    def rs_modified_statistic(series):
-        t = len(series)
-        mean = np.mean(series)
-        y = series - mean
-        cum_sum = np.cumsum(y)
-        r = np.max(cum_sum) - np.min(cum_sum)
-        sigma = np.sqrt(ComputeRS.compute_S_modified(series))
+    def rs_modified_statistic(series, window_size=0, chin=False):
+        if window_size > len(series):
+            window_size = len(series)
+
+        s = series.iloc[len(series) - window_size: len(series)]
+        mean = np.mean(s)
+        y = s - mean
+        r = np.max(np.cumsum(y)) - np.min(np.cumsum(y))
+        sigma = np.sqrt(ComputeRS.compute_S_modified(s, chin))
 
         return r / sigma

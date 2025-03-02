@@ -1,5 +1,4 @@
 import numpy as np
-import yfinance as yf
 from statsmodels.tsa.stattools import adfuller
 import pandas as pd
 import os
@@ -8,6 +7,7 @@ import plotly.graph_objects as go
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 IMG_PATH = os.path.dirname(__file__) + "/../img"
+
 
 # Dickey-Fuller Test
 def adf_test(series):
@@ -26,54 +26,61 @@ all_results = pd.DataFrame()
 
 if __name__ == "__main__":
 
-    tickers = ["^GSPC", "^FTSE", "^SBF250", "^TOPX", "^GSPTSE"]
+    tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GSPTSE"]
     adf_data = pd.DataFrame()
     # for ticker in tickers:
-        # 1968-01-02, 1996-06-10 TOPX True
-        # 1995-01-02, 2024-12-31 GSPC True
+    # "1987-09-10": "2025-02-28"
+    # all_prices = pd.DataFrame()
+    # for ticker in tickers:
+    #     p = yf.download(ticker, end="2025-12-25")["Close"]
+    #     all_prices = pd.concat([all_prices, p], axis=1)
+    # all_prices.to_csv(f"{DATA_PATH}/index_prices.csv")
 
-    # start_years = ["1995-01-02", "2005-01-02", "2015-01-02"]  # de 1995 à 2015
+    start_years = ["1995-01-02", "2005-01-02", "2015-01-02"]  # de 1995 à 2015
     #
     # for sy in start_years:
+    p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
+
     for ticker in tickers:
-        p = yf.download(ticker, start="1968-01-02", end="2024-12-31", progress=False)['Close']
+        p_ticker = p[ticker].dropna()
         ticker = ticker.replace("^", "")
-        # p_val_before = adf_test(p)
-
-        log_p = np.log(p)
+        #
+        p_ticker = p_ticker.loc["1968-01-02":"1996-06-10"]
+        log_p = np.log(p_ticker)
         r = log_p.diff().dropna()
-
-
-        # #
-        # # Stationarity test of the series (Dickey-Fuller)
+        # vol = r.rolling(window=252).std().dropna()
+        r = r.resample('M').last().dropna()
+        # p_val_before = adf_test(log_p)
+        #
+        # Stationarity test of the series (Dickey-Fuller)
         # p_val_after = adf_test(r)
-
+        # #
         # adf_data = pd.concat([adf_data, pd.DataFrame({
         #     "Ticker": [ticker],
         #     "P-Value on prices": [round(p_val_before, 3)],  # Round for clarity
         #     "P-Value on log differentiated return": [round(p_val_after, 3)]
         # })], ignore_index=True)
 
-        rs_modified = ComputeRS.rs_modified_statistic(r)
-        S_modified = ComputeRS.compute_S_modified(r)
-
-        rs_value = ComputeRS.rs_statistic(r)
-        rs_modified_value = ComputeRS.rs_modified_statistic(r)
+        Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
+        rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
 
         hurst_rs = np.log(rs_value) / np.log(len(r))
-        hurst_rs_modified = np.log(rs_modified_value) / np.log(len(r))
-        critical_value = rs_modified_value / np.sqrt(len(r))
+        hurst_rs_modified = np.log(Q_tild) / np.log(len(r))
+        critical_value = Q_tild / np.sqrt(len(r))
 
-        h_true = bool(critical_value.values > 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
+        h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
+        print(hurst_rs, hurst_rs_modified)
+        print(np.round(critical_value, 2))
+        # if h_true:
+        #     print(f"Long memory: {h_true} for {ticker} in {y} - {y + 15}")
+        #     print(f"Ticker: {ticker} \n")
+        #     print(f"R/S Statistic: {rs_value} \n")
+        #     print(f"Modified R/S Statistic: {Q_tild} \n")
+        #     print(f"Hurst Exponent: {hurst_rs} \n")
+        #     print(f"Modified Hurst Exponent: {hurst_rs_modified} \n")
+        #     print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
+        #     print("Long memory: ", h_true)
 
-        print(f"Ticker: {ticker}")
-        print(f"R/S Statistic: {rs_value}")
-        print(f"Modified R/S Statistic: {rs_modified_value}")
-        print(f"Hurst Exponent: {hurst_rs}")
-        print(f"Modified Hurst Exponent: {hurst_rs_modified}")
-        print(f"Critical Value of the Modified Hurst Exponent: {critical_value}")
-        print("Long memory: ", h_true)
-    #
     #     df_results = pd.DataFrame({
     #         "Ticker": [ticker],
     #         "R/S": [f"{rs_value:.3f}"],  # Format to 3 decimal places
@@ -84,7 +91,8 @@ if __name__ == "__main__":
     #     })
     #
     #     all_results = pd.concat([all_results, df_results])
-
+    # all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
+    # adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
 
     # Study of timestamp choice on the estimation
 
@@ -98,46 +106,46 @@ if __name__ == "__main__":
     # log_p = np.log(p)
     # r = log_p.diff().dropna()
 
- #    start_years = range(1995, 2025 - 1 + 1)  # de 1995 à 2015
- # # date centrale de chaque fenêtre
- #    timestamp = [10]
- #    for tms in timestamp:
- #        hurst_values = []
- #        window_dates = []
- #        for year in start_years:
- #            start_date = pd.Timestamp(f"{year}-01-01")
- #            end_date = pd.Timestamp(f"{year + tms}-01-01")  # fenêtre de 10 ans
- #            window_data = r[start_date:end_date]
- #
- #            if len(window_data) > 0:
- #                h_val = ComputeRS.rs_modified_statistic(window_data.values)
- #                critical_value = h_val / np.sqrt(len(window_data))
- #                hurst_values.append(critical_value)
- #                central_date = start_date + (end_date - start_date) / 2
- #                window_dates.append(central_date)
- #            else:
- #                print(f"Pas de données pour la fenêtre {year} - {year + tms}")
- #
- #        # Tracé avec Plotly
- #        fig = go.Figure()
- #        fig.add_trace(go.Scatter(
- #            x=window_dates,
- #            y=hurst_values,
- #            mode='lines+markers',
- #            name='Critical Value'
- #        ))
- #        fig.update_layout(
- #            title=f"Critical Value on a {tms}-year rolling window (moving by 1 year) Boeing Stock, from 1995 to 2015",
- #            xaxis_title="Date (central year of the window)",
- #            yaxis_title="Critical Value",
- #            template="plotly_white"
- #        )
- #        fig.show()
- #
- #        output_filename = os.path.join(IMG_PATH, f"timestamp_analysis_critical_value_{tms}ans_BA.png")
- #        fig.write_image(output_filename)
- #        print(f"Graphique sauvegardé sous : {output_filename}")
+#    start_years = range(1995, 2025 - 1 + 1)  # de 1995 à 2015
+# # date centrale de chaque fenêtre
+#    timestamp = [10]
+#    for tms in timestamp:
+#        hurst_values = []
+#        window_dates = []
+#        for year in start_years:
+#            start_date = pd.Timestamp(f"{year}-01-01")
+#            end_date = pd.Timestamp(f"{year + tms}-01-01")  # fenêtre de 10 ans
+#            window_data = r[start_date:end_date]
+#
+#            if len(window_data) > 0:
+#                h_val = ComputeRS.rs_modified_statistic(window_data.values)
+#                critical_value = h_val / np.sqrt(len(window_data))
+#                hurst_values.append(critical_value)
+#                central_date = start_date + (end_date - start_date) / 2
+#                window_dates.append(central_date)
+#            else:
+#                print(f"Pas de données pour la fenêtre {year} - {year + tms}")
+#
+#        # Tracé avec Plotly
+#        fig = go.Figure()
+#        fig.add_trace(go.Scatter(
+#            x=window_dates,
+#            y=hurst_values,
+#            mode='lines+markers',
+#            name='Critical Value'
+#        ))
+#        fig.update_layout(
+#            title=f"Critical Value on a {tms}-year rolling window (moving by 1 year) Boeing Stock, from 1995 to 2015",
+#            xaxis_title="Date (central year of the window)",
+#            yaxis_title="Critical Value",
+#            template="plotly_white"
+#        )
+#        fig.show()
+#
+#        output_filename = os.path.join(IMG_PATH, f"timestamp_analysis_critical_value_{tms}ans_BA.png")
+#        fig.write_image(output_filename)
+#        print(f"Graphique sauvegardé sous : {output_filename}")
 
 # all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
-# # adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
+# adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
 # print(all_results)
