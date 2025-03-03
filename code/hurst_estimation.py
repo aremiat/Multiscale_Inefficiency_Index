@@ -4,6 +4,7 @@ import pandas as pd
 import os
 from utils.RS import ComputeRS
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 IMG_PATH = os.path.dirname(__file__) + "/../img"
@@ -40,16 +41,39 @@ if __name__ == "__main__":
     #
     # for sy in start_years:
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
-
+    fig = go.Figure()
     for ticker in tickers:
+        ticker = ["^RUT"]
         p_ticker = p[ticker].dropna()
-        ticker = ticker.replace("^", "")
+        # ticker = ticker.replace("^", "")
         #
-        p_ticker = p_ticker.loc["1968-01-02":"1996-06-10"]
+        p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
         log_p = np.log(p_ticker)
         r = log_p.diff().dropna()
-        # vol = r.rolling(window=252).std().dropna()
         r = r.resample('M').last().dropna()
+        rolling_critical = r.rolling(120).apply(
+            lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
+                len(window)),
+            raw=False
+        ).dropna()
+
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                            subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
+        fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker["^RUT"], mode='lines', name=f'Russel Price', line=dict(color='red')),
+                      row=1, col=1)
+        fig.add_trace(go.Scatter(x=rolling_critical.index, y=rolling_critical, mode='lines', name='Rolling Critical Value',
+                                 line=dict(color='green')), row=2, col=1)
+        fig.add_trace(
+            go.Scatter(x=rolling_critical.index, y=[1.620] * len(rolling_critical), mode='lines', name='Threshold (V=1.620)',
+                       line=dict(color='red', dash='dash')), row=2, col=1)
+        fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
+        fig.update_xaxes(title_text="Date")
+        fig.update_yaxes(title_text="Price ($)", row=1, col=1)
+        fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+        fig.show()
+
+        #
+
         # p_val_before = adf_test(log_p)
         #
         # Stationarity test of the series (Dickey-Fuller)
@@ -61,16 +85,16 @@ if __name__ == "__main__":
         #     "P-Value on log differentiated return": [round(p_val_after, 3)]
         # })], ignore_index=True)
 
-        Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
-        rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
-
-        hurst_rs = np.log(rs_value) / np.log(len(r))
-        hurst_rs_modified = np.log(Q_tild) / np.log(len(r))
-        critical_value = Q_tild / np.sqrt(len(r))
-
-        h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
-        print(hurst_rs, hurst_rs_modified)
-        print(np.round(critical_value, 2))
+        # Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
+        # rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
+        #
+        # hurst_rs = np.log(rs_value) / np.log(len(r))
+        # hurst_rs_modified = np.log(Q_tild) / np.log(len(r))
+        # critical_value = Q_tild / np.sqrt(len(r))
+        #
+        # h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
+        # print(hurst_rs, hurst_rs_modified)
+        # print(np.round(critical_value, 2))
         # if h_true:
         #     print(f"Long memory: {h_true} for {ticker} in {y} - {y + 15}")
         #     print(f"Ticker: {ticker} \n")
@@ -149,3 +173,26 @@ if __name__ == "__main__":
 # all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
 # adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
 # print(all_results)
+
+#
+# rolling_critical = r_m.rolling(10).apply(
+#     lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False),
+#     raw=False
+# ).dropna()
+ #critical_value = rolling_critical / np.sqrt(len(rolling_critical))
+# fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+#                     subplot_titles=(f"{ticker} Price Evolution", "Rolling Critical Value"))
+# fig.add_trace(go.Scatter(x=rebase_p.index, y=rebase_p["^GSPC"], mode='lines', name=f'Sp500 Price', line=dict(color='black')),
+#               row=1, col=1)
+# fig.add_trace(go.Scatter(x=rebase_p.index, y=rebase_p["^RUT"], mode='lines', name=f'Russel Price', line=dict(color='red')),
+#               row=1, col=1)
+# fig.add_trace(go.Scatter(x=critical_value.index, y=critical_value, mode='lines', name='Rolling Critical Value',
+#                          line=dict(color='green')), row=2, col=1)
+# fig.add_trace(
+#     go.Scatter(x=critical_value.index, y=[1.620] * len(critical_value), mode='lines', name='Threshold (V=1.620)',
+#                line=dict(color='red', dash='dash')), row=2, col=1)
+# fig.update_layout(title_text=f"{ticker} Analysis", height=800, width=1000, showlegend=True)
+# fig.update_xaxes(title_text="Date")
+# fig.update_yaxes(title_text="Price ($)", row=1, col=1)
+# fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+# fig.show()
