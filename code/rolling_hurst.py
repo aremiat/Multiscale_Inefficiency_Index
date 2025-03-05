@@ -46,28 +46,28 @@ if __name__ == "__main__":
 
     # Chargement des prix
     # p = pd.read_csv(f"{LOADER_PATH}/sp500_prices_1995_2024_final.csv", index_col=0, parse_dates=True)
-    results = pd.DataFrame()
-
-    for ticker in russell2000_tickers:
-        # p_ticker = p[ticker].dropna()
-        # p_ticker = p_ticker.iloc[1:]
-        # p_ticker = p_ticker.astype(float)
-        p_ticker = yf.download(ticker, start="1995-01-02", end="2024-12-25")["Close"]
-        # p_ticker.index = pd.to_datetime(p_ticker.index, format='%d/%m/%Y')
-
-        window_size = 120  # Taille de la fenêtre (ex. 252 jours)
-        log_p = np.log(p_ticker)
-        r = log_p.diff().dropna()  # Rendements log
-        r_m = r.resample('M').last().dropna()
-
-        rolling_critical = r_m.rolling(window_size).apply(
-            lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
-                len(window)),
-            raw=False
-        ).dropna()
-
-        des_crit = rolling_critical.describe()
-        print(des_crit)
+    # results = pd.DataFrame()
+    #
+    # for ticker in russell2000_tickers:
+    #     # p_ticker = p[ticker].dropna()
+    #     # p_ticker = p_ticker.iloc[1:]
+    #     # p_ticker = p_ticker.astype(float)
+    #     p_ticker = yf.download(ticker, start="1995-01-02", end="2024-12-25")["Close"]
+    #     # p_ticker.index = pd.to_datetime(p_ticker.index, format='%d/%m/%Y')
+    #
+    #     window_size = 120  # Taille de la fenêtre (ex. 252 jours)
+    #     log_p = np.log(p_ticker)
+    #     r = log_p.diff().dropna()  # Rendements log
+    #     r_m = r.resample('M').last().dropna()
+    #
+    #     rolling_critical = r_m.rolling(window_size).apply(
+    #         lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
+    #             len(window)),
+    #         raw=False
+    #     ).dropna()
+    #
+    #     des_crit = rolling_critical.describe()
+    #     print(des_crit)
         # Création d'un DataFrame pour ce ticker avec les stats
         # ticker_stats = pd.DataFrame({
         #     'Ticker': [ticker],
@@ -184,14 +184,16 @@ if __name__ == "__main__":
     # print(results)
 
     # SP500 vs Russel 2000
+    # tickers = ['SPX Index', 'RTY Index']
+    # p = lisa.get_prices(tickers = tickers)
     # p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
-    # all_prices = pd.concat([p["^GSPC"], p["^RUT"]], axis=1)
-    # all_prices = all_prices.loc["1987-09-10": "2025-02-28"]
+    # all_prices = pd.concat([p["SPX Index"], p["RTY Index"]], axis=1)
+    # all_prices = all_prices.loc["1985-12-29": "2025-02-28"]
     # all_p = all_prices.pct_change().dropna()
-    # all_p['Diff'] = all_p['^GSPC'] - all_p['^RUT']
+    # all_p['Diff'] = all_p['SPX Index'] - all_p['RTY Index']
     # r = all_p['Diff']
     # r_m = r.resample('M').last().dropna()
-    # rebase_p = all_prices.loc["1987-09-10": "2025-02-28"]
+    # rebase_p = all_prices.loc["1985-12-29": "2025-02-28"]
     # rebase_p = rebase_p / rebase_p.iloc[0]
     # rolling_critical = r_m.rolling(120).apply(
     #     lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
@@ -201,10 +203,10 @@ if __name__ == "__main__":
     # fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
     #                     subplot_titles=(f"Sp500 and Russel Price Evolution", "Rolling Critical Value"))
     # fig.add_trace(
-    #     go.Scatter(x=rebase_p.index, y=rebase_p["^GSPC"], mode='lines', name=f'Sp500 Price', line=dict(color='black')),
+    #     go.Scatter(x=rebase_p.index, y=rebase_p["SPX Index"], mode='lines', name=f'Sp500 Price', line=dict(color='black')),
     #     row=1, col=1)
     # fig.add_trace(
-    #     go.Scatter(x=rebase_p.index, y=rebase_p["^RUT"], mode='lines', name=f'Russel Price', line=dict(color='red')),
+    #     go.Scatter(x=rebase_p.index, y=rebase_p["RTY Index"], mode='lines', name=f'Russel Price', line=dict(color='red')),
     #     row=1, col=1)
     # fig.add_trace(go.Scatter(x=rolling_critical.index, y=rolling_critical, mode='lines', name='Rolling Critical Value',
     #                          line=dict(color='green')), row=2, col=1)
@@ -218,10 +220,14 @@ if __name__ == "__main__":
     # fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
     # fig.show()
 
-    # Sectorial analysis
-    # prices_msci = lisa.get_prices(tickers =tickers)
+    # Sectorial analysis US
+    # tickers = ['MSDEWIN Index', ' NDWUMAT Index', 'NDWUTEL Index', 'NDWUCDIS Index',
+    #            'NDWUIND Index', 'NDWUFNCL Index', 'NDWURLCL Index', 'NDWUCSTA Index',
+    #            'NDWUUTIL Index', 'NDWUENR Index', 'NDWUIT Index', 'NDWUHC Index']
+    # prices_msci = lisa.get_prices(tickers = tickers)
     # prices_msci = prices_msci.drop(columns={'NDWURLCL Index'})
     # r_prices = prices_msci.pct_change().dropna()
+    # r_m_prices = r_prices.resample('M').last()
     # for col in r_prices.columns[1:]:
     #     base_col = r_prices['MSDEWIN Index']
     #     r_prices[col + '_diff'] = r_prices[col] - base_col
@@ -237,8 +243,6 @@ if __name__ == "__main__":
     #
     # # Reconstruction d'un DataFrame à partir du dictionnaire
     # rolling_critical_df = pd.DataFrame(rolling_critical_dict)
-
-    # r_m_prices = r_prices.resample('M').last()
     # rebase_p = prices_msci / prices_msci.iloc[0]
     # for col in prices_msci.columns[1:]:
     #     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
@@ -262,3 +266,49 @@ if __name__ == "__main__":
     #     fig.update_yaxes(title_text="Price ($)", row=1, col=1)
     #     fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
     #     fig.show()
+
+    # Sectorial analysis US
+    # tickers = ['SXXP Index', 'SX6P Index', 'SXBSCP Index', 'SXFINP Index',
+    #            'SX8P Index', 'SXDP Index', 'SXIDUP Index ', 'SX86P Index']
+    # p = lisa.get_prices(tickers = tickers)
+    # p = p.loc['2002-06-28':]
+    # r_prices = p.pct_change().dropna()
+    # for col in r_prices.columns[:-1]:
+    #     base_col = r_prices['SXXP Index']
+    #     r_prices[col + '_diff'] = r_prices[col] - base_col
+    # rolling_critical_dict = {}
+    # r_m_prices = r_prices.resample('M').last()
+    # for col in r_m_prices.columns[7:]:
+    # rolling_critical_dict[col] = r_m_prices[col].rolling(120).apply(
+    #     lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(len(window)),
+    #     raw=False
+    # ).dropna()
+    # # Reconstruction d'un DataFrame à partir du dictionnaire
+    # rolling_critical_df = pd.DataFrame(rolling_critical_dict)
+
+    # rebase_p = p / p.iloc[0]
+    # for col in p.columns[:-1]:
+    #     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+    #                         subplot_titles=(f"{col} Price Evolution", "Rolling Critical Value"))
+    #     fig.add_trace(
+    #         go.Scatter(x=rebase_p.index, y=rebase_p["SXXP Index"], mode='lines', name=f'MSCI World Price',
+    #                    line=dict(color='black')),
+    #         row=1, col=1)
+    #     fig.add_trace(
+    #         go.Scatter(x=rebase_p.index, y=rebase_p[col], mode='lines', name=f'{col} Price', line=dict(color='red')),
+    #         row=1, col=1)
+    #     fig.add_trace(go.Scatter(x=rolling_critical_df.index, y=rolling_critical_df[col + '_diff'], mode='lines',
+    #                              name='Rolling Critical Value',
+    #                              line=dict(color='green')), row=2, col=1)
+    #     fig.add_trace(
+    #         go.Scatter(x=rolling_critical_df.index, y=[1.620] * len(rolling_critical_df), mode='lines',
+    #                    name='Threshold (V=1.620)',
+    #                    line=dict(color='red', dash='dash')), row=2, col=1)
+    #     fig.update_layout(title_text=f"{col} Analysis", height=800, width=1000, showlegend=True)
+    #     fig.update_xaxes(title_text="Date")
+    #     fig.update_yaxes(title_text="Price ($)", row=1, col=1)
+    #     fig.update_yaxes(title_text="Critical Value 10%", row=2, col=1)
+    #     fig.show()
+
+    tickers = ['DJSC NA Equity', 'EXSD TH Equity']
+    p = lisa.get_prices(tickers = tickers)
