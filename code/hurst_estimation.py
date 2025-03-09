@@ -85,25 +85,25 @@ if __name__ == "__main__":
         #     "P-Value on log differentiated return": [round(p_val_after, 3)]
         # })], ignore_index=True)
 
-        # Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
-        # rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
-        #
-        # hurst_rs = np.log(rs_value) / np.log(len(r))
-        # hurst_rs_modified = np.log(Q_tild) / np.log(len(r))
-        # critical_value = Q_tild / np.sqrt(len(r))
-        #
-        # h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
-        # print(hurst_rs, hurst_rs_modified)
-        # print(np.round(critical_value, 2))
-        # if h_true:
-        #     print(f"Long memory: {h_true} for {ticker} in {y} - {y + 15}")
-        #     print(f"Ticker: {ticker} \n")
-        #     print(f"R/S Statistic: {rs_value} \n")
-        #     print(f"Modified R/S Statistic: {Q_tild} \n")
-        #     print(f"Hurst Exponent: {hurst_rs} \n")
-        #     print(f"Modified Hurst Exponent: {hurst_rs_modified} \n")
-        #     print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
-        #     print("Long memory: ", h_true)
+        Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
+        rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
+
+        hurst_rs = np.log(rs_value) / np.log(len(r))
+        hurst_rs_modified = np.log(Q_tild) / np.log(len(r))
+        critical_value = Q_tild / np.sqrt(len(r))
+
+        h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
+        print(hurst_rs, hurst_rs_modified)
+        print(np.round(critical_value, 2))
+        if h_true:
+            print(f"Long memory: {h_true} for {ticker} in {y} - {y + 15}")
+            print(f"Ticker: {ticker} \n")
+            print(f"R/S Statistic: {rs_value} \n")
+            print(f"Modified R/S Statistic: {Q_tild} \n")
+            print(f"Hurst Exponent: {hurst_rs} \n")
+            print(f"Modified Hurst Exponent: {hurst_rs_modified} \n")
+            print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
+            print("Long memory: ", h_true)
 
     #     df_results = pd.DataFrame({
     #         "Ticker": [ticker],

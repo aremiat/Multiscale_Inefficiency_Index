@@ -267,7 +267,8 @@ The following table summarizes the results of the R/S statistic, Modified R/S st
         columns/Critical Value/.style={column name=Critical Value, fixed, precision=3},
         columns/Long Memory/.style={column name=Long Memory}
     ] {data/hurst_results.csv}
-    \caption{Results for R/S and Modified R/S Statistics, Hurst Exponent, and Long Memory 10\%.}
+    \caption{Results for R/S, Hurst Exponent, Modified Hurst Exponent, Critical Value at 10\%, and rejection of the null
+    hypothesis of Long Memory.}
     \label{tab:hurst_results}
 \end{table}
 
@@ -283,7 +284,7 @@ in the case of a one-tailed test. It is observed that only one serie actually ex
 For all other series, despite the Hurst exponent being greater than 0.5, the null hypothesis
 of short memory cannot be rejected.
 
-\subsection*{Implication for Momentum Strategies}
+\subsection{Implication for Momentum Strategies}
 The findings suggest that most financial time series do not exhibit true long-term memory, despite their Hurst exponents being greater than 0.5.
 Since only the S\&P 500 stock index (US) shows significant persistence, momentum strategies may be effective primarily in markets where persistence is statistically validated.
 
@@ -293,6 +294,31 @@ The apparent long-term memory detected by the traditional R/S method may be misl
 This implies that traders relying on momentum should carefully validate the persistence of trends using robust statistical methods before implementing
 such strategies. Additionally, markets with stronger mean reversion characteristics (where the modified R/S test fails to confirm persistence) might
 be better suited for contrarian or mean-reversion strategies rather than momentum-based approaches.
+
+
+\subsection{Pitfalls and more granular analysis}
+
+\begin{table}[h!]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=comma,
+        header=true,
+        string type,
+        every head row/.style={before row=\hline, after row=\hline},
+        every last row/.style={after row=\hline},
+        columns/Frequency/.style={column name=Frequency, string type},
+        columns/Hurst Exponent/.style={column name=Hurst Exponent, fixed, precision=2},
+        columns/Modified Hurst Exponent/.style={column name=Modified Hurst Exponent, fixed, precision=3},
+        columns/Critical Value/.style={column name=Critical Value, fixed, precision=3},
+        columns/Long Memory/.style={column name=Long Memory, fixed, precision=3},
+    ] {data/frequencies_results.csv}
+    \caption{Results for Hurst Exponent, Modified Hurst Exponent, Critical Value at 10\% and rejection of the null
+    hypothesis of Long Memory, different frequencies daily, weekly and montlhy.}
+    \label{tab:frequencies_results}
+\end{table}
+
+\FloatBarrier
+
 
 \subsection{Adaptive trading strategy}
 
