@@ -245,11 +245,11 @@ def fitted_volatility(pi_history, sigma_opt, product_cache):
 ###############################################################################
 
 if __name__ == "__main__":
-
+    np.random.seed(1234)
     # Paramètres optimaux trouvés
-    m0_opt = 0.6
-    gamma1_opt = 0.5
-    sigma_opt = 0.3
+    m0_opt = 1.0
+    gamma1_opt = 0.01
+    sigma_opt = 0.012
 
     K = 3
     b = 2.0
@@ -259,6 +259,20 @@ if __name__ == "__main__":
     data_df = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0)
     # On suppose qu'il y a une colonne '^RUT' contenant les prix
     returns = data_df['^RUT'].pct_change().dropna().values
+    # m0_grid = np.linspace(0.1, 2, 10)  # 20 points entre 0.1 et 10
+    # gamma1_grid = np.linspace(0.01, 0.99, 10)  # 20 points entre 0.1 et 0.9
+    # sigma_grid = np.linspace(0.001,0.1, 10)  # 20 points entre 0.5 et 2.0
+    #
+    #
+    # # Estimation brute par grille
+    # best_params, best_logL = estimate_msm_binomial(returns, m0_grid=m0_grid, gamma1_grid=gamma1_grid,
+    #                                                sigma_grid=sigma_grid, K=K, b=b)
+    # print("Best param (m0, gamma1, sigma) =", best_params)
+    # print("LogLik =", best_logL)
+
+    # m0_opt = best_params[0]
+    # gamma1_opt = best_params[1]
+    # sigma_opt = best_params[2]
 
     # Construction de l'espace d'états
     states, product_cache = build_state_space(K, m0_opt)

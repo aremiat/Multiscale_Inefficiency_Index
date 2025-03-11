@@ -1,0 +1,4 @@
+Frequency,Hurst Exponent,Modified Hurst Exponent,Critical Value,Long Memory
+D,0.488,0.488,0.893,False
+W,0.504,0.504,1.028,False
+M,0.645,0.588,1.714,True

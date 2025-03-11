@@ -233,6 +233,108 @@ The critical values for the Modified R/S test are provided in the table below. T
 \end{table}
 
 
+\subsection{MF-DFA Methodology}
+
+The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below \cite{kantelhardt, barabasi}:
+
+\begin{enumerate}
+    \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean $\langle x \rangle$. We build the profile
+    \[
+        Y(i) \;=\; \sum_{k=1}^{i} \bigl(x_k \;-\; \langle x \rangle\bigr),
+        \quad i \;=\; 1,2,\dots,N.
+    \]
+    This cumulative sum helps to capture the local fluctuations in the data.
+
+    \item \textbf{Division into segments.} We split the profile $Y(i)$ into $N_s \equiv \lfloor N/s \rfloor$ non-overlapping segments, each of length $s$. Since $N$ may not be a multiple of $s$, we repeat this procedure also starting from the opposite end, yielding $2\,N_s$ segments in total.
+
+    \item \textbf{Detrending.} For each of the $2\,N_s$ segments, we fit a polynomial trend (often linear or quadratic) and subtract it from $Y(i)$ in that segment. Let $y_\nu(i)$ be the fitting polynomial in segment $\nu$. We then define the local variance
+    \[
+        F^2\bigl(s,\nu\bigr)
+        \;=\;
+        \frac{1}{s}
+        \sum_{i=1}^s
+        \Bigl[\,Y\bigl((\nu-1)s + i\bigr)\;-\;y_\nu(i)\Bigr]^2.
+    \]
+    This detrending removes possible polynomial trends in the data.
+
+    \item \textbf{Generalized fluctuation function.} We compute, for each scale $s$, the $q$th-order fluctuation function,
+    \[
+        F_q(s)
+        \;=\;
+        \biggl\{
+          \frac{1}{2\,N_s}
+          \sum_{\nu=1}^{2\,N_s}
+          \Bigl[
+            F^2\bigl(s,\nu\bigr)
+          \Bigr]^{\!q/2}
+        \biggr\}^{\!1/q}.
+    \]
+    Varying $q$ allows us to emphasize large ($q>0$) or small ($q<0$) fluctuations.
+
+    \item \textbf{Scaling behavior.} Finally, on double-logarithmic axes, we examine the dependence of $F_q(s)$ sur $s$. If
+    \[
+        F_q(s) \;\sim\; s^{\,h(q)},
+    \]
+    we say that $h(q)$ is the generalized Hurst exponent. In a \emph{multifractal} system, $h(q)$ varies with $q$, indicating different scaling behaviors for large versus small fluctuations.
+\end{enumerate}
+
+\noindent
+\textbf{Interpretation.}
+\begin{itemize}
+    \item For \emph{monofractal} series, $h(q)$ is approximately constant for tous $q$.
+    \item Pour les séries \emph{multifractales}, $h(q)$ dépend fortement de $q$, révélant une hétérogénéité de l'échelle des fluctuations.
+\end{itemize}
+
+\vspace*{1em}
+\noindent
+\textbf{Connection with the Modified R/S Analysis.} \\
+The MF-DFA and the \emph{Modified R/S} analysis share a common objective: detecting the presence of \emph{long memory} and \emph{multifractality} in a time series. The Modified R/S statistic,
+\[
+\tilde{Q}_T \;=\; \frac{R}{\hat{\sigma}_T(q)},
+\]
+includes in its denominator not only the variance but also the autocovariances, which helps isolate \emph{long memory} in potentially autocorrelated series \cite{lo, neweywest, andrews}. While the R/S (or Modified R/S) approach primarily focuses on testing for long memory (using the statistic
+\[
+V \;=\; \frac{\tilde{Q}_T}{\sqrt{T}}
+\]
+and critical values derived from a Brownian bridge), the MF-DFA generalizes the analysis by measuring the \emph{entire multifractal spectrum} (via $h(q)$ and the width $\Delta \alpha$ of the singularity spectrum). Thus, the two methods are complementary:
+
+\begin{itemize}
+    \item \emph{Modified R/S}: Explicitly tests the hypothesis of \emph{short memory} vs. \emph{long memory} based on a critical statistic.
+    \item \emph{MF-DFA}: Detects and quantifies \emph{multifractality}, revealing how fluctuations scale differently depending on the order $q$.
+\end{itemize}
+
+In practice, an analyst can first employ the \emph{Modified R/S} statistic to validate or reject the presence of long memory and then refine the analysis by computing the function $h(q)$ via MF-DFA, highlighting the complexity (multifractal or not) of the examined time series.
+
+\section{Holder Exponent and Singularity Spectrum}
+
+\subsection{Holder Exponent}
+The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
+\begin{equation}
+\alpha(q) = h(q) + q h'(q).
+\end{equation}
+This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
+
+\subsection{Singularity Spectrum}
+The multifractal spectrum $f(\alpha)$ provides a measure of the fractal dimension of subsets characterized by a given $\alpha$:
+\begin{equation}
+f(\alpha) = q [\alpha(q) - h(q)] + 1.
+\end{equation}
+This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
+
+The Hölder exponent, denoted as $\alpha(q)$, characterizes the local regularity (or singularity strength) of a signal. For a moment order $q$, it is defined via the Legendre transform of the scaling function $h(q)$:
+\begin{equation}
+\alpha(q) = h(q) + q\, h'(q),
+\end{equation}
+where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
+
+The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
+\begin{itemize}
+    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
+    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
+    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
+\end{itemize}
+Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics.
+
 
 \section{Data}
 

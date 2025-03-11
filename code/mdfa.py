@@ -227,11 +227,13 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 
 data = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0, parse_dates=True)
 
+ticker = "^RUT"
 # Calcul des rendements journaliers en log
 returns = np.log(data).diff().dropna()
-r_m = returns.resample('M').last()
+r_m = returns
+# r_m = returns.resample('M').last()
 
-window_size = 120  # ex. 120 mois (10 ans)
+window_size = 2520  # ex. 120 mois (10 ans)
 q_list = np.linspace(-5, 5, 21)
 scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(80), 10)).astype(int))
 
