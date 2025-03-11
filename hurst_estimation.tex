@@ -15,11 +15,13 @@
 \usepackage{pgfplots}
 \usetikzlibrary{calc}
 \pgfplotsset{compat=1.18}
+\usepgfplotslibrary{dateplot}
 \usepackage[margin=1in]{geometry}
 \usepackage[colorlinks=true, allcolors=blue]{hyperref}
 \usepackage{amsmath}
 \usepackage{pgfplotstable}
 \usepackage{amsfonts}
+
 \usetikzlibrary{backgrounds}
 
 \title{
@@ -233,9 +235,9 @@ The critical values for the Modified R/S test are provided in the table below. T
 \end{table}
 
 
-\subsection{MF-DFA Methodology}
+\subsection{Multifractal Detrended Fluctuation Analysis}
 
-The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below \cite{kantelhardt, barabasi}:
+The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below:
 
 \begin{enumerate}
     \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean $\langle x \rangle$. We build the profile
@@ -278,25 +280,10 @@ The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of 
     we say that $h(q)$ is the generalized Hurst exponent. In a \emph{multifractal} system, $h(q)$ varies with $q$, indicating different scaling behaviors for large versus small fluctuations.
 \end{enumerate}
 
-\noindent
-\textbf{Interpretation.}
-\begin{itemize}
-    \item For \emph{monofractal} series, $h(q)$ is approximately constant for tous $q$.
-    \item Pour les séries \emph{multifractales}, $h(q)$ dépend fortement de $q$, révélant une hétérogénéité de l'échelle des fluctuations.
-\end{itemize}
+For \emph{monofractal} series, $h(q)$ is approximately constant for tous $q$.
+For \emph{multifractals} series, $h(q)$ strongly depends on qq, revealing heterogeneity in the scaling of fluctuations.
 
-\vspace*{1em}
-\noindent
-\textbf{Connection with the Modified R/S Analysis.} \\
-The MF-DFA and the \emph{Modified R/S} analysis share a common objective: detecting the presence of \emph{long memory} and \emph{multifractality} in a time series. The Modified R/S statistic,
-\[
-\tilde{Q}_T \;=\; \frac{R}{\hat{\sigma}_T(q)},
-\]
-includes in its denominator not only the variance but also the autocovariances, which helps isolate \emph{long memory} in potentially autocorrelated series \cite{lo, neweywest, andrews}. While the R/S (or Modified R/S) approach primarily focuses on testing for long memory (using the statistic
-\[
-V \;=\; \frac{\tilde{Q}_T}{\sqrt{T}}
-\]
-and critical values derived from a Brownian bridge), the MF-DFA generalizes the analysis by measuring the \emph{entire multifractal spectrum} (via $h(q)$ and the width $\Delta \alpha$ of the singularity spectrum). Thus, the two methods are complementary:
+Thus, the two methods are complementary:
 
 \begin{itemize}
     \item \emph{Modified R/S}: Explicitly tests the hypothesis of \emph{short memory} vs. \emph{long memory} based on a critical statistic.
@@ -305,13 +292,14 @@ and critical values derived from a Brownian bridge), the MF-DFA generalizes the 
 
 In practice, an analyst can first employ the \emph{Modified R/S} statistic to validate or reject the presence of long memory and then refine the analysis by computing the function $h(q)$ via MF-DFA, highlighting the complexity (multifractal or not) of the examined time series.
 
-\section{Holder Exponent and Singularity Spectrum}
+\subsection{Holder Exponent and Singularity Spectrum}
 
 \subsection{Holder Exponent}
 The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
 \begin{equation}
 \alpha(q) = h(q) + q h'(q).
 \end{equation}
+where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
 This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
 
 \subsection{Singularity Spectrum}
@@ -321,12 +309,6 @@ f(\alpha) = q [\alpha(q) - h(q)] + 1.
 \end{equation}
 This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
 
-The Hölder exponent, denoted as $\alpha(q)$, characterizes the local regularity (or singularity strength) of a signal. For a moment order $q$, it is defined via the Legendre transform of the scaling function $h(q)$:
-\begin{equation}
-\alpha(q) = h(q) + q\, h'(q),
-\end{equation}
-where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
-
 The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
 \begin{itemize}
     \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
@@ -335,12 +317,6 @@ The analysis using the Hölder exponent and singularity spectrum is a powerful t
 \end{itemize}
 Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics.
 
-
-\section{Data}
-
-The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and the Toronto Stock Exchange 300 (GSPTSE).
-The data spans the period from January 2, 1995, to December 31, 2024, and was downloaded from Yahoo Finance.
-
 For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log returns.
 These log returns were then used to calculate the R/S and Modified R/S statistics and estimate the Hurst exponent.
 The purpose of using this data is to evaluate the long-term memory properties of financial markets, which can indicate persistence or mean-reversion in market behavior.
@@ -348,6 +324,11 @@ The purpose of using this data is to evaluate the long-term memory properties of
 Additionally, a stationarity test was conducted on the log return series using the Augmented Dickey-Fuller (ADF) test.
 The results indicated that all series were non-stationary, suggesting the presence of unit roots. To address this, the series were differenced once, after which they exhibited stationarity.
 This step ensures that the analysis of long-term memory is conducted on properly transformed data, free from non-stationary distortions.
+
+\section{Data}
+
+The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and the Toronto Stock Exchange 300 (GSPTSE).
+The data spans the period from September 10th, 1987, to February 28, 2025, and was downloaded from Yahoo Finance.
 
 \section{Results}
 
@@ -382,23 +363,20 @@ as the Hurst exponents are consistently greater than 0.5. However, the asymptoti
 which prevents us from determining whether the estimated Hurst exponent is significantly greater than 0.5. This issue can be
 addressed by using the modified R/S method. In this case, we simply compare the estimated values of the statistic V to the
 critical values provided by Lo (1991), which are 1.620 and 1.747 for the 10\% and 5\% significance levels, respectively,
-in the case of a one-tailed test. It is observed that only one serie actually exhibit persistence: the returns of the S\&P 500 stock indices (US).
+in the case of a one-tailed test. It is observed that only one serie actually exhibit persistence: the returns of the Russell 2000 small and mid cap (US).
 For all other series, despite the Hurst exponent being greater than 0.5, the null hypothesis
 of short memory cannot be rejected.
-
-\subsection{Implication for Momentum Strategies}
-The findings suggest that most financial time series do not exhibit true long-term memory, despite their Hurst exponents being greater than 0.5.
-Since only the S\&P 500 stock index (US) shows significant persistence, momentum strategies may be effective primarily in markets where persistence is statistically validated.
-
-For the majority of other assets, where the null hypothesis of short memory cannot be rejected, momentum strategies might be less reliable.
-The apparent long-term memory detected by the traditional R/S method may be misleading, and price movements could be more influenced by short-term noise rather than sustained trends.
-
-This implies that traders relying on momentum should carefully validate the persistence of trends using robust statistical methods before implementing
-such strategies. Additionally, markets with stronger mean reversion characteristics (where the modified R/S test fails to confirm persistence) might
-be better suited for contrarian or mean-reversion strategies rather than momentum-based approaches.
+From now on, we will focus on the Russell 2000 index to further investigate the long memory properties of the series.
 
 
 \subsection{Pitfalls and more granular analysis}
+
+Unfortunately those results are not very conclusive, the Hurst exponent is not a very robust statistic and can be
+influenced by the length of the series, the presence of trends, or the presence of structural breaks.
+To highlight these shortcomings, we adjust both the analysis frequency and the study period. Specifically, we perform a
+detailed investigation across different frequencies (daily, weekly, monthly) and various study periods, comparing the
+outcomes. This combined approach enables us to detect long-memory behavior within particular timeframes and ensures
+more robust and reliable conclusions.
 
 \begin{table}[h!]
     \centering
@@ -421,18 +399,206 @@ be better suited for contrarian or mean-reversion strategies rather than momentu
 
 \FloatBarrier
 
+\begin{table}[h!]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=comma,
+        header=true,
+        string type,
+        every head row/.style={before row=\hline, after row=\hline},
+        every last row/.style={after row=\hline},
+        columns/Period/.style={column name=Period, string type},
+        columns/Hurst Exponent/.style={column name=Hurst Exponent, fixed, precision=2},
+        columns/Modified Hurst Exponent/.style={column name=Modified Hurst Exponent, fixed, precision=3},
+        columns/Critical Value/.style={column name=Critical Value, fixed, precision=3},
+        columns/Long Memory/.style={column name=Long Memory, fixed, precision=3},
+    ] {data/timestamp_analysis.csv}
+    \caption{Results for Hurst Exponent, Modified Hurst Exponent, Critical Value at 10\% and rejection of the null
+    hypothesis of Long Memory, different estimation periods.}
+    \label{tab:timestamp_analysis}
+\end{table}
 
-\subsection{Adaptive trading strategy}
+\FloatBarrier
+
+\subsection{Rolling Critical value}
+
+To further investigate the long memory properties of the Russell 2000 index,
+we perform a ten year rolling analysis of the Modified R/S statistic and compare it to the critical value at the
+10\% significance level (1.620).
 
 
 
-\section{Discussion}
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\year-\month,
+            xticklabel style={rotate=45, anchor=east},
+            xlabel={Date},
+            ylabel={Price},
+            grid=major,
+            legend style={at={(0.5,-0.2)},anchor=north,legend columns=-1},
+            ]
+            \addplot[blue, thick] table[
+                col sep=comma,
+                x=Date,
+                y=Price,
+            ] {data/rolling_and_price.csv};
+            \legend{Russell Price}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Russell Price Evolution}
+\end{figure}
 
-It is important to emphasize that the results obtained in this study are highly sensitive to the choice of the evaluation period.
-The estimation of the Hurst exponent and the detection of long-term memory can vary significantly depending on the length and timeframe of the data used.
-Small changes in the selected period can lead to different conclusions regarding market persistence or mean reversion.
-Therefore, readers should be cautious when interpreting these results and take into account the impact of the evaluation period in their analyses.
-To ensure robust conclusions, it is recommended to test multiple timeframes and assess the stability of the findings across different periods.
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\year-\month,
+            xticklabel style={rotate=45, anchor=east},
+            grid=major,
+            legend style={font=\footnotesize, at={(0.5,-0.2)},anchor=north,legend columns=-1},
+        ]
+        \addplot[green, thick] table[
+            x=Date,
+            y=Critical Value,
+            col sep=comma,
+        ] {data/rolling_and_price.csv};
+        \addplot[red, thick, dashed] coordinates {
+            ({1997-09-30}, 1.620)
+            ({2025-02-28}, 1.620)
+        };
+        \legend{Rolling Critical Value, Threshold (V=1.620)}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Rolling Critical Value}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[htbp]
+    \centering
+    %--- Premier axis : Rolling Critical Value (gauche) ---
+    \begin{tikzpicture}
+        \begin{axis}[
+            name=axis1,
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\year-\month,
+            xticklabel style={rotate=45, anchor=east},
+            grid=major,
+            legend style={
+                font=\footnotesize,
+                at={(0.5,-0.2)},
+                anchor=north,
+                legend columns=3
+            },
+            xlabel={Date},
+            ylabel={Rolling Critical Value},
+            ymin=0, ymax=1.7, % Échelle de gauche
+        ]
+            %--- Rolling Critical Value ---
+            \addplot[
+                green,
+                thick
+            ] table[
+                x=Date,
+                y={Critical Value},
+                col sep=comma
+            ] {data/alpha_rolling_price.csv};
+            \addlegendentry{Rolling Critical Value}
+
+            %--- Threshold ---
+            \addplot[
+                red,
+                thick,
+                dashed
+            ] coordinates {
+                ({1997-09-30}, 1.620)
+                ({2025-02-28}, 1.620)
+            };
+            \addlegendentry{Threshold (V=1.620)}
+        \end{axis}
+
+        %--- Second axis : Alpha Width (droite) ---
+        \begin{axis}[
+            name=axis2,
+            at={(axis1.south west)},
+            anchor=south west,
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\empty,  % On ne veut pas réafficher les dates
+            axis x line=none,   % On n'affiche pas l'axe x du 2e
+            axis y line=right,  % L'axe Y est à droite
+            ymin=0, ymax=1.3,   % Échelle de droite
+            ylabel={Alpha Width},
+            yticklabel style={color=purple},  % Couleur pour rappeler la courbe
+            ylabel style={color=purple},
+            grid=major,
+        ]
+            %--- Alpha Width ---
+            \addplot[
+                purple,
+                thick
+            ] table[
+                x=Date,
+                y={Alpha Width},
+                col sep=comma
+            ] {data/alpha_rolling_price.csv};
+            \addlegendentry{Alpha Width}
+        \end{axis}
+    \end{tikzpicture}
+
+\caption{Rolling critical value (green) and alpha width (purple).
+Both metrics are computed using a ten-year rolling window on monthly data.
+The alpha width represents the difference between the maximum and minimum alpha over the estimation window.}
+\end{figure}
+
+\FloatBarrier
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            xlabel={$q$},
+            ylabel={$h(q)$},
+            grid=major,
+            legend style={
+            font=\footnotesize,
+            at={(0.5,-0.2)},
+            anchor=north,
+            legend columns=3
+            }
+        ]
+            \addplot[
+                blue,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=q,
+                y=h(q),
+                col sep=comma
+            ]
+            {data/multifractal_spectrum.csv};
+            \legend{Multifractal Spectrum}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Multifractal Spectrum $h(q)$ for the Russell 2000 returns.}
+\end{figure}
+
+\FloatBarrier
 
 \section{Appendix}
 
@@ -453,7 +619,7 @@ To ensure robust conclusions, it is recommended to test multiple timeframes and 
     \label{tab:adf_results}
 \end{table}
 
-
+\FloatBarrier
 
 
 \begin{table}[ht]
@@ -479,7 +645,7 @@ SPG,7299.0,1.113,0.204,0.63,0.951,1.096,1.275,1.784
         columns/Ticker/.style={string type}
     ]{\datatable}
 \end{table}
-
+\FloatBarrier
 
 \section{References}
 

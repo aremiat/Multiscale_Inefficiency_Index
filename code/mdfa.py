@@ -230,10 +230,10 @@ data = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0, parse_dates=Tru
 ticker = "^RUT"
 # Calcul des rendements journaliers en log
 returns = np.log(data).diff().dropna()
-r_m = returns
-# r_m = returns.resample('M').last()
+# r_m = returns
+r_m = returns.resample('M').last()
 
-window_size = 2520  # ex. 120 mois (10 ans)
+window_size = 120  # ex. 120 mois (10 ans)
 q_list = np.linspace(-5, 5, 21)
 scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(80), 10)).astype(int))
 
@@ -242,17 +242,21 @@ alpha_width_series = mfdfa_rolling(r_m, window_size, q_list, scales, order=1)
 # rs_value = ComputeRS.rs_statistic(returns, window_size=len(returns))
 # hurst_rs = np.log(rs_value) / np.log(len(returns))
 
-# rolling_critical = r_m.rolling(window_size).apply(
-#     lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False)/np.sqrt(len(window)),
-#     raw=False
-# ).dropna()
-
 rolling_critical = r_m.rolling(window_size).apply(
-    lambda w: np.log(ComputeRS.rs_statistic(w, len(w))) / np.log(len(w)),
+    lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False)/np.sqrt(len(window)),
     raw=False
 ).dropna()
 
+# rolling_critical = r_m.rolling(window_size).apply(
+#     lambda w: np.log(ComputeRS.rs_statistic(w, len(w))) / np.log(len(w)),
+#     raw=False
+# ).dropna()
+
 alpha_width_series.index = rolling_critical.index
+
+alpha_rolling_price = pd.concat([data, alpha_width_series, rolling_critical], axis=1, join='inner')
+alpha_rolling_price.columns = ['Price', 'Alpha Width', 'Critical Value']
+alpha_rolling_price.to_csv(f"{DATA_PATH}/alpha_rolling_price.csv")
 
 # window_size = 12
 # # Calcul de la corrélation glissante
@@ -287,6 +291,10 @@ for j, q in enumerate(q_list):
     coeffs = np.polyfit(log_scales, log_Fq, 1)
     h_q.append(coeffs[0])
 h_q = np.array(h_q)
+
+
+hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)')], axis=1)
+hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum.csv", index=False)
 
 fig_hq = go.Figure()
 fig_hq.add_trace(go.Scatter(
