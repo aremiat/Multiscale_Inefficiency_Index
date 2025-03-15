@@ -2,6 +2,7 @@ import os.path
 
 import numpy as np
 import pandas as pd
+from arch import arch_model
 
 
 ###############################################################################
@@ -18,12 +19,12 @@ def build_state_space(K, m0):
     """
     # Pour K composantes binaires, on a 2^K états.
     # On génère toutes les combinaisons : 0 => m0, 1 => 2-m0
-    d = 2 ** K
+    d = 2 ** K # Nombre total d'états
     states = []
     product_cache = np.zeros(d)
 
     for i in range(d):
-        # ex: i=3 => binaire = '011' => état = (2-m0, m0, m0) si on lit de gauche à droite
+        # ex: i=3 => binaire = '011' => état = (m0, 2-m0, 2-m0) si on lit de gauche à droite
         bits = np.binary_repr(i, width=K)
         mults = []
         for bit in bits:
@@ -113,11 +114,11 @@ def msm_loglik(data, sigma, states, product_cache, A):
     # Probabilité stationnaire (ergodique) comme vecteur initial
     # On peut la trouver en résolvant pi * A = pi.
     # Pour la simplicité, on prend la première valeur propre ou on fait un vecteur stationnaire approx
-    eigvals, eigvecs = np.linalg.eig(A.T)
+    eigvals, eigvecs = np.linalg.eig(A.T) # A.T car on veut les vecteurs propres à gauche
     # stationnaire = vecteur propre de valeur propre = 1
-    idx_stat = np.argmin(np.abs(eigvals - 1.0))
-    pi0 = eigvecs[:, idx_stat].real
-    pi0 = pi0 / pi0.sum()
+    idx_stat = np.argmin(np.abs(eigvals - 1.0)) # indice de la valeur propre la plus proche de 1
+    pi0 = eigvecs[:, idx_stat].real # vecteur propre associé
+    pi0 = pi0 / pi0.sum() # normalisation
 
     # Filtre : pi_t (1 x d)
     pi_t = pi0
@@ -134,14 +135,14 @@ def msm_loglik(data, sigma, states, product_cache, A):
             if vol < 1e-14:
                 fx[j] = 0.0
             else:
-                z = data[t] / vol
-                fx[j] = (1.0 / vol) * (1.0 / np.sqrt(2.0 * np.pi)) * np.exp(-0.5 * z ** 2)
+                z = data[t] / vol # z = x_t / [sigma * sqrt(prod)]
+                fx[j] = (1.0 / vol) * (1.0 / np.sqrt(2.0 * np.pi)) * np.exp(-0.5 * z ** 2) # densité
 
         # Mise à jour pi_{t+1} = [ pi_t * A ] . f(x_t) / ...
         # On fait pi_t A => shape (1 x d)
         piA = pi_t @ A
         # piA * fx => shape (1 x d) (Hadamard product)
-        numer = piA * fx
+        numer = piA * fx # pi_t * A . f(x_t)
         denom = numer.sum()
         if denom < 1e-14:
             # risque underflow => on peut stopper ou log(1e-300) ...
@@ -247,21 +248,21 @@ def fitted_volatility(pi_history, sigma_opt, product_cache):
 if __name__ == "__main__":
     np.random.seed(1234)
     # Paramètres optimaux trouvés
-    m0_opt = 1.0
-    gamma1_opt = 0.01
-    sigma_opt = 0.012
+    # m0_opt = 1.0
+    # gamma1_opt = 0.01
+    # sigma_opt = 0.012
 
-    K = 3
-    b = 2.0
+    K = 3 # K composantes binaires max 10
+    b = 0.5 # b entre 1 et +infini
 
     # Chargement des données (rendements Russell 2000)
     DATA_PATH = os.path.dirname(__file__) + "/../data"
     data_df = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0)
     # On suppose qu'il y a une colonne '^RUT' contenant les prix
     returns = data_df['^RUT'].pct_change().dropna().values
-    # m0_grid = np.linspace(0.1, 2, 10)  # 20 points entre 0.1 et 10
-    # gamma1_grid = np.linspace(0.01, 0.99, 10)  # 20 points entre 0.1 et 0.9
-    # sigma_grid = np.linspace(0.001,0.1, 10)  # 20 points entre 0.5 et 2.0
+    # m0_grid = np.linspace(0.1, 1, 5)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
+    # gamma1_grid = np.linspace(0.01, 0.99, 5)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
+    # sigma_grid = np.linspace(0.001, 0.1, 5)  # 20 points entre 0.001 et 0.1 (volatilité daily)
     #
     #
     # # Estimation brute par grille
@@ -270,9 +271,9 @@ if __name__ == "__main__":
     # print("Best param (m0, gamma1, sigma) =", best_params)
     # print("LogLik =", best_logL)
 
-    # m0_opt = best_params[0]
-    # gamma1_opt = best_params[1]
-    # sigma_opt = best_params[2]
+    m0_opt = 0.325
+    gamma1_opt = 0.01
+    sigma_opt = 0.02575
 
     # Construction de l'espace d'états
     states, product_cache = build_state_space(K, m0_opt)
@@ -298,8 +299,16 @@ if __name__ == "__main__":
     import numpy as np
 
     abs_ret = np.abs(returns)
+    vol = pd.Series(returns).rolling(window=21).std().values # éviter les divisions par 0
+    vol = [v if v > 1e-14 else 1e-14 for v in vol]
 
-    fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: MSM Volatility vs. |Returns|"])
+    rmse = np.sqrt(np.mean((vol_fit - vol) ** 2))
+    print("RMSE between fitted volatility and realized volatility =", rmse)
+
+    corr_coef = np.corrcoef(vol_fit, vol)[0, 1]
+    print("Correlation coefficient =", corr_coef)
+
+    fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: MSM Volatility vs. Volatility |Returns|"])
     fig.add_trace(go.Scatter(
         x=np.arange(len(vol_fit)),
         y=vol_fit,
@@ -307,8 +316,8 @@ if __name__ == "__main__":
         name='Fitted MSM Vol'
     ), row=1, col=1)
     fig.add_trace(go.Scatter(
-        x=np.arange(len(abs_ret)),
-        y=abs_ret,
+        x=np.arange(len(vol)),
+        y=vol,
         mode='lines',
         name='|Returns|'
     ), row=1, col=1)
@@ -320,4 +329,36 @@ if __name__ == "__main__":
     )
     fig.show()
 
+    garch_model = arch_model(pd.Series(returns), vol='GARCH', p=1, q=1, dist='normal')
+    garch_fit = garch_model.fit(disp='off')
 
+    # La volatilité conditionnelle quotidienne (généralement en échelle "daily") est obtenue comme suit :
+    garch_vol = garch_fit.conditional_volatility
+
+    rmse_garch = np.sqrt(np.mean((garch_vol - vol) ** 2))
+    print("RMSE between GARCH volatility and realized volatility =", rmse_garch)
+
+    corr_coef_garch = np.corrcoef(garch_vol, vol)[0, 1]
+    print("Correlation coefficient GARCH =", corr_coef_garch)
+
+    fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: GARCH Volatility vs. Volatility |Returns|"])
+    fig.add_trace(go.Scatter(
+        x=np.arange(len(garch_vol)),
+        y=garch_vol,
+        mode='lines',
+        name='Fitted GARCH Vol'
+    ), row=1, col=1)
+
+    fig.add_trace(go.Scatter(
+        x=np.arange(len(vol)),
+        y=vol,
+        mode='lines',
+        name='|Returns|'
+    ), row=1, col=1)
+
+    fig.update_layout(
+        title=f"LogLik in-sample = {garch_fit.loglikelihood:.2f}",
+        xaxis_title="Time index",
+        yaxis_title="Value"
+    )
+    fig.show()

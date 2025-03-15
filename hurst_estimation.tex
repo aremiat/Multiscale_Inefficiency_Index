@@ -290,10 +290,6 @@ Thus, the two methods are complementary:
     \item \emph{MF-DFA}: Detects and quantifies \emph{multifractality}, revealing how fluctuations scale differently depending on the order $q$.
 \end{itemize}
 
-In practice, an analyst can first employ the \emph{Modified R/S} statistic to validate or reject the presence of long memory and then refine the analysis by computing the function $h(q)$ via MF-DFA, highlighting the complexity (multifractal or not) of the examined time series.
-
-\subsection{Holder Exponent and Singularity Spectrum}
-
 \subsection{Holder Exponent}
 The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
 \begin{equation}
@@ -315,8 +311,40 @@ The analysis using the Hölder exponent and singularity spectrum is a powerful t
     \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
     \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
 \end{itemize}
-Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics.
+Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
 
+\subsection{Markov Switching Multifractal (MSM)}
+\label{sec:msm}
+
+In the Markov Switching Multifractal (MSM) model introduced by Calvet and Fisher (2004), the volatility process is driven by a product of $K$ independent components (or multipliers), each evolving according to a Markov chain. Specifically, for each level $k = 1, \ldots, K$, the multiplier $M_{k,t}$ can take one of two values, for instance $m_0$ or $(2 - m_0)$, ensuring the mean of the two states equals 1. This binomial structure leads to a total of $2^K$ possible configurations (states) at time $t$.
+
+\subsection{Model Specification}
+Let $\{ x_t \}$ be the log-returns of the asset. The MSM model posits:
+\begin{equation}
+    x_t \;=\; \sigma \,\sqrt{\prod_{k=1}^K M_{k,t}} \;\epsilon_t,\quad
+    \epsilon_t \,\sim\, \mathcal{N}(0,1),
+\end{equation}
+where $\sigma$ is a global scale parameter and $M_{k,t}$ denotes the multiplier at level $k$. Each multiplier switches between its two possible values with probability $\gamma_k$, which often follows the decreasing scheme:
+\begin{equation}
+    \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)\,b^{\,k-1},
+\end{equation}
+for some $0 < \gamma_1 < 1$ and $b > 0$. Consequently, higher levels $k$ switch less frequently, introducing persistent low-frequency shocks to volatility.
+
+\subsection{Transition Dynamics and Likelihood}
+Since each $M_{k,t}$ follows a two-state Markov chain, the joint process $\bigl(M_{1,t}, \dots, M_{K,t}\bigr)$ has $2^K$ states. We construct a $2^K \times 2^K$ transition matrix $\mathbf{A}$ encoding the probabilities of switching or staying in the same value at each level. The stationary distribution of $\mathbf{A}$ provides the initial state probabilities for the filtering procedure.
+
+To estimate model parameters $(m_0,\,\gamma_1,\,b,\,\sigma)$, we maximize the log-likelihood of the observed returns. Let $\pi_t$ be the probability distribution over the $2^K$ states at time $t$. The likelihood is updated recursively via a forward filter:
+\begin{enumerate}
+    \item Compute the conditional density of $x_t$ given each state $s_j$,
+          using $\sigma \sqrt{\prod_{k=1}^K M_{k,t}^{(j)}}$ as the volatility.
+    \item Propagate $\pi_{t-1}$ through $\mathbf{A}$ and weight by the conditional densities.
+    \item Normalize to obtain $\pi_t$ and accumulate the log-likelihood.
+\end{enumerate}
+This procedure iterates over all observations $x_1,\ldots,x_T$, yielding the maximum-likelihood estimates for the MSM parameters once the log-likelihood is maximized.
+
+The MSM framework captures volatility clustering through a cascade of multiplicative factors, each operating on different timescales. Fast-switching levels introduce short-term fluctuations, while slow-switching levels generate persistent volatility regimes. As shown by Calvet and Fisher (2004), this hierarchical structure can replicate a wide range of stylized facts observed in financial returns, such as fat-tailed distributions and long-memory effects in volatility.
+
+\subsection{Data Preprocessing and Stationarity Analysis}
 For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log returns.
 These log returns were then used to calculate the R/S and Modified R/S statistics and estimate the Hurst exponent.
 The purpose of using this data is to evaluate the long-term memory properties of financial markets, which can indicate persistence or mean-reversion in market behavior.
@@ -327,7 +355,7 @@ This step ensures that the analysis of long-term memory is conducted on properly
 
 \section{Data}
 
-The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and the Toronto Stock Exchange 300 (GSPTSE).
+The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), Russell 2000 (RUT),FTSE 100 (FTSE), NIKKEI 225 (N225), and the Toronto Stock Exchange 300 (GSPTSE).
 The data spans the period from September 10th, 1987, to February 28, 2025, and was downloaded from Yahoo Finance.
 
 \section{Results}
@@ -363,7 +391,8 @@ as the Hurst exponents are consistently greater than 0.5. However, the asymptoti
 which prevents us from determining whether the estimated Hurst exponent is significantly greater than 0.5. This issue can be
 addressed by using the modified R/S method. In this case, we simply compare the estimated values of the statistic V to the
 critical values provided by Lo (1991), which are 1.620 and 1.747 for the 10\% and 5\% significance levels, respectively,
-in the case of a one-tailed test. It is observed that only one serie actually exhibit persistence: the returns of the Russell 2000 small and mid cap (US).
+in the case of a one-tailed test. It is observed that only two series actually exhibit persistence: the returns of the
+Russell 2000 small and mid cap (US) and the Toronto Stock Exchange 300.
 For all other series, despite the Hurst exponent being greater than 0.5, the null hypothesis
 of short memory cannot be rejected.
 From now on, we will focus on the Russell 2000 index to further investigate the long memory properties of the series.
@@ -434,7 +463,6 @@ we perform a ten year rolling analysis of the Modified R/S statistic and compare
 10\% significance level (1.620).
 
 
-
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}
@@ -489,6 +517,11 @@ we perform a ten year rolling analysis of the Modified R/S statistic and compare
 
 \FloatBarrier
 
+Therefore, only one period in 2009 exhibits long memory, while the rest of the series remains below the critical value.
+The long memory properties of the Russell 2000 index are not stable over time and may be influenced by
+structural changes or market dynamics. The presence of long memory in the series is not a consistent feature.
+
+\subsection{Rolling Critical value and Alpha Width}
 
 
 \begin{figure}[htbp]
@@ -573,6 +606,15 @@ The alpha width represents the difference between the maximum and minimum alpha 
 
 \FloatBarrier
 
+Using the multifractal detrended fluctuation analysis (MF-DFA), we can further investigate the multifractal properties of the Russell 2000 index.
+The multifractal spectrum $f(\alpha)$ characterizes the distribution of singularities in the series, providing insights into the heterogeneity of fluctuations.
+The Holder exponent $\alpha(q)$ quantifies the local singularity strength, revealing the intensity of irregular behaviors in the signal.
+The analysis of the multifractal spectrum and Holder exponent offers a detailed and nuanced description of the series' local variability, enhancing our understanding of its underlying dynamics.
+There is a clear negative correlation (-0.35) between the Hurst exponent and the multifractal spectrum width, indicating that higher Hurst exponents are associated with narrower spectra.
+This relationship highlights the interplay between long memory and multifractality in financial time series, suggesting that persistent behaviors are linked to more homogeneous fluctuations.
+
+\subsection{Multifractal Spectrum}
+
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}
@@ -608,6 +650,66 @@ The alpha width represents the difference between the maximum and minimum alpha 
 \end{figure}
 
 \FloatBarrier
+
+If we take a closer look at the multifractal spectrum, we can observe that the series exhibits multifractal properties, as the spectrum is not an horizontal straight line.
+The curvature of the spectrum indicates the presence of heterogeneity in the distribution of singularities, with different regions of the series characterized by varying degrees of irregularity.
+Lower values of $q$ emphasize small fluctuations, while higher values highlight high fluctuations.
+Therefore, this spectrum showcases that during periods of small fluctuations the series is likely to exhibits long-term memory,
+whether for drastic changes in the series behavior the hurst exponent is likely not to be high.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            xlabel={$\alpha$},
+            ylabel={$f(\alpha)$},
+            grid=major,
+            legend style={
+                font=\footnotesize,
+                at={(0.5,-0.2)},
+                anchor=north,
+                legend columns=3
+            }
+        ]
+            \addplot[
+                blue,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha,
+                y=f_alpha,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha.csv};
+            \legend{Multifractal Spectrum}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Multifractal spectrum $f(\alpha)$ for Russell 2000 returns.}
+\end{figure}
+
+\FloatBarrier
+
+The multifractal spectrum $f(\alpha)$ for the Russell 2000 returns exhibits a characteristic bell-shaped curve,
+indicating multiple scaling behaviors in the data. The peak near the center represents the most common local Hölder
+exponent, while the spread around this peak highlights the diversity of singularities present in the series. A wider
+spectrum suggests stronger multifractality, reflecting volatility clustering across multiple timescales. Furthermore,
+the approximate symmetry of the curve around its maximum implies that both large and small fluctuations are represented,
+albeit with varying intensity. Overall, this bell-shaped spectrum underscores the complex, multi-scale nature of the
+Russell 2000 returns, in line with multifractal processes often observed in financial markets.
+A peak of the multifractal spectrum at $\alpha \approx 0.65$ indicates that the most common local Hölder exponent
+in the Russell 2000 returns is around 0.65. In general, $\alpha > 0.5$ suggests a certain degree of persistence or
+short- to medium-term correlation, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk),
+and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.65 implies a
+moderately rough signal—neither purely random nor overly smooth—highlighting the presence of multifractal characteristics.
+This points to the coexistence of multiple scaling behaviors, where volatility clustering arises across different temporal scales.
+
+\subsection{MSM for depicting volatility}
+
+\subsection{Comparison of the MSM with GARCH(1,1)}
 
 \section{Appendix}
 

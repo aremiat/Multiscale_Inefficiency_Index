@@ -312,8 +312,6 @@ fig_hq.update_layout(
 )
 fig_hq.show()
 
-
-
 # --- Calcul du spectre multifractal f(α) via la transformation de Legendre ---
 dq = q_list[1] - q_list[0]
 dh_dq = np.gradient(h_q, dq)
@@ -336,3 +334,11 @@ fig_falpha.update_layout(
     template="plotly_white"
 )
 fig_falpha.show()
+
+df = pd.DataFrame({
+    'f_alpha': f_alpha,
+    'alpha': alpha
+})
+
+# Sauvegarde au format CSV
+df.to_csv(f'{DATA_PATH}/f_alpha_alpha.csv', index=False)
