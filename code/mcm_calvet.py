@@ -3,6 +3,9 @@ import os.path
 import numpy as np
 import pandas as pd
 from arch import arch_model
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
+from aeqlib.quantlib import volatility
 
 
 ###############################################################################
@@ -260,9 +263,9 @@ if __name__ == "__main__":
     data_df = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0)
     # On suppose qu'il y a une colonne '^RUT' contenant les prix
     returns = data_df['^RUT'].pct_change().dropna().values
-    # m0_grid = np.linspace(0.1, 1, 5)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
-    # gamma1_grid = np.linspace(0.01, 0.99, 5)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
-    # sigma_grid = np.linspace(0.001, 0.1, 5)  # 20 points entre 0.001 et 0.1 (volatilité daily)
+    # m0_grid = np.linspace(0.1, 1.5, 20)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
+    # gamma1_grid = np.linspace(0.01, 0.99, 20)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
+    # sigma_grid = np.linspace(0.001, 0.1, 20)  # 20 points entre 0.001 et 0.1 (volatilité daily)
     #
     #
     # # Estimation brute par grille
@@ -270,10 +273,25 @@ if __name__ == "__main__":
     #                                                sigma_grid=sigma_grid, K=K, b=b)
     # print("Best param (m0, gamma1, sigma) =", best_params)
     # print("LogLik =", best_logL)
+    #
+    # m0_opt = best_params[0]
+    # gamma1_opt = best_params[1]
+    # sigma_opt = best_params[2]
+    #
+    # # Calcul des critères AIC et BIC
+    # # Hypothèse : 3 paramètres estimés (m0, gamma1, sigma)
+    # n = len(returns)  # nombre d'observations
+    # k_params = 3      # nombre de paramètres libres estimés
+    # AIC = 2 * k_params - 2 * best_logL
+    # BIC = k_params * np.log(n) - 2 * best_logL
+    #
+    # print(f"AIC = {AIC:.2f}")
+    # print(f"BIC = {BIC:.2f}")
 
-    m0_opt = 0.325
+
+    m0_opt = 0.39473684210526316
     gamma1_opt = 0.01
-    sigma_opt = 0.02575
+    sigma_opt = 0.01663157894736842
 
     # Construction de l'espace d'états
     states, product_cache = build_state_space(K, m0_opt)
@@ -292,16 +310,15 @@ if __name__ == "__main__":
 
     # Volatilité fittée in-sample
     vol_fit = fitted_volatility(pi_history, sigma_opt, product_cache)
+    #
+    # # Comparaison via Plotly
 
-    # Comparaison via Plotly
-    import plotly.graph_objects as go
-    from plotly.subplots import make_subplots
-    import numpy as np
-
-    abs_ret = np.abs(returns)
+    #
+    # abs_ret = np.abs(returns)
     vol = pd.Series(returns).rolling(window=21).std().values # éviter les divisions par 0
+    # vol = volatility(returns)
     vol = [v if v > 1e-14 else 1e-14 for v in vol]
-
+    #
     rmse = np.sqrt(np.mean((vol_fit - vol) ** 2))
     print("RMSE between fitted volatility and realized volatility =", rmse)
 
@@ -362,3 +379,14 @@ if __name__ == "__main__":
         yaxis_title="Value"
     )
     fig.show()
+
+    # Best
+    # param(m0, gamma1, sigma) = (0.46842105263157896, 0.01, 0.01663157894736842)
+    # LogLik = 29402.418073294393
+    # RMSE
+    # between
+    # fitted
+    # volatility and realized
+    # volatility = 0.0032690964001980878
+    # Correlation
+    # coefficient = 0.9085561692670849

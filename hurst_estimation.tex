@@ -63,13 +63,7 @@
 \section*{Abstract}
 
 This paper presents a study on long-term memory processes in financial time series using Hurst estimation methods, specifically the traditional R/S statistic (Rescaled Range analysis) and the Modified R/S statistic.
-We analyze the long-term memory properties of five major stock market indices: S\&P 500 (GSPC), FTSE 100 (FTSE), SBF 250 (SBF250), TOPIX (TOPX), and Toronto Stock Exchange 300 (GSPTSE) using daily returns data spanning from January 2, 1995, to December 31, 2024.
-
 The R/S statistic and the Modified R/S statistic are computed to determine the presence of long-range dependence in the time series data. The Hurst exponent, derived from both statistics, is used to characterize the memory behavior of the series.
-
-The results indicate that, except for GSPC, all indices exhibit short-term memory or randomness with Hurst exponents below the critical threshold of 1.620.
-Specifically, the Hurst exponent for the GSPC index exceeds 1.620, indicating the presence of long-term memory (persistent behavior).
-These findings suggest that certain stock markets, like the US stock market represented by GSPC, may exhibit more pronounced long-term memory effects compared to others.
 
 
 \newpage
@@ -281,14 +275,8 @@ The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of 
 \end{enumerate}
 
 For \emph{monofractal} series, $h(q)$ is approximately constant for tous $q$.
-For \emph{multifractals} series, $h(q)$ strongly depends on qq, revealing heterogeneity in the scaling of fluctuations.
+For \emph{multifractals} series, $h(q)$ strongly depends on q, revealing heterogeneity in the scaling of fluctuations.
 
-Thus, the two methods are complementary:
-
-\begin{itemize}
-    \item \emph{Modified R/S}: Explicitly tests the hypothesis of \emph{short memory} vs. \emph{long memory} based on a critical statistic.
-    \item \emph{MF-DFA}: Detects and quantifies \emph{multifractality}, revealing how fluctuations scale differently depending on the order $q$.
-\end{itemize}
 
 \subsection{Holder Exponent}
 The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
@@ -709,7 +697,39 @@ This points to the coexistence of multiple scaling behaviors, where volatility c
 
 \subsection{MSM for depicting volatility}
 
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/msm_vol}
+    \caption{Fitted volatility in sample and volatility of Russel 2000 returns, with MSM.}
+    \label{fig:msm_fitted_vol}
+\end{figure}
+
+\FloatBarrier
+
+Best param (m0, gamma1, sigma) = (0.46842105263157896, 0.01, 0.01663157894736842) \\
+
+LogLik = 29402.418073294393 \\
+
+RMSE between fitted volatility and realized volatility = 0.0032690964001980878 \\
+
+Correlation coefficient = 0.9085561692670849 \\
+
+
+
 \subsection{Comparison of the MSM with GARCH(1,1)}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/garch_vol}
+    \caption{Fitted volatility in sample and volatility of Russel 2000 returns, with garch(1,1).}
+    \label{fig:garch_fitted_vol}
+\end{figure}
+
+\FloatBarrier
+
+RMSE between GARCH volatility and realized volatility = 0.0023021519154493224 \\
+
+Correlation coefficient GARCH = 0.9615264660690124 \\
 
 \section{Appendix}
 
