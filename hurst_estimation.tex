@@ -50,12 +50,6 @@
 
 \maketitle
 
-\vspace{1.5cm}
-{
-  \hypersetup{linkcolor=black}
-  \tableofcontents
-  % \listoffigures
-}
 
 \newpage
 
@@ -80,9 +74,7 @@ Through this analysis, we aim to highlight the advantages of the Modified R/S st
 
 
 
-\section{Methods}
-
-\subsection{Fractional Brownian Motion}
+\section{Fractional Brownian Motion}
 
 Fractional Brownian motion (fBm) is a generalization of standard Brownian motion that introduces dependence in increments,
 making it suitable for modeling processes with memory effects. It is a continuous-time Gaussian process \( X_H(t) \) H corresponds
@@ -210,129 +202,11 @@ V = \frac{\tilde{Q}_T}{\sqrt{T}},
 
 converges to the range of a Brownian bridge over the unit interval. It is therefore possible to perform a statistical test for the null hypothesis of short memory against the alternative hypothesis of long memory by referring to the critical value table provided by Lo (1991).
 
-\subsection{Critical Value Table from Lo (1991)}
-The critical values for the Modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the Modified R/S statistic.
+\subsection{Data}
 
-\begin{table}[ht!]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{Significance Level} & \textbf{Critical Value (Modified R/S Statistic)} \\
-\hline
-0.005 & 2.098\\
-0.05 & 1.747\\
-0.10 & 1.620\\
+The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), Russell 2000 (RUT),FTSE 100 (FTSE), NIKKEI 225 (N225), and the Toronto Stock Exchange 300 (GSPTSE).
+The data spans the period from September 10th, 1987, to February 28, 2025, and was downloaded from Yahoo Finance.
 
-\hline
-\end{tabular}
-\caption{Critical values for the Modified R/S Statistic (Lo, 1991)}
-\end{table}
-
-
-\subsection{Multifractal Detrended Fluctuation Analysis}
-
-The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below:
-
-\begin{enumerate}
-    \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean $\langle x \rangle$. We build the profile
-    \[
-        Y(i) \;=\; \sum_{k=1}^{i} \bigl(x_k \;-\; \langle x \rangle\bigr),
-        \quad i \;=\; 1,2,\dots,N.
-    \]
-    This cumulative sum helps to capture the local fluctuations in the data.
-
-    \item \textbf{Division into segments.} We split the profile $Y(i)$ into $N_s \equiv \lfloor N/s \rfloor$ non-overlapping segments, each of length $s$. Since $N$ may not be a multiple of $s$, we repeat this procedure also starting from the opposite end, yielding $2\,N_s$ segments in total.
-
-    \item \textbf{Detrending.} For each of the $2\,N_s$ segments, we fit a polynomial trend (often linear or quadratic) and subtract it from $Y(i)$ in that segment. Let $y_\nu(i)$ be the fitting polynomial in segment $\nu$. We then define the local variance
-    \[
-        F^2\bigl(s,\nu\bigr)
-        \;=\;
-        \frac{1}{s}
-        \sum_{i=1}^s
-        \Bigl[\,Y\bigl((\nu-1)s + i\bigr)\;-\;y_\nu(i)\Bigr]^2.
-    \]
-    This detrending removes possible polynomial trends in the data.
-
-    \item \textbf{Generalized fluctuation function.} We compute, for each scale $s$, the $q$th-order fluctuation function,
-    \[
-        F_q(s)
-        \;=\;
-        \biggl\{
-          \frac{1}{2\,N_s}
-          \sum_{\nu=1}^{2\,N_s}
-          \Bigl[
-            F^2\bigl(s,\nu\bigr)
-          \Bigr]^{\!q/2}
-        \biggr\}^{\!1/q}.
-    \]
-    Varying $q$ allows us to emphasize large ($q>0$) or small ($q<0$) fluctuations.
-
-    \item \textbf{Scaling behavior.} Finally, on double-logarithmic axes, we examine the dependence of $F_q(s)$ sur $s$. If
-    \[
-        F_q(s) \;\sim\; s^{\,h(q)},
-    \]
-    we say that $h(q)$ is the generalized Hurst exponent. In a \emph{multifractal} system, $h(q)$ varies with $q$, indicating different scaling behaviors for large versus small fluctuations.
-\end{enumerate}
-
-For \emph{monofractal} series, $h(q)$ is approximately constant for tous $q$.
-For \emph{multifractals} series, $h(q)$ strongly depends on q, revealing heterogeneity in the scaling of fluctuations.
-
-
-\subsection{Holder Exponent}
-The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
-\begin{equation}
-\alpha(q) = h(q) + q h'(q).
-\end{equation}
-where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
-This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
-
-\subsection{Singularity Spectrum}
-The multifractal spectrum $f(\alpha)$ provides a measure of the fractal dimension of subsets characterized by a given $\alpha$:
-\begin{equation}
-f(\alpha) = q [\alpha(q) - h(q)] + 1.
-\end{equation}
-This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
-
-The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
-\begin{itemize}
-    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
-    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
-    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
-\end{itemize}
-Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
-
-\subsection{Markov Switching Multifractal (MSM)}
-\label{sec:msm}
-
-In the Markov Switching Multifractal (MSM) model introduced by Calvet and Fisher (2004), the volatility process is driven by a product of $K$ independent components (or multipliers), each evolving according to a Markov chain. Specifically, for each level $k = 1, \ldots, K$, the multiplier $M_{k,t}$ can take one of two values, for instance $m_0$ or $(2 - m_0)$, ensuring the mean of the two states equals 1. This binomial structure leads to a total of $2^K$ possible configurations (states) at time $t$.
-
-\subsection{Model Specification}
-Let $\{ x_t \}$ be the log-returns of the asset. The MSM model posits:
-\begin{equation}
-    x_t \;=\; \sigma \,\sqrt{\prod_{k=1}^K M_{k,t}} \;\epsilon_t,\quad
-    \epsilon_t \,\sim\, \mathcal{N}(0,1),
-\end{equation}
-where $\sigma$ is a global scale parameter and $M_{k,t}$ denotes the multiplier at level $k$. Each multiplier switches between its two possible values with probability $\gamma_k$, which often follows the decreasing scheme:
-\begin{equation}
-    \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)\,b^{\,k-1},
-\end{equation}
-for some $0 < \gamma_1 < 1$ and $b > 0$. Consequently, higher levels $k$ switch less frequently, introducing persistent low-frequency shocks to volatility.
-
-\subsection{Transition Dynamics and Likelihood}
-Since each $M_{k,t}$ follows a two-state Markov chain, the joint process $\bigl(M_{1,t}, \dots, M_{K,t}\bigr)$ has $2^K$ states. We construct a $2^K \times 2^K$ transition matrix $\mathbf{A}$ encoding the probabilities of switching or staying in the same value at each level. The stationary distribution of $\mathbf{A}$ provides the initial state probabilities for the filtering procedure.
-
-To estimate model parameters $(m_0,\,\gamma_1,\,b,\,\sigma)$, we maximize the log-likelihood of the observed returns. Let $\pi_t$ be the probability distribution over the $2^K$ states at time $t$. The likelihood is updated recursively via a forward filter:
-\begin{enumerate}
-    \item Compute the conditional density of $x_t$ given each state $s_j$,
-          using $\sigma \sqrt{\prod_{k=1}^K M_{k,t}^{(j)}}$ as the volatility.
-    \item Propagate $\pi_{t-1}$ through $\mathbf{A}$ and weight by the conditional densities.
-    \item Normalize to obtain $\pi_t$ and accumulate the log-likelihood.
-\end{enumerate}
-This procedure iterates over all observations $x_1,\ldots,x_T$, yielding the maximum-likelihood estimates for the MSM parameters once the log-likelihood is maximized.
-
-The MSM framework captures volatility clustering through a cascade of multiplicative factors, each operating on different timescales. Fast-switching levels introduce short-term fluctuations, while slow-switching levels generate persistent volatility regimes. As shown by Calvet and Fisher (2004), this hierarchical structure can replicate a wide range of stylized facts observed in financial returns, such as fat-tailed distributions and long-memory effects in volatility.
-
-\subsection{Data Preprocessing and Stationarity Analysis}
 For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log returns.
 These log returns were then used to calculate the R/S and Modified R/S statistics and estimate the Hurst exponent.
 The purpose of using this data is to evaluate the long-term memory properties of financial markets, which can indicate persistence or mean-reversion in market behavior.
@@ -341,13 +215,8 @@ Additionally, a stationarity test was conducted on the log return series using t
 The results indicated that all series were non-stationary, suggesting the presence of unit roots. To address this, the series were differenced once, after which they exhibited stationarity.
 This step ensures that the analysis of long-term memory is conducted on properly transformed data, free from non-stationary distortions.
 
-\section{Data}
 
-The data used in this analysis consists of the historical closing prices of five major stock market indices: the S\&P 500 (GSPC), Russell 2000 (RUT),FTSE 100 (FTSE), NIKKEI 225 (N225), and the Toronto Stock Exchange 300 (GSPTSE).
-The data spans the period from September 10th, 1987, to February 28, 2025, and was downloaded from Yahoo Finance.
-
-\section{Results}
-
+\subsection{Results}
 
 The following table summarizes the results of the R/S statistic, Modified R/S statistic, and the estimated Hurst exponents for each of the five indices analyzed: \\
 
@@ -447,7 +316,7 @@ may be an unstable characteristic influenced by structural trends or market chan
 \subsection{Rolling Critical value}
 
 To further investigate the long memory properties of the Russell 2000 index,
-we perform a ten year rolling analysis of the Modified R/S statistic and compare it to the critical value at the
+we perform a ten year rolling analysis of the modified R/S statistic and compare it to the critical value at the
 10\% significance level (1.620).
 
 
@@ -497,10 +366,10 @@ we perform a ten year rolling analysis of the Modified R/S statistic and compare
             ({1997-09-30}, 1.620)
             ({2025-02-28}, 1.620)
         };
-        \legend{Rolling Critical Value, Threshold (V=1.620)}
+        \legend{Rolling modified R/S statistic, Threshold (V=1.620)}
         \end{axis}
     \end{tikzpicture}
-    \caption{Rolling Critical Value}
+    \caption{Rolling modified R/S statistic}
 \end{figure}
 
 \FloatBarrier
@@ -508,6 +377,79 @@ we perform a ten year rolling analysis of the Modified R/S statistic and compare
 Therefore, only one period in 2009 exhibits long memory, while the rest of the series remains below the critical value.
 The long memory properties of the Russell 2000 index are not stable over time and may be influenced by
 structural changes or market dynamics. The presence of long memory in the series is not a consistent feature.
+
+
+\section{Multifractal Detrended Fluctuation Analysis}
+
+The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below:
+
+\begin{enumerate}
+    \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean $\langle x \rangle$. We build the profile
+    \[
+        Y(i) \;=\; \sum_{k=1}^{i} \bigl(x_k \;-\; \langle x \rangle\bigr),
+        \quad i \;=\; 1,2,\dots,N.
+    \]
+    This cumulative sum helps to capture the local fluctuations in the data.
+
+    \item \textbf{Division into segments.} We split the profile $Y(i)$ into $N_s \equiv \lfloor N/s \rfloor$ non-overlapping segments, each of length $s$. Since $N$ may not be a multiple of $s$, we repeat this procedure also starting from the opposite end, yielding $2\,N_s$ segments in total.
+
+    \item \textbf{Detrending.} For each of the $2\,N_s$ segments, we fit a polynomial trend (often linear or quadratic) and subtract it from $Y(i)$ in that segment. Let $y_\nu(i)$ be the fitting polynomial in segment $\nu$. We then define the local variance
+    \[
+        F^2\bigl(s,\nu\bigr)
+        \;=\;
+        \frac{1}{s}
+        \sum_{i=1}^s
+        \Bigl[\,Y\bigl((\nu-1)s + i\bigr)\;-\;y_\nu(i)\Bigr]^2.
+    \]
+    This detrending removes possible polynomial trends in the data.
+
+    \item \textbf{Generalized fluctuation function.} We compute, for each scale $s$, the $q$th-order fluctuation function,
+    \[
+        F_q(s)
+        \;=\;
+        \biggl\{
+          \frac{1}{2\,N_s}
+          \sum_{\nu=1}^{2\,N_s}
+          \Bigl[
+            F^2\bigl(s,\nu\bigr)
+          \Bigr]^{\!q/2}
+        \biggr\}^{\!1/q}.
+    \]
+    Varying $q$ allows us to emphasize large ($q>0$) or small ($q<0$) fluctuations.
+
+    \item \textbf{Scaling behavior.} Finally, on double-logarithmic axes, we examine the dependence of $F_q(s)$ on $s$. If
+    \[
+        F_q(s) \;\sim\; s^{\,h(q)},
+    \]
+    we say that $h(q)$ is the generalized Hurst exponent. In a \emph{multifractal} system, $h(q)$ varies with $q$, indicating different scaling behaviors for large versus small fluctuations.
+\end{enumerate}
+
+For \emph{monofractal} series, $h(q)$ is approximately constant for all $q$.
+For \emph{multifractals} series, $h(q)$ strongly depends on q, revealing heterogeneity in the scaling of fluctuations.
+
+
+\subsection{Holder Exponent}
+The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
+\begin{equation}
+\alpha(q) = h(q) + q h'(q).
+\end{equation}
+where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
+This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
+
+\subsection{Singularity Spectrum}
+The multifractal spectrum $f(\alpha)$ provides a measure of the fractal dimension of subsets characterized by a given $\alpha$:
+\begin{equation}
+f(\alpha) = q [\alpha(q) - h(q)] + 1.
+\end{equation}
+This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
+
+The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
+\begin{itemize}
+    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
+    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
+    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
+\end{itemize}
+Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
 
 \subsection{Rolling Critical value and Alpha Width}
 
@@ -531,7 +473,7 @@ structural changes or market dynamics. The presence of long memory in the series
                 legend columns=3
             },
             xlabel={Date},
-            ylabel={Rolling Critical Value},
+            ylabel={Rolling modified R/S statistic},
             ymin=0, ymax=1.7, % Échelle de gauche
         ]
             %--- Rolling Critical Value ---
@@ -543,7 +485,7 @@ structural changes or market dynamics. The presence of long memory in the series
                 y={Critical Value},
                 col sep=comma
             ] {data/alpha_rolling_price.csv};
-            \addlegendentry{Rolling Critical Value}
+            \addlegendentry{Rolling modified R/S statistic}
 
             %--- Threshold ---
             \addplot[
@@ -587,7 +529,7 @@ structural changes or market dynamics. The presence of long memory in the series
         \end{axis}
     \end{tikzpicture}
 
-\caption{Rolling critical value (green) and alpha width (purple).
+\caption{Rolling modified R/S statistic (green) and alpha width (purple).
 Both metrics are computed using a ten-year rolling window on monthly data.
 The alpha width represents the difference between the maximum and minimum alpha over the estimation window.}
 \end{figure}
@@ -598,7 +540,7 @@ Using the multifractal detrended fluctuation analysis (MF-DFA), we can further i
 The multifractal spectrum $f(\alpha)$ characterizes the distribution of singularities in the series, providing insights into the heterogeneity of fluctuations.
 The Holder exponent $\alpha(q)$ quantifies the local singularity strength, revealing the intensity of irregular behaviors in the signal.
 The analysis of the multifractal spectrum and Holder exponent offers a detailed and nuanced description of the series' local variability, enhancing our understanding of its underlying dynamics.
-There is a clear negative correlation (-0.35) between the Hurst exponent and the multifractal spectrum width, indicating that higher Hurst exponents are associated with narrower spectra.
+There is a clear negative correlation (-0.35) between the rolling modified R/S statistic (how significant is the hurst exponent) and the rolling holder exponent ($\alpha$) width, indicating that higher rolling modified R/S statistic are associated with narrower spectra.
 This relationship highlights the interplay between long memory and multifractality in financial time series, suggesting that persistent behaviors are linked to more homogeneous fluctuations.
 
 \subsection{Multifractal Spectrum}
@@ -695,6 +637,38 @@ and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an
 moderately rough signal—neither purely random nor overly smooth—highlighting the presence of multifractal characteristics.
 This points to the coexistence of multiple scaling behaviors, where volatility clustering arises across different temporal scales.
 
+
+\section{Markov Switching Multifractal (MSM)}
+\label{sec:msm}
+
+In the Markov Switching Multifractal (MSM) model introduced by Calvet and Fisher (2004), the volatility process is driven by a product of $K$ independent components (or multipliers), each evolving according to a Markov chain. Specifically, for each level $k = 1, \ldots, K$, the multiplier $M_{k,t}$ can take one of two values, for instance $m_0$ or $(2 - m_0)$, ensuring the mean of the two states equals 1. This binomial structure leads to a total of $2^K$ possible configurations (states) at time $t$.
+
+\subsection{Model Specification}
+Let $\{ x_t \}$ be the log-returns of the asset. The MSM model posits:
+\begin{equation}
+    x_t \;=\; \sigma \,\sqrt{\prod_{k=1}^K M_{k,t}} \;\epsilon_t,\quad
+    \epsilon_t \,\sim\, \mathcal{N}(0,1),
+\end{equation}
+where $\sigma$ is a global scale parameter and $M_{k,t}$ denotes the multiplier at level $k$. Each multiplier switches between its two possible values with probability $\gamma_k$, which often follows the decreasing scheme:
+\begin{equation}
+    \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)\,b^{\,k-1},
+\end{equation}
+for some $0 < \gamma_1 < 1$ and $b > 0$. Consequently, higher levels $k$ switch less frequently, introducing persistent low-frequency shocks to volatility.
+
+\subsection{Transition Dynamics and Likelihood}
+Since each $M_{k,t}$ follows a two-state Markov chain, the joint process $\bigl(M_{1,t}, \dots, M_{K,t}\bigr)$ has $2^K$ states. We construct a $2^K \times 2^K$ transition matrix $\mathbf{A}$ encoding the probabilities of switching or staying in the same value at each level. The stationary distribution of $\mathbf{A}$ provides the initial state probabilities for the filtering procedure.
+
+To estimate model parameters $(m_0,\,\gamma_1,\,b,\,\sigma)$, we maximize the log-likelihood of the observed returns. Let $\pi_t$ be the probability distribution over the $2^K$ states at time $t$. The likelihood is updated recursively via a forward filter:
+\begin{enumerate}
+    \item Compute the conditional density of $x_t$ given each state $s_j$,
+          using $\sigma \sqrt{\prod_{k=1}^K M_{k,t}^{(j)}}$ as the volatility.
+    \item Propagate $\pi_{t-1}$ through $\mathbf{A}$ and weight by the conditional densities.
+    \item Normalize to obtain $\pi_t$ and accumulate the log-likelihood.
+\end{enumerate}
+This procedure iterates over all observations $x_1,\ldots,x_T$, yielding the maximum-likelihood estimates for the MSM parameters once the log-likelihood is maximized.
+
+The MSM framework captures volatility clustering through a cascade of multiplicative factors, each operating on different timescales. Fast-switching levels introduce short-term fluctuations, while slow-switching levels generate persistent volatility regimes. As shown by Calvet and Fisher (2004), this hierarchical structure can replicate a wide range of stylized facts observed in financial returns, such as fat-tailed distributions and long-memory effects in volatility.
+
 \subsection{MSM for depicting volatility}
 
 \begin{figure}[!ht]
@@ -732,6 +706,23 @@ RMSE between GARCH volatility and realized volatility = 0.0023021519154493224 \\
 Correlation coefficient GARCH = 0.9615264660690124 \\
 
 \section{Appendix}
+
+The critical values for the Modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the Modified R/S statistic.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Significance Level} & \textbf{Critical Value (Modified R/S Statistic)} \\
+\hline
+0.005 & 2.098\\
+0.05 & 1.747\\
+0.10 & 1.620\\
+
+\hline
+\end{tabular}
+\caption{Critical values for the Modified R/S Statistic (Lo, 1991)}
+\end{table}
 
 \begin{table}[h!]
     \centering

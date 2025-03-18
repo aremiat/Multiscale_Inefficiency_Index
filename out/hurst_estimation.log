@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  16 MAR 2025 17:09
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  18 MAR 2025 21:20
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -872,11 +872,7 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count356
 \l__pdf_internal_box=\box71
 )
-(out/hurst_estimation.aux
-
-LaTeX Warning: Label `fig:msm_fitted_vol' multiply defined.
-
-)
+(out/hurst_estimation.aux)
 \openout1 = `hurst_estimation.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 47.
@@ -905,7 +901,8 @@ Package french.ldf Info: Setting StandardEnumerateEnv=true for
 (french.ldf)             compatibility with enumitem package,
 (french.ldf)             reported on input line 47.
 LaTeX Info: Redefining \up on input line 47.
- (c:/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+
+(c:/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count357
 \scratchdimen=\dimen321
@@ -969,14 +966,17 @@ s been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring ON on input line 47.
-(out/hurst_estimation.out) (out/hurst_estimation.out)
+(out/hurst_estimation.out) (out/hurst_estimation.out
+! I can't write on file `hurst_estimation.pdf'.
+(Press Enter to retry, or Control-Z to exit; default file extension is `.pdf')
+Please type another file name for output: 
+)
 \@outlinefile=\write4
 \openout4 = `hurst_estimation.out'.
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 52.
 
-
-(c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 52.
@@ -985,23 +985,16 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 52.
 (c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
-(out/hurst_estimation.toc
 
 [1
 
 {c:/texlive/2024/texmf-var/fonts/map/pdftex/updmap/pdftex.map}{c:/texlive/2024/
-texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}])
-\tf@toc=\write5
-\openout5 = `hurst_estimation.toc'.
-
-
+texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 
 [2]
 
 [3]
-
-[4]
-Overfull \hbox (30.81369pt too wide) in paragraph at lines 139--141
+Overfull \hbox (30.81369pt too wide) in paragraph at lines 131--133
 []\T1/cmr/m/n/10.95 The params used for this sim-u-la-tion are N = 1000, T = 1,
  and Hurst ex-po-nents $\OML/cmm/m/it/10.95 H \OT1/cmr/m/n/10.95 = 0\OML/cmm/m/
 it/10.95 :\OT1/cmr/m/n/10.95 2\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95 0\OML/cm
@@ -1011,190 +1004,242 @@ L/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 5\OML/cmm/m/it/10.95 ; \OT1/cmr/m/n/10.95
 .95 0\OML/cmm/m/it/10.95 :\OT1/cmr/m/n/10.95 8$\T1/cmr/m/n/10.95 ,
  []
 
-<img/fdm_autocorr.png, id=167, 5018.75pt x 5018.75pt>
+<img/fdm_autocorr.png, id=127, 5018.75pt x 5018.75pt>
 File: img/fdm_autocorr.png Graphic file (type png)
 <use img/fdm_autocorr.png>
-Package pdftex.def Info: img/fdm_autocorr.png  used on input line 144.
+Package pdftex.def Info: img/fdm_autocorr.png  used on input line 136.
 (pdftex.def)             Requested size: 375.80544pt x 375.77737pt.
 
 
-[5]
+[4]
 
-[6 <./img/fdm_autocorr.png>]
+[5 <./img/fdm_autocorr.png>]
 
-[7]
-
-[8]
-Underfull \hbox (badness 10000) in paragraph at lines 302--303
-
- []
-
-
-
-[9]
-
-[10]
-Underfull \hbox (badness 10000) in paragraph at lines 352--353
+[6]
+Underfull \hbox (badness 10000) in paragraph at lines 221--222
 
  []
 
 PGFPlots: reading {data/hurst_results.csv}
 
-Overfull \hbox (6.62965pt too wide) in paragraph at lines 368--370
+Overfull \hbox (6.62965pt too wide) in paragraph at lines 237--239
+ [][] 
+ []
+
+
+
+[7]
+PGFPlots: reading {data/frequencies_results.csv}
+PGFPlots: reading {data/timestamp_analysis.csv}
+
+Overfull \hbox (33.58714pt too wide) in paragraph at lines 301--303
+ [][] 
+ []
+
+
+
+[8]
+Package pgfplots info on input line 336: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+PGFPlots: reading {data/rolling_and_price.csv}
+Package pgfplots info on input line 341: dateplot: setting 'date ZERO={1997-09-
+30}' for this axis.
+
+Overfull \hbox (6.81865pt too wide) in paragraph at lines 344--345
+ [][] 
+ []
+
+Package pgfplots info on input line 359: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+PGFPlots: reading {data/rolling_and_price.csv}
+Package pgfplots info on input line 364: dateplot: setting 'date ZERO={1997-09-
+30}' for this axis.
+
+
+[9]
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 452--453
+
+ []
+
+Package pgfplots info on input line 478: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+PGFPlots: reading {data/alpha_rolling_price.csv}
+Package pgfplots info on input line 487: dateplot: setting 'date ZERO={1997-09-
+30}' for this axis.
+Package pgfplots info on input line 518: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+PGFPlots: reading {data/alpha_rolling_price.csv}
+Package pgfplots info on input line 527: dateplot: setting 'date ZERO={1997-09-
+30}' for this axis.
+
+Overfull \hbox (35.5669pt too wide) in paragraph at lines 530--531
  [][] 
  []
 
 
 
 [11]
-PGFPlots: reading {data/frequencies_results.csv}
-PGFPlots: reading {data/timestamp_analysis.csv}
-
-Overfull \hbox (33.58714pt too wide) in paragraph at lines 432--434
- [][] 
- []
-
-Package pgfplots info on input line 467: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
-PGFPlots: reading {data/rolling_and_price.csv}
-Package pgfplots info on input line 472: dateplot: setting 'date ZERO={1997-09-
-30}' for this axis.
-
-Overfull \hbox (6.81865pt too wide) in paragraph at lines 475--476
- [][] 
- []
-
-Package pgfplots info on input line 490: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
-PGFPlots: reading {data/rolling_and_price.csv}
-Package pgfplots info on input line 495: dateplot: setting 'date ZERO={1997-09-
-30}' for this axis.
-
-
-[12]
-
-[13]
-Package pgfplots info on input line 536: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
-PGFPlots: reading {data/alpha_rolling_price.csv}
-Package pgfplots info on input line 545: dateplot: setting 'date ZERO={1997-09-
-30}' for this axis.
-Package pgfplots info on input line 576: Using 'lua backend=false' for axis: x 
-coord trafo unsupported.
-PGFPlots: reading {data/alpha_rolling_price.csv}
-Package pgfplots info on input line 585: dateplot: setting 'date ZERO={1997-09-
-30}' for this axis.
-
-Overfull \hbox (34.28952pt too wide) in paragraph at lines 588--589
- [][] 
- []
-
 PGFPlots: reading {data/multifractal_spectrum.csv}
 
 
-[14]
+[12]
 PGFPlots: reading {data/f_alpha_alpha.csv}
 
 
-[15]
-<img/msm_vol.png, id=250, 1416.79312pt x 646.66594pt>
+[13]
+<img/msm_vol.png, id=205, 1416.79312pt x 646.66594pt>
 File: img/msm_vol.png Graphic file (type png)
 <use img/msm_vol.png>
-Package pdftex.def Info: img/msm_vol.png  used on input line 702.
+Package pdftex.def Info: img/msm_vol.png  used on input line 676.
 (pdftex.def)             Requested size: 375.80544pt x 171.52353pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 709--710
+
+[14]
+Underfull \hbox (badness 10000) in paragraph at lines 683--684
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 711--712
+Underfull \hbox (badness 10000) in paragraph at lines 685--686
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 713--714
+Underfull \hbox (badness 10000) in paragraph at lines 687--688
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 715--716
+Underfull \hbox (badness 10000) in paragraph at lines 689--690
 
  []
 
-<img/garch_vol.png, id=251, 1410.0178pt x 639.89063pt>
+<img/garch_vol.png, id=218, 1410.0178pt x 639.89063pt>
 File: img/garch_vol.png Graphic file (type png)
 <use img/garch_vol.png>
-Package pdftex.def Info: img/garch_vol.png  used on input line 723.
+Package pdftex.def Info: img/garch_vol.png  used on input line 697.
 (pdftex.def)             Requested size: 375.80544pt x 170.5466pt.
 
-
-[16 <./img/msm_vol.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 730--731
+Underfull \hbox (badness 10000) in paragraph at lines 704--705
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 732--733
+Underfull \hbox (badness 10000) in paragraph at lines 706--707
 
  []
 
+
+
+[15 <./img/msm_vol.png> <./img/garch_vol.png>]
 PGFPlots: reading {data/adf_results.csv}
 
-
-[17 <./img/garch_vol.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 783--784
+Underfull \hbox (badness 10000) in paragraph at lines 774--775
 
  []
 
 
-Overfull \hbox (4.04208pt too wide) in paragraph at lines 793--794
+
+[16]
+Overfull \hbox (4.04208pt too wide) in paragraph at lines 784--785
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969d). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
 
 
 
-[18] (out/hurst_estimation.aux)
+[17] (out/hurst_estimation.aux)
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
  ***********
 
 
-LaTeX Warning: There were multiply-defined labels.
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-Package rerunfilecheck Info: File `hurst_estimation.out' has not changed.
-(rerunfilecheck)             Checksum: D68F8B4FAE8793023C3676E755D46A67;4624.
+
+Package rerunfilecheck Warning: File `hurst_estimation.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `hurst_estimation.out':
+(rerunfilecheck)             Before: DD4C55CDDD0D96FF213B65C08B5907EC;4114
+(rerunfilecheck)             After:  FD9DAC25880610D662145B47222681D5;3983.
  ) 
 Here is how much of TeX's memory you used:
- 36258 strings out of 473362
- 845749 string characters out of 5725050
- 1416494 words of memory out of 5000000
- 58695 multiletter control sequences out of 15000+600000
+ 36264 strings out of 473362
+ 845872 string characters out of 5725050
+ 1414090 words of memory out of 5000000
+ 58698 multiletter control sequences out of 15000+600000
  575045 words of font info for 77 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,765b,2298s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/tex
-live/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2024
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2024/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2024/texmf-dist/fonts/t
-ype1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmr10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts
-/cm/cmr8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.
-pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/te
-xlive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texliv
-e/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb><c:/texlive/2024/tex
-mf-dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2024/texmf-dist/fo
-nts/type1/public/cm-super/sfbx1440.pfb><c:/texlive/2024/texmf-dist/fonts/type1/
-public/cm-super/sfbx1728.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-
-super/sfrm0900.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm
-1095.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><
-c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on out/hurst_estimation.pdf (18 pages, 1258268 bytes).
+
+pdfTeX warning (dest): name{subsection.2.19} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.18} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.17} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.16} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.15} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.14} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.13} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.12} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.11} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.10} has been referenced but does not e
+xist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{subsection.2.9} has been referenced but does not ex
+ist, replaced by a fixed one
+
+<c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><c:/texli
+ve/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texlive/2024/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2024/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2024/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/c
+m/cmr8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pf
+b><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texl
+ive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/
+2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb><c:/texlive/2024/texmf
+-dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2024/texmf-dist/font
+s/type1/public/cm-super/sfbx1440.pfb><c:/texlive/2024/texmf-dist/fonts/type1/pu
+blic/cm-super/sfbx1728.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-su
+per/sfrm0900.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm10
+95.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:
+/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on out/hurst_estimation.pdf (17 pages, 1255903 bytes).
 PDF statistics:
- 373 PDF objects out of 1000 (max. 8388607)
- 307 compressed objects within 4 object streams
- 80 named destinations out of 1000 (max. 500000)
- 228 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 345 PDF objects out of 1000 (max. 8388607)
+ 281 compressed objects within 3 object streams
+ 86 named destinations out of 1000 (max. 500000)
+ 212 words of extra memory for PDF output out of 10000 (max. 10000000)
 
