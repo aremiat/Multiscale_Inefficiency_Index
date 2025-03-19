@@ -32,7 +32,7 @@ def mfdfa(signal, scales, q_list, order=1):
     Fq = np.zeros((len(q_list), len(scales)))
 
     # Pour chaque échelle s
-    for i, s in enumerate(scales):
+    for j, s in enumerate(scales):
         s = int(s)
         if s < 2:
             continue
@@ -60,12 +60,12 @@ def mfdfa(signal, scales, q_list, order=1):
         F_seg[F_seg < 1e-10] = 1e-10
 
         # Calcul de F_q(s) pour chaque valeur de q
-        for j, q in enumerate(q_list):
+        for k, q in enumerate(q_list):
             if np.abs(q) < 1e-6:
                 # q = 0 : utilisation de la moyenne géométrique (limite q->0)
-                Fq[j, i] = np.exp(0.5 * np.mean(np.log(F_seg)))
+                Fq[k, j] = np.exp(0.5 * np.mean(np.log(F_seg)))
             else:
-                Fq[j, i] = (np.mean(F_seg ** (q / 2))) ** (1 / q)
+                Fq[k, j] = (np.mean(F_seg ** (q / 2))) ** (1 / q)
 
     return Fq
 
