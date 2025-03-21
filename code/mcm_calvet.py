@@ -192,10 +192,10 @@ def estimate_msm_binomial(
         states, product_cache = build_state_space(K, m0)
         d = len(states)
         for gamma1 in gamma1_grid:
-            # On calcule gamma_k = 1 - (1-gamma1)*b^(k-1)
+            # On calcule gamma_k = 1 - (1-gamma1)**b^(k-1)
             gamma_list = []
             for k in range(1, K + 1):
-                gamma_k = 1.0 - (1.0 - gamma1) * (b ** (k - 1))
+                gamma_k = 1.0 - (1.0 - gamma1) ** (b ** (k - 1))
                 gamma_list.append(gamma_k)
             # Matrice de transition
             A = build_transition_matrix(states, K, gamma_list)
@@ -255,43 +255,43 @@ if __name__ == "__main__":
     # gamma1_opt = 0.01
     # sigma_opt = 0.012
 
-    K = 3 # K composantes binaires max 10
-    b = 0.5 # b entre 1 et +infini
+    K = 5 # K composantes binaires max 10
+    b = 2 # b entre 1 et +infini
 
     # Chargement des données (rendements Russell 2000)
     DATA_PATH = os.path.dirname(__file__) + "/../data"
     data_df = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0)
     # On suppose qu'il y a une colonne '^RUT' contenant les prix
     returns = data_df['^RUT'].pct_change().dropna().values
-    # m0_grid = np.linspace(0.1, 1.5, 20)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
-    # gamma1_grid = np.linspace(0.01, 0.99, 20)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
-    # sigma_grid = np.linspace(0.001, 0.1, 20)  # 20 points entre 0.001 et 0.1 (volatilité daily)
-    #
-    #
-    # # Estimation brute par grille
-    # best_params, best_logL = estimate_msm_binomial(returns, m0_grid=m0_grid, gamma1_grid=gamma1_grid,
-    #                                                sigma_grid=sigma_grid, K=K, b=b)
-    # print("Best param (m0, gamma1, sigma) =", best_params)
-    # print("LogLik =", best_logL)
-    #
-    # m0_opt = best_params[0]
-    # gamma1_opt = best_params[1]
-    # sigma_opt = best_params[2]
-    #
-    # # Calcul des critères AIC et BIC
-    # # Hypothèse : 3 paramètres estimés (m0, gamma1, sigma)
-    # n = len(returns)  # nombre d'observations
-    # k_params = 3      # nombre de paramètres libres estimés
-    # AIC = 2 * k_params - 2 * best_logL
-    # BIC = k_params * np.log(n) - 2 * best_logL
-    #
-    # print(f"AIC = {AIC:.2f}")
-    # print(f"BIC = {BIC:.2f}")
+    m0_grid = np.linspace(0.1, 1.9, 10)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
+    gamma1_grid = np.linspace(0.01, 0.99, 10)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
+    sigma_grid = np.linspace(0.001, 0.1, 10)  # 20 points entre 0.001 et 0.1 (volatilité daily)
 
 
-    m0_opt = 0.39473684210526316
-    gamma1_opt = 0.01
-    sigma_opt = 0.01663157894736842
+    # Estimation brute par grille
+    best_params, best_logL = estimate_msm_binomial(returns, m0_grid=m0_grid, gamma1_grid=gamma1_grid,
+                                                   sigma_grid=sigma_grid, K=K, b=b)
+    print("Best param (m0, gamma1, sigma) =", best_params)
+    print("LogLik =", best_logL)
+
+    m0_opt = best_params[0]
+    gamma1_opt = best_params[1]
+    sigma_opt = best_params[2]
+
+    # Calcul des critères AIC et BIC
+    # Hypothèse : 3 paramètres estimés (m0, gamma1, sigma)
+    n = len(returns)  # nombre d'observations
+    k_params = 3      # nombre de paramètres libres estimés
+    AIC = 2 * k_params - 2 * best_logL
+    BIC = k_params * np.log(n) - 2 * best_logL
+
+    print(f"AIC = {AIC:.2f}")
+    print(f"BIC = {BIC:.2f}")
+
+
+    # m0_opt = 0.39473684210526316
+    # gamma1_opt = 0.01
+    # sigma_opt = 0.01663157894736842
 
     # Construction de l'espace d'états
     states, product_cache = build_state_space(K, m0_opt)
@@ -299,7 +299,7 @@ if __name__ == "__main__":
     # Calcul des gamma_k = 1 - (1 - gamma1_opt)*b^(k-1), en s'assurant 0 <= gamma_k <= 1
     gamma_list_opt = []
     for k_ in range(1, K+1):
-        val = 1.0 - (1.0 - gamma1_opt)*(b**(k_-1))
+        val = 1.0 - (1.0 - gamma1_opt)**(b**(k_-1))
         gamma_list_opt.append(max(0.0, min(1.0, val)))
 
     # Matrice de transition
@@ -345,40 +345,40 @@ if __name__ == "__main__":
         yaxis_title="Value"
     )
     fig.show()
-
-    garch_model = arch_model(pd.Series(returns), vol='GARCH', p=1, q=1, dist='normal')
-    garch_fit = garch_model.fit(disp='off')
-
-    # La volatilité conditionnelle quotidienne (généralement en échelle "daily") est obtenue comme suit :
-    garch_vol = garch_fit.conditional_volatility
-
-    rmse_garch = np.sqrt(np.mean((garch_vol - vol) ** 2))
-    print("RMSE between GARCH volatility and realized volatility =", rmse_garch)
-
-    corr_coef_garch = np.corrcoef(garch_vol, vol)[0, 1]
-    print("Correlation coefficient GARCH =", corr_coef_garch)
-
-    fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: GARCH Volatility vs. Volatility |Returns|"])
-    fig.add_trace(go.Scatter(
-        x=np.arange(len(garch_vol)),
-        y=garch_vol,
-        mode='lines',
-        name='Fitted GARCH Vol'
-    ), row=1, col=1)
-
-    fig.add_trace(go.Scatter(
-        x=np.arange(len(vol)),
-        y=vol,
-        mode='lines',
-        name='|Returns|'
-    ), row=1, col=1)
-
-    fig.update_layout(
-        title=f"LogLik in-sample = {garch_fit.loglikelihood:.2f}",
-        xaxis_title="Time index",
-        yaxis_title="Value"
-    )
-    fig.show()
+    #
+    # garch_model = arch_model(pd.Series(returns), vol='GARCH', p=1, q=1, dist='normal')
+    # garch_fit = garch_model.fit(disp='off')
+    #
+    # # La volatilité conditionnelle quotidienne (généralement en échelle "daily") est obtenue comme suit :
+    # garch_vol = garch_fit.conditional_volatility
+    #
+    # rmse_garch = np.sqrt(np.mean((garch_vol - vol) ** 2))
+    # print("RMSE between GARCH volatility and realized volatility =", rmse_garch)
+    #
+    # corr_coef_garch = np.corrcoef(garch_vol, vol)[0, 1]
+    # print("Correlation coefficient GARCH =", corr_coef_garch)
+    #
+    # fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: GARCH Volatility vs. Volatility |Returns|"])
+    # fig.add_trace(go.Scatter(
+    #     x=np.arange(len(garch_vol)),
+    #     y=garch_vol,
+    #     mode='lines',
+    #     name='Fitted GARCH Vol'
+    # ), row=1, col=1)
+    #
+    # fig.add_trace(go.Scatter(
+    #     x=np.arange(len(vol)),
+    #     y=vol,
+    #     mode='lines',
+    #     name='|Returns|'
+    # ), row=1, col=1)
+    #
+    # fig.update_layout(
+    #     title=f"LogLik in-sample = {garch_fit.loglikelihood:.2f}",
+    #     xaxis_title="Time index",
+    #     yaxis_title="Value"
+    # )
+    # fig.show()
 
     # Best
     # param(m0, gamma1, sigma) = (0.46842105263157896, 0.01, 0.01663157894736842)

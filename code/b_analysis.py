@@ -14,7 +14,7 @@ def simulate_msm(K, gamma1, b, T=10_000):
     # Calcul des probabilités de switch pour chaque niveau k
     gamma_list = []
     for k in range(1, K + 1):
-        val = 1.0 - (1.0 - gamma1) ** (b ** (k - 1))
+        val = 1.0 - (1.0 - gamma1) * (b ** (k - 1))
         gamma_list.append(val)
 
     # Initialisation aléatoire des états (0 ou 1) pour chaque niveau

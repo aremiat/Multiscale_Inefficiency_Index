@@ -651,9 +651,36 @@ Let $\{ x_t \}$ be the log-returns of the asset. The MSM model posits:
 \end{equation}
 where $\sigma$ is a global scale parameter and $M_{k,t}$ denotes the multiplier at level $k$. Each multiplier switches between its two possible values with probability $\gamma_k$, which often follows the decreasing scheme:
 \begin{equation}
-    \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)\,b^{\,k-1},
+    \label{eq:gamma_k}
+    \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)^{b^{\,k-1}},
 \end{equation}
-for some $0 < \gamma_1 < 1$ and $b > 0$. Consequently, higher levels $k$ switch less frequently, introducing persistent low-frequency shocks to volatility.
+for some $0 < \gamma_1 < 1$ and $b \in  [0,1]$. Consequently, higher levels $k$ switch more frequently, introducing persistent high-frequency shocks to volatility.
+
+
+\subsection{Probability of Switching}
+
+\begin{figure}[!ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/k_analysis}
+    \caption{Probability of switching at each k level in the MSM model, from top to bottom show increasing values of k.
+    The simulation was performed for K=5, m0 = 0.8, 2-m0 = 1.2 and gamma [0.1, 0.19 0.34 0.57 0.81].}
+    \label{fig:k_analysis}
+\end{figure}
+
+\FloatBarrier
+
+Low-frequency multipliers $m_{t,k}$ build a fundamental block for persistent volatility.
+A change in these low-level multipliers implies a strong tendency for movements in multiplied volatility.
+
+Intermediate-frequency multipliers $m_{t,k}$ provide a smoother transition of volatility states,
+effectively playing the role of a moving average in volatility. The resulting volatility may exhibit
+clustering, largely due to highly correlated volatility components across different time scales.
+
+
+High-frequency multipliers $m_{t,k}$ introduce additional outliers by directly affecting the
+tails of the MSMF process (CalvetFisher2005). These volatility components are very short-lived and,
+in extreme cases, resemble noise. As a result, it is not straightforward to capture the effect of this
+component above certain thresholds of $\bar{k}$.
 
 \subsection{Transition Dynamics and Likelihood}
 Since each $M_{k,t}$ follows a two-state Markov chain, the joint process $\bigl(M_{1,t}, \dots, M_{K,t}\bigr)$ has $2^K$ states. We construct a $2^K \times 2^K$ transition matrix $\mathbf{A}$ encoding the probabilities of switching or staying in the same value at each level. The stationary distribution of $\mathbf{A}$ provides the initial state probabilities for the filtering procedure.
@@ -668,6 +695,10 @@ To estimate model parameters $(m_0,\,\gamma_1,\,b,\,\sigma)$, we maximize the lo
 This procedure iterates over all observations $x_1,\ldots,x_T$, yielding the maximum-likelihood estimates for the MSM parameters once the log-likelihood is maximized.
 
 The MSM framework captures volatility clustering through a cascade of multiplicative factors, each operating on different timescales. Fast-switching levels introduce short-term fluctuations, while slow-switching levels generate persistent volatility regimes. As shown by Calvet and Fisher (2004), this hierarchical structure can replicate a wide range of stylized facts observed in financial returns, such as fat-tailed distributions and long-memory effects in volatility.
+
+
+
+
 
 \subsection{MSM for depicting volatility}
 
