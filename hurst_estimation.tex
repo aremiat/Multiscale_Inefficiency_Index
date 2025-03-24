@@ -21,6 +21,7 @@
 \usepackage{amsmath}
 \usepackage{pgfplotstable}
 \usepackage{amsfonts}
+\usepgfplotslibrary{groupplots}
 
 \usetikzlibrary{backgrounds}
 
@@ -323,53 +324,85 @@ we perform a ten year rolling analysis of the modified R/S statistic and compare
 \begin{figure}[htbp]
     \centering
     \begin{tikzpicture}
+        %--- Premier axe (pour le tracé uniquement) ---
         \begin{axis}[
+            name=axis1,
             width=\textwidth,
             height=8cm,
             date coordinates in=x,
             xticklabel=\year-\month,
             xticklabel style={rotate=45, anchor=east},
+            grid=major,
             xlabel={Date},
             ylabel={Price},
-            grid=major,
-            legend style={at={(0.5,-0.2)},anchor=north,legend columns=-1},
-            ]
-            \addplot[blue, thick] table[
-                col sep=comma,
+            ymin=3, ymax=8, % Échelle de gauche
+            % (aucune légende ici)
+        ]
+            \addplot[
+                blue!50,
+                thick
+            ] table[
                 x=Date,
-                y=Price,
+                y={Price},
+                col sep=comma
             ] {data/rolling_and_price.csv};
-            \legend{Russell Price}
         \end{axis}
-    \end{tikzpicture}
-    \caption{Russell Price Evolution}
-\end{figure}
 
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}
+        %--- Deuxième axe (inclut la légende globale) ---
         \begin{axis}[
+            name=axis2,
+            at={(axis1.south west)},
+            anchor=south west,
             width=\textwidth,
             height=8cm,
             date coordinates in=x,
-            xticklabel=\year-\month,
-            xticklabel style={rotate=45, anchor=east},
+            xticklabel=\empty,  % On ne réaffiche pas les dates
+            axis x line=none,   % Pas d'axe x sur le 2e graphique
+            axis y line=right,  % Axe y à droite
+            ymin=0.6, ymax=3, % Échelle de droite
+            ylabel={Rolling modified R/S statistic},
+            yticklabel style={color=purple},  % Couleur rappelée pour la courbe
+            ylabel style={color=purple},
             grid=major,
-            legend style={font=\footnotesize, at={(0.5,-0.2)},anchor=north,legend columns=-1},
+            legend to name=global, % On prépare la légende globale
+            legend style={
+                font=\footnotesize,
+                legend columns=3
+            },
         ]
-        \addplot[green, thick] table[
-            x=Date,
-            y=Critical Value,
-            col sep=comma,
-        ] {data/rolling_and_price.csv};
-        \addplot[red, thick, dashed] coordinates {
-            ({1997-09-30}, 1.620)
-            ({2025-02-28}, 1.620)
-        };
-        \legend{Rolling modified R/S statistic, Threshold (V=1.620)}
+            % Réintégrer l'entrée de légende pour la courbe bleue
+            \addlegendimage{blue!50, thick}
+            \addlegendentry{Russel 2000 prices}
+
+            %--- Alpha Width ---
+            \addplot[
+                green,
+                thick
+            ] table[
+                x=Date,
+                y={Critical Value},
+                col sep=comma
+            ] {data/rolling_and_price.csv};
+            \addlegendentry{Rolling modified R/S statistic}
+
+            %--- Threshold ---
+            \addplot[
+                red,
+                thick,
+                dashed
+            ] coordinates {
+                ({1997-09-30}, 1.620)
+                ({2025-02-28}, 1.620)
+            };
+            \addlegendentry{Threshold (V=1.620)}
         \end{axis}
+
+        % Placement de la légende globale sous les axes
+        \node at (current bounding box.south) [below=1cm]
+            {\pgfplotslegendfromname{global}};
     \end{tikzpicture}
-    \caption{Rolling modified R/S statistic}
+    \caption{Rolling modified R/S statistic (green) et alpha width (purple).
+Les deux métriques sont calculées sur une fenêtre roulante de dix ans avec des données mensuelles.}
 \end{figure}
 
 \FloatBarrier
@@ -377,6 +410,15 @@ we perform a ten year rolling analysis of the modified R/S statistic and compare
 Therefore, only one period in 2009 exhibits long memory, while the rest of the series remains below the critical value.
 The long memory properties of the Russell 2000 index are not stable over time and may be influenced by
 structural changes or market dynamics. The presence of long memory in the series is not a consistent feature.
+Given that the presence of long memory is not a consistent feature of the series, it is necessary to delve into a more
+nuanced analysis.
+
+
+Specifically, we will employ Multifractal Detrended Fluctuation Analysis (MF-DFA) to investigate the local behavior of
+the series and to characterize its singularity spectrum. This method will allow us to uncover potential multifractal
+properties and provide deeper insights into the complex, scale-dependent dynamics governing the index.
+
+
 
 
 \section{Multifractal Detrended Fluctuation Analysis}
@@ -451,97 +493,6 @@ The analysis using the Hölder exponent and singularity spectrum is a powerful t
 \end{itemize}
 Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
 
-\subsection{Rolling Critical value and Alpha Width}
-
-
-\begin{figure}[htbp]
-    \centering
-    %--- Premier axis : Rolling Critical Value (gauche) ---
-    \begin{tikzpicture}
-        \begin{axis}[
-            name=axis1,
-            width=\textwidth,
-            height=8cm,
-            date coordinates in=x,
-            xticklabel=\year-\month,
-            xticklabel style={rotate=45, anchor=east},
-            grid=major,
-            legend style={
-                font=\footnotesize,
-                at={(0.5,-0.2)},
-                anchor=north,
-                legend columns=3
-            },
-            xlabel={Date},
-            ylabel={Rolling modified R/S statistic},
-            ymin=0, ymax=1.7, % Échelle de gauche
-        ]
-            %--- Rolling Critical Value ---
-            \addplot[
-                green,
-                thick
-            ] table[
-                x=Date,
-                y={Critical Value},
-                col sep=comma
-            ] {data/alpha_rolling_price.csv};
-            \addlegendentry{Rolling modified R/S statistic}
-
-            %--- Threshold ---
-            \addplot[
-                red,
-                thick,
-                dashed
-            ] coordinates {
-                ({1997-09-30}, 1.620)
-                ({2025-02-28}, 1.620)
-            };
-            \addlegendentry{Threshold (V=1.620)}
-        \end{axis}
-
-        %--- Second axis : Alpha Width (droite) ---
-        \begin{axis}[
-            name=axis2,
-            at={(axis1.south west)},
-            anchor=south west,
-            width=\textwidth,
-            height=8cm,
-            date coordinates in=x,
-            xticklabel=\empty,  % On ne veut pas réafficher les dates
-            axis x line=none,   % On n'affiche pas l'axe x du 2e
-            axis y line=right,  % L'axe Y est à droite
-            ymin=0, ymax=1.3,   % Échelle de droite
-            ylabel={Alpha Width},
-            yticklabel style={color=purple},  % Couleur pour rappeler la courbe
-            ylabel style={color=purple},
-            grid=major,
-        ]
-            %--- Alpha Width ---
-            \addplot[
-                purple,
-                thick
-            ] table[
-                x=Date,
-                y={Alpha Width},
-                col sep=comma
-            ] {data/alpha_rolling_price.csv};
-            \addlegendentry{Alpha Width}
-        \end{axis}
-    \end{tikzpicture}
-
-\caption{Rolling modified R/S statistic (green) and alpha width (purple).
-Both metrics are computed using a ten-year rolling window on monthly data.
-The alpha width represents the difference between the maximum and minimum alpha over the estimation window.}
-\end{figure}
-
-\FloatBarrier
-
-Using the multifractal detrended fluctuation analysis (MF-DFA), we can further investigate the multifractal properties of the Russell 2000 index.
-The multifractal spectrum $f(\alpha)$ characterizes the distribution of singularities in the series, providing insights into the heterogeneity of fluctuations.
-The Holder exponent $\alpha(q)$ quantifies the local singularity strength, revealing the intensity of irregular behaviors in the signal.
-The analysis of the multifractal spectrum and Holder exponent offers a detailed and nuanced description of the series' local variability, enhancing our understanding of its underlying dynamics.
-There is a clear negative correlation (-0.35) between the rolling modified R/S statistic (how significant is the hurst exponent) and the rolling holder exponent ($\alpha$) width, indicating that higher rolling modified R/S statistic are associated with narrower spectra.
-This relationship highlights the interplay between long memory and multifractality in financial time series, suggesting that persistent behaviors are linked to more homogeneous fluctuations.
 
 \subsection{Multifractal Spectrum}
 
@@ -636,6 +587,105 @@ short- to medium-term correlation, $\alpha = 0.5$ aligns with a standard Brownia
 and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.65 implies a
 moderately rough signal—neither purely random nor overly smooth—highlighting the presence of multifractal characteristics.
 This points to the coexistence of multiple scaling behaviors, where volatility clustering arises across different temporal scales.
+
+\subsection{Rolling Critical value and Alpha Width}
+
+
+\begin{figure}[ht]
+    \centering
+    \begin{tikzpicture}
+        %--- Premier axe (tracé principal de la série verte et de la ligne seuil) ---
+        \begin{axis}[
+            name=axis1,
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\year-\month,
+            xticklabel style={rotate=45, anchor=east},
+            grid=major,
+            xlabel={Date},
+            ylabel={Rolling modified R/S statistic},
+            ymin=0, ymax=1.7, % Échelle de gauche
+            % Aucune légende n'est affichée ici
+        ]
+            % Rolling Critical Value (en vert)
+            \addplot[
+                green,
+                thick
+            ] table[
+                x=Date,
+                y={Critical Value},
+                col sep=comma
+            ] {data/alpha_rolling_price.csv};
+
+            % Seuil (en rouge, pointillé)
+            \addplot[
+                red,
+                thick,
+                dashed
+            ] coordinates {
+                ({1997-09-30}, 1.620)
+                ({2025-02-28}, 1.620)
+            };
+        \end{axis}
+
+        %--- Deuxième axe (tracé de la série purple et légende globale) ---
+        \begin{axis}[
+            name=axis2,
+            at={(axis1.south west)},
+            anchor=south west,
+            width=\textwidth,
+            height=8cm,
+            date coordinates in=x,
+            xticklabel=\empty,  % Pas de réaffichage des dates
+            axis x line=none,   % On masque l'axe x
+            axis y line=right,  % Axe y à droite
+            ymin=0, ymax=1.3,   % Échelle de droite
+            ylabel={Alpha Width},
+            yticklabel style={color=purple},
+            ylabel style={color=purple},
+            grid=major,
+            legend to name=global, % Stocke les entrées dans une légende globale
+            legend style={
+                font=\footnotesize,
+                legend columns=3
+            },
+        ]
+            % Réintégration des entrées de légende issues du premier axe
+            \addlegendimage{green, thick}
+            \addlegendentry{Rolling modified R/S statistic}
+
+            \addlegendimage{red, thick, dashed}
+            \addlegendentry{Threshold (V=1.620)}
+
+            % Tracé de l'Alpha Width (en purple)
+            \addplot[
+                purple,
+                thick
+            ] table[
+                x=Date,
+                y={Alpha Width},
+                col sep=comma
+            ] {data/alpha_rolling_price.csv};
+            \addlegendentry{Alpha Width}
+        \end{axis}
+
+        % Placement de la légende globale en bas
+        \node at (current bounding box.south) [below=1cm]
+            {\pgfplotslegendfromname{global}};
+    \end{tikzpicture}
+    \caption{Rolling modified R/S statistic (green) and alpha width (purple). \\
+Both metrics are computed using a ten-year rolling window on monthly data. The alpha width represents the difference between the maximum and minimum alpha over the estimation window.}
+\end{figure}
+
+\FloatBarrier
+
+Using the multifractal detrended fluctuation analysis (MF-DFA), we can further investigate the multifractal properties of the Russell 2000 index.
+The multifractal spectrum $f(\alpha)$ characterizes the distribution of singularities in the series, providing insights into the heterogeneity of fluctuations.
+The Holder exponent $\alpha(q)$ quantifies the local singularity strength, revealing the intensity of irregular behaviors in the signal.
+The analysis of the multifractal spectrum and Holder exponent offers a detailed and nuanced description of the series' local variability, enhancing our understanding of its underlying dynamics.
+There is a clear negative correlation (-0.35) between the rolling modified R/S statistic (how significant is the hurst exponent) and the rolling holder exponent ($\alpha$) width, indicating that higher rolling modified R/S statistic are associated with narrower spectra.
+This relationship highlights the interplay between long memory and multifractality in financial time series, suggesting that persistent behaviors are linked to more homogeneous fluctuations.
 
 
 \section{Markov Switching Multifractal (MSM)}

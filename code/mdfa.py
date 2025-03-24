@@ -229,8 +229,8 @@ data = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0, parse_dates=Tru
 ticker = "^RUT"
 # Calcul des rendements journaliers en log
 returns = np.log(data).diff().dropna()
-r_m = returns
-# r_m = returns.resample('M').last()
+# r_m = returns
+r_m = returns.resample('M').last()
 
 window_size = 120  # ex. 120 mois (10 ans)
 q_list = np.linspace(-5, 5, 21)
@@ -250,6 +250,10 @@ rolling_critical = r_m.rolling(window_size).apply(
     raw=False
 ).dropna()
 
+rolling_and_prices = pd.concat([np.log(data), rolling_critical], axis=1, join='inner')
+rolling_and_prices.columns = ['Price', 'Critical Value']
+rolling_and_prices.to_csv(f"{DATA_PATH}/rolling_and_price.csv")
+
 # rolling_critical = r_m.rolling(window_size).apply(
 #     lambda w: np.log(ComputeRS.rs_statistic(w, len(w))) / np.log(len(w)),
 #     raw=False
@@ -257,7 +261,7 @@ rolling_critical = r_m.rolling(window_size).apply(
 
 alpha_width_series.index = rolling_critical.index
 
-alpha_rolling_price = pd.concat([data, alpha_width_series, rolling_critical], axis=1, join='inner')
+alpha_rolling_price = pd.concat([np.log(data), alpha_width_series, rolling_critical], axis=1, join='inner')
 alpha_rolling_price.columns = ['Price', 'Alpha Width', 'Critical Value']
 alpha_rolling_price.to_csv(f"{DATA_PATH}/alpha_rolling_price.csv")
 
@@ -281,7 +285,7 @@ alpha_rolling_price.to_csv(f"{DATA_PATH}/alpha_rolling_price.csv")
 data_rolling = data.loc["1997-08-31": "2025-02-28"]
 rolling_series = rolling_critical[ticker].dropna()
 price_series = data_rolling[ticker].dropna()
-plot_russell_and_critical_alpha(price_series, rolling_series, alpha_width_series, threshold=1.2)
+plot_russell_and_critical_alpha(np.log(price_series), rolling_series, alpha_width_series, threshold=1.2)
 
 Fq = mfdfa(r_m.values, scales, q_list, order=1)
 
@@ -297,7 +301,7 @@ h_q = np.array(h_q)
 
 
 hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)')], axis=1)
-hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum.csv", index=False)
+# hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum.csv", index=False)
 
 fig_hq = go.Figure()
 fig_hq.add_trace(go.Scatter(
