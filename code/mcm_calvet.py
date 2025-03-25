@@ -180,19 +180,19 @@ def estimate_msm_binomial(
     if sigma_grid is None:
         sigma_grid = np.linspace(0.5, 2.0, 5)
 
+    # Calcul du nombre total d'itérations
+    total_iterations = len(m0_grid) * len(gamma1_grid) * len(sigma_grid)
+    current_iter = 0
+
     best_logL = -1e15
     best_params = (None, None, None)
 
-    T = len(data)
-    # On convertit data en np.array
     data_arr = np.array(data)
 
     for m0 in m0_grid:
-        # On construit l'espace d'états pour K composantes
         states, product_cache = build_state_space(K, m0)
-        d = len(states)
         for gamma1 in gamma1_grid:
-            # On calcule gamma_k = 1 - (1-gamma1)**b^(k-1)
+            # Construction de gamma_k
             gamma_list = []
             for k in range(1, K + 1):
                 gamma_k = 1.0 - (1.0 - gamma1) ** (b ** (k - 1))
@@ -200,12 +200,19 @@ def estimate_msm_binomial(
             # Matrice de transition
             A = build_transition_matrix(states, K, gamma_list)
             for sigma in sigma_grid:
-                # log-likelihood
+                # Incrémenter le compteur et afficher la progression
+                current_iter += 1
+                progress = 100.0 * current_iter / total_iterations
+                print(f"Progress: {progress:.2f}% completed", end="\r")
+
+                # Calcul de la log-vraisemblance
                 ll = msm_loglik(data_arr, sigma, states, product_cache, A)
                 if ll > best_logL:
                     best_logL = ll
                     best_params = (m0, gamma1, sigma)
 
+    # Pour revenir à la ligne après la boucle
+    print()
     return best_params, best_logL
 
 
@@ -250,143 +257,130 @@ def fitted_volatility(pi_history, sigma_opt, product_cache):
 
 if __name__ == "__main__":
     np.random.seed(1234)
-    # Paramètres optimaux trouvés
-    # m0_opt = 1.0
-    # gamma1_opt = 0.01
-    # sigma_opt = 0.012
+    K = 5
+    b = 2
 
-    K = 5 # K composantes binaires max 10
-    b = 2 # b entre 1 et +infini
-
-    # Chargement des données (rendements Russell 2000)
     DATA_PATH = os.path.dirname(__file__) + "/../data"
     data_df = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0)
-    # On suppose qu'il y a une colonne '^RUT' contenant les prix
+
+    # Suppose qu'il y a une colonne '^RUT' contenant les prix => calcul rendements
     returns = data_df['^RUT'].pct_change().dropna().values
-    m0_grid = np.linspace(0.1, 1.9, 10)  # 20 points entre 0.1 et 2 multiplicateur de volatilité minimal
-    gamma1_grid = np.linspace(0.01, 0.99, 10)  # 20 points entre 0.1 et 0.99, proba entre 0 et 1
-    sigma_grid = np.linspace(0.001, 0.1, 10)  # 20 points entre 0.001 et 0.1 (volatilité daily)
 
+    # 1) Split train/test
+    T = len(returns)
+    T_train = int(0.8 * T)
+    train_data = returns[:T_train]
+    test_data = returns[T_train:]
 
-    # Estimation brute par grille
-    best_params, best_logL = estimate_msm_binomial(returns, m0_grid=m0_grid, gamma1_grid=gamma1_grid,
-                                                   sigma_grid=sigma_grid, K=K, b=b)
-    print("Best param (m0, gamma1, sigma) =", best_params)
-    print("LogLik =", best_logL)
+    # 2) Estimation sur l'échantillon d'entraînement
+    m0_grid = np.linspace(0.1, 1.9, 20)
+    gamma1_grid = np.linspace(0.01, 0.99, 20)
+    sigma_grid = np.linspace(0.001, 0.1, 20)
 
-    m0_opt = best_params[0]
-    gamma1_opt = best_params[1]
-    sigma_opt = best_params[2]
+    best_params, best_logL = estimate_msm_binomial(train_data,
+                                                   K=K, b=b,
+                                                   m0_grid=m0_grid,
+                                                   gamma1_grid=gamma1_grid,
+                                                   sigma_grid=sigma_grid)
+    m0_opt, gamma1_opt, sigma_opt = best_params
+    print("Best param (m0, gamma1, sigma) =", best_params, "LogLik =", best_logL)
 
-    # Calcul des critères AIC et BIC
-    # Hypothèse : 3 paramètres estimés (m0, gamma1, sigma)
-    n = len(returns)  # nombre d'observations
-    k_params = 3      # nombre de paramètres libres estimés
+    # AIC / BIC sur training
+    n_train = len(train_data)
+    k_params = 3
     AIC = 2 * k_params - 2 * best_logL
-    BIC = k_params * np.log(n) - 2 * best_logL
+    BIC = k_params * np.log(n_train) - 2 * best_logL
+    print(f"AIC (train) = {AIC:.2f}")
+    print(f"BIC (train) = {BIC:.2f}")
 
-    print(f"AIC = {AIC:.2f}")
-    print(f"BIC = {BIC:.2f}")
-
-
-    # m0_opt = 0.39473684210526316
-    # gamma1_opt = 0.01
-    # sigma_opt = 0.01663157894736842
-
-    # Construction de l'espace d'états
+    # 3) Construction de l'espace d'états + matrice de transition
     states, product_cache = build_state_space(K, m0_opt)
-
-    # Calcul des gamma_k = 1 - (1 - gamma1_opt)*b^(k-1), en s'assurant 0 <= gamma_k <= 1
     gamma_list_opt = []
     for k_ in range(1, K+1):
         val = 1.0 - (1.0 - gamma1_opt)**(b**(k_-1))
         gamma_list_opt.append(max(0.0, min(1.0, val)))
-
-    # Matrice de transition
     A = build_transition_matrix(states, K, gamma_list_opt)
 
-    # Filtrage
-    pi_history, loglik_in_sample = forward_filter(returns, sigma_opt, states, product_cache, A)
+    # 4) Filtrage in-sample sur le training pour récupérer pi_{T_train}
+    pi_history_train, loglik_in_sample = forward_filter(train_data, sigma_opt, states, product_cache, A)
+    pi_last_train = pi_history_train[-1, :]  # distribution à la fin du training
 
-    # Volatilité fittée in-sample
-    vol_fit = fitted_volatility(pi_history, sigma_opt, product_cache)
-    #
-    # # Comparaison via Plotly
+    # 5) Volatilité fittée in-sample
+    vol_fit_train = fitted_volatility(pi_history_train, sigma_opt, product_cache)
 
-    #
-    # abs_ret = np.abs(returns)
-    vol = pd.Series(returns).rolling(window=21).std().values # éviter les divisions par 0
-    # vol = volatility(returns)
-    vol = [v if v > 1e-14 else 1e-14 for v in vol]
-    #
-    rmse = np.sqrt(np.mean((vol_fit - vol) ** 2))
-    print("RMSE between fitted volatility and realized volatility =", rmse)
+    # 6) Projection out-of-sample
+    T_test = len(test_data)
+    pi_history_test = np.zeros((T_test, len(states)))
+    vol_forecast = np.zeros(T_test)
 
-    corr_coef = np.corrcoef(vol_fit, vol)[0, 1]
-    print("Correlation coefficient =", corr_coef)
+    pi_t = pi_last_train.copy()  # On part de la distribution de fin de training
+    for t in range(T_test):
+        # 6.1) On fait un forecast de la distribution à t+1 => pi_{t+1} = pi_t @ A
+        pi_pred  = pi_t @ A
 
-    fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: MSM Volatility vs. Volatility |Returns|"])
+        expected_var = sigma_opt**2 * np.sum(pi_pred * product_cache)
+        vol_forecast[t] = np.sqrt(expected_var)
+
+        # 6.3) Incorporation de l’observation test_data[t] pour réajuster pi_t
+        fx = np.zeros(len(states))
+        for j in range(len(states)):
+            vol_j = sigma_opt * np.sqrt(product_cache[j])
+            if vol_j < 1e-14:
+                fx[j] = 1e-300
+            else:
+                z = test_data[t] / vol_j
+                fx[j] = (1.0 / vol_j) * (1.0 / np.sqrt(2 * np.pi)) * np.exp(-0.5 * z ** 2)
+
+        numer = pi_pred * fx
+        denom = numer.sum()
+        if denom < 1e-14:
+            denom = 1e-14
+        pi_t = numer / denom
+
+        # Stocker la distribution filtrée (post-observation)
+        pi_history_test[t, :] = pi_t
+
+    # 7) Calcul de la volatilité réalisée sur la période test
+    #    Par exemple, rolling 21 jours, ou l'écart-type sur x jours. Ici, on fait 21 jours :
+    realized_vol_test = pd.Series(test_data).rolling(window=21).std().values
+    realized_vol_test = np.where(np.isnan(realized_vol_test), 0.0, realized_vol_test)
+
+    # 8) Mesure de la qualité de prévision sur la période de test
+    #    On tronque vol_forecast pour aligner avec realized_vol_test décalée ?
+    #    Ici, on va juste comparer sur les points "valides".
+    valid_idx = np.where(realized_vol_test > 0)[0]  # indices où on a un calcul de vol
+    vol_fore_oos = vol_forecast[valid_idx]
+    vol_real_oos = realized_vol_test[valid_idx]
+
+    rmse_oos = np.sqrt(np.mean((vol_fore_oos - vol_real_oos) ** 2))
+    corr_oos = np.corrcoef(vol_fore_oos, vol_real_oos)[0, 1]
+    print(f"Out-of-sample RMSE = {rmse_oos:.5f}")
+    print(f"Out-of-sample Corr  = {corr_oos:.3f}")
+
+    # 9) Visualisation Plotly
+    fig = make_subplots(rows=1, cols=1, subplot_titles=["Out-of-sample forecast (MSM) vs. Realized Vol"])
+    # Index de test => pour l'affichage, on va juste mettre un range simple
+    test_range = np.arange(T_test)
+
     fig.add_trace(go.Scatter(
-        x=np.arange(len(vol_fit)),
-        y=vol_fit,
+        x=test_range,
+        y=vol_forecast,
         mode='lines',
-        name='Fitted MSM Vol'
+        name='Forecasted MSM Vol'
     ), row=1, col=1)
+
     fig.add_trace(go.Scatter(
-        x=np.arange(len(vol)),
-        y=vol,
+        x=test_range,
+        y=realized_vol_test,
         mode='lines',
-        name='|Returns|'
+        name='Realized Vol (21d rolling)'
     ), row=1, col=1)
 
     fig.update_layout(
-        title=f"LogLik in-sample = {loglik_in_sample:.2f}",
-        xaxis_title="Time index",
-        yaxis_title="Value"
+        title=f"Out-of-sample MSM Vol Forecast vs. Realized Vol\n(RMSE={rmse_oos:.4f}, Corr={corr_oos:.3f})",
+        xaxis_title="Test sample index",
+        yaxis_title="Volatility"
     )
     fig.show()
-    #
-    # garch_model = arch_model(pd.Series(returns), vol='GARCH', p=1, q=1, dist='normal')
-    # garch_fit = garch_model.fit(disp='off')
-    #
-    # # La volatilité conditionnelle quotidienne (généralement en échelle "daily") est obtenue comme suit :
-    # garch_vol = garch_fit.conditional_volatility
-    #
-    # rmse_garch = np.sqrt(np.mean((garch_vol - vol) ** 2))
-    # print("RMSE between GARCH volatility and realized volatility =", rmse_garch)
-    #
-    # corr_coef_garch = np.corrcoef(garch_vol, vol)[0, 1]
-    # print("Correlation coefficient GARCH =", corr_coef_garch)
-    #
-    # fig = make_subplots(rows=1, cols=1, subplot_titles=["In-sample: GARCH Volatility vs. Volatility |Returns|"])
-    # fig.add_trace(go.Scatter(
-    #     x=np.arange(len(garch_vol)),
-    #     y=garch_vol,
-    #     mode='lines',
-    #     name='Fitted GARCH Vol'
-    # ), row=1, col=1)
-    #
-    # fig.add_trace(go.Scatter(
-    #     x=np.arange(len(vol)),
-    #     y=vol,
-    #     mode='lines',
-    #     name='|Returns|'
-    # ), row=1, col=1)
-    #
-    # fig.update_layout(
-    #     title=f"LogLik in-sample = {garch_fit.loglikelihood:.2f}",
-    #     xaxis_title="Time index",
-    #     yaxis_title="Value"
-    # )
-    # fig.show()
 
-    # Best
-    # param(m0, gamma1, sigma) = (0.46842105263157896, 0.01, 0.01663157894736842)
-    # LogLik = 29402.418073294393
-    # RMSE
-    # between
-    # fitted
-    # volatility and realized
-    # volatility = 0.0032690964001980878
-    # Correlation
-    # coefficient = 0.9085561692670849
+    # Best param (m0, gamma1, sigma) = (0.5736842105263157, 0.01, 0.011421052631578946) LogLik = 23826.9989722232

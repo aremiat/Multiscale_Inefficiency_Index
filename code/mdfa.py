@@ -242,9 +242,6 @@ Fq = mfdfa(r_m.values, scales, q_list, order=1)
 
 alpha_width_series = mfdfa_rolling(r_m, window_size, q_list, scales, order=1)
 
-# rs_value = ComputeRS.rs_statistic(returns, window_size=len(returns))
-# hurst_rs = np.log(rs_value) / np.log(len(returns))
-
 rolling_critical = r_m.rolling(window_size).apply(
     lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False)/np.sqrt(len(window)),
     raw=False
@@ -254,40 +251,16 @@ rolling_and_prices = pd.concat([np.log(data), rolling_critical], axis=1, join='i
 rolling_and_prices.columns = ['Price', 'Critical Value']
 rolling_and_prices.to_csv(f"{DATA_PATH}/rolling_and_price.csv")
 
-# rolling_critical = r_m.rolling(window_size).apply(
-#     lambda w: np.log(ComputeRS.rs_statistic(w, len(w))) / np.log(len(w)),
-#     raw=False
-# ).dropna()
-
 alpha_width_series.index = rolling_critical.index
 
 alpha_rolling_price = pd.concat([np.log(data), alpha_width_series, rolling_critical], axis=1, join='inner')
 alpha_rolling_price.columns = ['Price', 'Alpha Width', 'Critical Value']
 alpha_rolling_price.to_csv(f"{DATA_PATH}/alpha_rolling_price.csv")
 
-# window_size = 12
-# # Calcul de la corrélation glissante
-# rolling_corr = rolling_critical.rolling(window=window_size).corr(alpha_width_series)
-# # Création de la figure Plotly
-# fig = go.Figure()
-# fig.add_trace(go.Scatter(
-#     x=rolling_corr.index,
-#     y=rolling_corr.values,
-#     mode='lines',
-#     name=f'Rolling Corr (window={window_size})'
-# ))
-# fig.update_layout(
-#     title='Corrélation glissante entre rolling_critical et alpha_width_series',
-#     xaxis_title='Date',
-#     yaxis_title='Coefficient de corrélation'
-# )
-# fig.show()
 data_rolling = data.loc["1997-08-31": "2025-02-28"]
 rolling_series = rolling_critical[ticker].dropna()
 price_series = data_rolling[ticker].dropna()
 plot_russell_and_critical_alpha(np.log(price_series), rolling_series, alpha_width_series, threshold=1.2)
-
-Fq = mfdfa(r_m.values, scales, q_list, order=1)
 
 # --- Estimation des exposants h(q) ---
 # Pour chaque q, ajuster une régression linéaire sur le log-log (log(Fq(s)) vs log(s))
@@ -301,7 +274,7 @@ h_q = np.array(h_q)
 
 
 hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)')], axis=1)
-# hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum.csv", index=False)
+hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum.csv", index=False)
 
 fig_hq = go.Figure()
 fig_hq.add_trace(go.Scatter(

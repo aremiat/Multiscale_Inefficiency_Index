@@ -59,8 +59,7 @@ class ComputeRS:
             window_size = len(series)
 
         s = series.iloc[len(series) - window_size: len(series)]
-        mean = np.mean(s)
-        y = s - mean
+        y = s - np.mean(s)
         r = np.max(np.cumsum(y)) - np.min(np.cumsum(y))
         sigma = np.sqrt(ComputeRS.compute_S_modified(s, chin))
 

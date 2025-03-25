@@ -402,7 +402,7 @@ we perform a ten year rolling analysis of the modified R/S statistic and compare
             {\pgfplotslegendfromname{global}};
     \end{tikzpicture}
     \caption{Rolling modified R/S statistic (green) et alpha width (purple).
-Les deux métriques sont calculées sur une fenêtre roulante de dix ans avec des données mensuelles.}
+Both metrics are computed using a ten-year rolling window on monthly data.}
 \end{figure}
 
 \FloatBarrier
@@ -686,6 +686,13 @@ The Holder exponent $\alpha(q)$ quantifies the local singularity strength, revea
 The analysis of the multifractal spectrum and Holder exponent offers a detailed and nuanced description of the series' local variability, enhancing our understanding of its underlying dynamics.
 There is a clear negative correlation (-0.35) between the rolling modified R/S statistic (how significant is the hurst exponent) and the rolling holder exponent ($\alpha$) width, indicating that higher rolling modified R/S statistic are associated with narrower spectra.
 This relationship highlights the interplay between long memory and multifractality in financial time series, suggesting that persistent behaviors are linked to more homogeneous fluctuations.
+
+Given these findings, a model capable of simultaneously capturing long memory and multifractal features becomes particularly
+relevant. Traditional GARCH-type models may capture volatility clustering but struggle with multifractal scaling, while
+purely fractal or fractional models may not handle regime shifts well. The Markov Switching Multifractal (MSM) framework introduced par Calvet et Fisher
+(2004) addresses both issues by combining Markov switching dynamics with multifractal volatility, allowing multiple
+states of volatility that evolve stochastically. This makes it well-suited for financial time series
+exhibiting both persistent volatility patterns and complex, multifractal behavior.
 
 
 \section{Markov Switching Multifractal (MSM)}
