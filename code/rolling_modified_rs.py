@@ -14,7 +14,6 @@ if __name__ == "__main__":
     data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)['^RUT']
     log_prices = np.log(data).dropna()
     returns = log_prices.diff().dropna()
-    returns = returns
 
     rolling_modified_rs = returns.rolling(window=120).apply(
         lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False) / np.sqrt(len(window)),
