@@ -129,6 +129,7 @@ if __name__ == "__main__":
     # --- 1. Calcul du momentum sur la Diff
     # 12 mois sans prendre en compte le dernier mois
     momentum = all_p['Diff'].shift(20) / all_p['Diff'].shift(252) - 1
+    # momentum =  (1 +  all_p['Diff']).shift(20).rolling(window=252).apply(np.prod, raw=True) - 1
 
     # on shift de 1 pour avoir le momentum du jour précédent
     rolling_critical = rolling_modified_rs.shift(1)
@@ -234,7 +235,7 @@ if __name__ == "__main__":
                 arrowcolor=arrowcolor
             ))
             prev_pos = curr_pos
-
+    # je suis obligé de le rajouter à la main sinon il n'affiche pas dans le graphe
     annotations.extend([
         dict(
             x="1991-05-20",
@@ -269,7 +270,7 @@ if __name__ == "__main__":
 
     # Trace de la stratégie long/short SPX vs Russel
     fig_backtest.add_trace(
-        go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name="Stratégie Long/Short", line=dict(color='blue')),
+        go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name="Stratégie Long/Neutral", line=dict(color='blue')),
         row=1, col=1
     )
 

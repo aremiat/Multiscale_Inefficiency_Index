@@ -15,7 +15,7 @@ if __name__ == "__main__":
     log_prices = np.log(data).dropna()
     returns = log_prices.diff().dropna()
 
-    rolling_modified_rs = returns.rolling(window=120).apply(
+    rolling_modified_rs = returns.rolling(window=252).apply(
         lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False) / np.sqrt(len(window)),
         raw=False
     ).dropna()
