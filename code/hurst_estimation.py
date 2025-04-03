@@ -43,11 +43,11 @@ if __name__ == "__main__":
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
     fig = go.Figure()
     for ticker in tickers:
-        ticker = ["^RUT"]
         p_ticker = p[ticker].dropna()
         # ticker = ticker.replace("^", "")
         #
-        p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
+        # p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
+        print(p_ticker.first_valid_index())
         log_p = np.log(p_ticker)
         r = log_p.diff().dropna()
         r = r.resample('M').last().dropna()
@@ -93,17 +93,17 @@ if __name__ == "__main__":
         critical_value = Q_tild / np.sqrt(len(r))
 
         h_true = bool(np.round(critical_value, 2) >= 1.620)  # critical values (10, 5, 0.5) are 1.620, 1.747, 2.098
-        print(hurst_rs, hurst_rs_modified)
-        print(np.round(critical_value, 2))
+        # print(hurst_rs, hurst_rs_modified)
+        # print(np.round(critical_value, 2))
         if h_true:
-            print(f"Long memory: {h_true} for {ticker} in {y} - {y + 15}")
-            print(f"Ticker: {ticker} \n")
-            print(f"R/S Statistic: {rs_value} \n")
-            print(f"Modified R/S Statistic: {Q_tild} \n")
-            print(f"Hurst Exponent: {hurst_rs} \n")
-            print(f"Modified Hurst Exponent: {hurst_rs_modified} \n")
-            print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
-            print("Long memory: ", h_true)
+            print(f"Long memory: {h_true} for {ticker}")
+            # print(f"Ticker: {ticker} \n")
+            # print(f"R/S Statistic: {rs_value} \n")
+            # print(f"Modified R/S Statistic: {Q_tild} \n")
+            # print(f"Hurst Exponent: {hurst_rs} \n")
+            # print(f"Modified Hurst Exponent: {hurst_rs_modified} \n")
+            # print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
+            # print("Long memory: ", h_true)
 
     #     df_results = pd.DataFrame({
     #         "Ticker": [ticker],

@@ -107,42 +107,97 @@ def compute_performance_stats(daily_returns: pd.Series, freq=252):
 
     return annual_return, annual_vol, sharpe_ratio, max_drawdown
 
+def non_overlapping_rolling(series, window, func):
+    """
+    Applique la fonction 'func' à des fenêtres non chevauchantes de taille 'window' sur la série.
+    Retourne une Series avec, pour chaque segment, la valeur calculée, indexée par la date
+    du dernier point du segment.
+    """
+    results = []
+    indices = []
+    n_segments = len(series) // window
+    for i in range(n_segments):
+        seg = series.iloc[i * window: (i + 1) * window]
+        results.append(func(seg))
+        indices.append(seg.index[-1])
+    return pd.Series(results, index=indices)
+
 if __name__ == "__main__":
 
     DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
 
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
-    all_prices = pd.concat([p["^GSPC"], p["^RUT"]], axis=1)
-    all_prices = all_prices.loc["1987-10-09": "2024-12-31"]
+    ticker1 = "^GSPC"
+    ticker2 = "^RUT"
+    all_prices = pd.concat([p[ticker1], p[ticker2]], axis=1)
+    all_prices = all_prices.loc["1987-10-09": "2025-02-28"]
     all_p = all_prices.pct_change().dropna()
-    all_p['Diff'] = all_p['^GSPC'] - all_p["^RUT"]
+    all_p['Diff'] = all_p[ticker1] - all_p[ticker2]
     r = all_p['Diff']
-    rebase_p = all_prices.loc["1987-10-09": "2024-12-31"].dropna()
+    rebase_p = all_prices.loc["1987-10-09": "2025-02-28"].dropna()
     rebase_p = rebase_p / rebase_p.iloc[0]
     # rolling de la statistique R/S modifiée 6 mois
-    rolling_modified_rs = r.rolling(120).apply(
-        lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
-            len(window)),
+    # rolling_modified_rs = r.rolling(126).apply(
+    #     lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
+    #         len(window)),
+    #     raw=False
+    # ).dropna()
+
+    # rolling_modified_rs = r.shift(1).rolling(window=120).apply(
+    #     lambda window: np.log(ComputeRS.rs_statistic(window, len(window))) / np.log(len(window)),
+    #     raw=False
+    # ).dropna()
+
+    rolling_modified_rs = r.shift(1).rolling(window=120).apply(
+        lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window), chin=False)) / np.log(len(window)),
         raw=False
     ).dropna()
 
+    # Calcul du rolling modified R/S (non chevauchant) sur 120 jours
+    # rolling_modified_rs = non_overlapping_rolling(
+    #     r.shift(1),
+    #     window=120,
+    #     func=lambda window: np.log(ComputeRS.rs_statistic(window, len(window))) / np.log(len(window))
+    # )
+    #
+    # full_index = pd.date_range(start=rolling_modified_rs.index.min(),
+    #                            end=rolling_modified_rs.index.max(),
+    #                            freq='B')  # 'B' = jours ouvrés (bourse)
+    #
+    # # 2. Réindexer ta série avec ce nouvel index (les jours manquants auront NaN)
+    # rolling_modified_rs_full = rolling_modified_rs.reindex(full_index)
+    #
+    # # 3. Appliquer un forward-fill pour remplir les valeurs manquantes avec la dernière connue
+    # rolling_modified_rs = rolling_modified_rs_full.ffill()
+
+
     # --- 1. Calcul du momentum sur la Diff
     # 12 mois sans prendre en compte le dernier mois
-    momentum = all_p['Diff'].shift(20) / all_p['Diff'].shift(252) - 1
+    # momentum = all_p['Diff'].shift(20) / all_p['Diff'].shift(252) - 1
+    # avg_diff_220 = all_p['Diff'].rolling(window=220).mean()
+
+    # Calcul du momentum en décalant de 20 jours
+    # momentum = avg_diff_220 / avg_diff_220.shift(20) - 1
     # momentum =  (1 +  all_p['Diff']).shift(20).rolling(window=252).apply(np.prod, raw=True) - 1
+    diff_shifted = all_p['Diff'].shift(20)
+
+    # Calculer la moyenne mobile sur 220 jours à partir de la série décalée
+    momentum = diff_shifted.rolling(window=220).mean()
+
+    # momentum = all_p['Diff'].rolling(window=20).mean()
 
     # on shift de 1 pour avoir le momentum du jour précédent
     rolling_critical = rolling_modified_rs.shift(1)
     # --- 2. Définition des positions
     # Création d'un DataFrame positions avec une colonne pour SPX et une pour RUT.
-    positions = pd.DataFrame(index=all_p.index, columns=['SPX', 'RUT'])
+    positions = pd.DataFrame(index=all_p.index, columns=[ticker1, ticker2])
 
     # Par défaut, on est long sur les deux indices (position 0.5)
-    positions['SPX'] = 0.5
-    positions['RUT'] = 0.5
+    positions[ticker1] = 0.5
+    positions[ticker2] = 0.5
 
     # Condition : lorsque la rolling critical > 1.62
-    condition = rolling_critical > 1.62
+    condition = rolling_critical > 0.5
 
     # On aligne le DataFrame "positions" avec "rolling_critical" et "momentum".
     # On prend uniquement les dates communes
@@ -153,43 +208,43 @@ if __name__ == "__main__":
     rolling_critical = rolling_critical.loc[common_dates]
 
     # Pour les dates où la condition est remplie, on ajuste les positions selon le signe du momentum
-    positions.loc[condition & (momentum > 0), 'SPX'] = 1
-    positions.loc[condition & (momentum > 0), 'RUT'] = 0
+    positions.loc[condition & (momentum > 0), ticker1] = 0.8
+    positions.loc[condition & (momentum > 0), ticker2] = 0.20
 
-    positions.loc[condition & (momentum < 0), 'SPX'] = 0
-    positions.loc[condition & (momentum < 0), 'RUT'] = 1
+    positions.loc[condition & (momentum < 0), ticker1] = 0.20
+    positions.loc[condition & (momentum < 0), ticker2] = 0.8
 
     # --- 2bis. Application d'un minimum de 1 an de maintien avant reswitch ---
     min_holding_days = 360
     # On va créer une nouvelle série de positions qui respecte la contrainte
     final_positions = positions.copy()
-    last_switch_date = positions.index[0]
-    final_positions.loc[positions.index[0]] = positions.loc[positions.index[0]]
-
-    for date in positions.index[1:]:
-        # Si moins de 252 jours se sont écoulés depuis le dernier switch, on conserve la position précédente
-        if (date - last_switch_date).days < min_holding_days:
-            final_positions.loc[date] = final_positions.loc[last_switch_date]
-        else:
-            # Si le signal indique un changement par rapport à la dernière position maintenue, on met à jour
-            if not (positions.loc[date] == final_positions.loc[last_switch_date]).all():
-                final_positions.loc[date] = positions.loc[date]
-                last_switch_date = date
-            else:
-                final_positions.loc[date] = final_positions.loc[last_switch_date]
+    # last_switch_date = positions.index[0]
+    # final_positions.loc[positions.index[0]] = positions.loc[positions.index[0]]
+    #
+    # for date in positions.index[1:]:
+    #     # Si moins de 252 jours se sont écoulés depuis le dernier switch, on conserve la position précédente
+    #     if (date - last_switch_date).days < min_holding_days:
+    #         final_positions.loc[date] = final_positions.loc[last_switch_date]
+    #     else:
+    #         # Si le signal indique un changement par rapport à la dernière position maintenue, on met à jour
+    #         if not (positions.loc[date] == final_positions.loc[last_switch_date]).all():
+    #             final_positions.loc[date] = positions.loc[date]
+    #             last_switch_date = date
+    #         else:
+    #             final_positions.loc[date] = final_positions.loc[last_switch_date]
 
     # Utilisation de final_positions pour le backtest
-    portfolio_returns = final_positions['SPX'] * all_p['^GSPC'] + final_positions['RUT'] * all_p['^RUT']
+    portfolio_returns = final_positions[ticker1] * all_p[ticker1] + final_positions[ticker2] * all_p[ticker2]
     cumulative_returns = (1 + portfolio_returns).cumprod()
 
     # Calcul des portefeuilles de comparaison
-    sp500_returns = all_p['^GSPC']
+    sp500_returns = all_p[ticker1]
     sp500_cumulative = (1 + sp500_returns).cumprod()
 
-    russel_returns = all_p["^RUT"]
+    russel_returns = all_p[ticker2]
     russel_cumulative = (1 + russel_returns).cumprod()
 
-    portfolio_50_50_returns = 0.5 * all_p['^GSPC'] + 0.5 * all_p["^RUT"]
+    portfolio_50_50_returns = 0.5 * all_p[ticker1] + 0.5 * all_p[ticker2]
     portfolio_50_50_cumulative = (1 + portfolio_50_50_returns).cumprod()
 
 
@@ -197,72 +252,81 @@ if __name__ == "__main__":
 
 
     # --- 3. Détection des changements de position et création des annotations ---
-    annotations = []
-    # On se base sur final_positions pour détecter les changements, en itérant à partir du deuxième jour
-    prev_pos = final_positions.iloc[0]
-    for date in final_positions.index[1:]:
-        curr_pos = final_positions.loc[date]
-        if not (curr_pos == prev_pos).all():
-            # Détermine le nouvel état sous forme de tuple (SPX, RUT)
-            state = (curr_pos['SPX'], curr_pos['RUT'])
-            if state == (1, 0):
-                text = "Switch: Long SPX, Neutral RUT"
-                arrowcolor = "green"
-                ay = -30
-            elif state == (0, 1):
-                text = "Switch: Neutral SPX, Long RUT"
-                arrowcolor = "red"
-                ay = 30
-            elif state == (0.5, 0.5):
-                text = "Switch: Neutral"
-                arrowcolor = "blue"
-                ay = -20
-            else:
-                text = "Switch: Long SPX, Long RUT"
-                arrowcolor = "purple"
-                ay = 20
+    # annotations = []
+    # # On se base sur final_positions pour détecter les changements, en itérant à partir du deuxième jour
+    # prev_pos = final_positions.iloc[0]
+    # for date in final_positions.index[1:]:
+    #     curr_pos = final_positions.loc[date]
+    #     if not (curr_pos == prev_pos).all():
+    #         # Détermine le nouvel état sous forme de tuple (SPX, RUT)
+    #         state = (curr_pos[ticker1], curr_pos[ticker2])
+    #         if state == (0.8, 0.2):
+    #             text = f"Switch: Long {ticker1}, Neutral {ticker2}"
+    #             arrowcolor = "green"
+    #             ay = -30
+    #         elif state == (0.2, 0.8):
+    #             text = f"Switch: Neutral {ticker1}, Long {ticker2}"
+    #             arrowcolor = "red"
+    #             ay = 30
+    #         elif state == (0.5, 0.5):
+    #             text = "Switch: Neutral"
+    #             arrowcolor = "blue"
+    #             ay = -20
+    #         else:
+    #             text = f"Switch: Long {ticker1}, Long {ticker2}"
+    #             arrowcolor = "purple"
+    #             ay = 20
+    #
+    #         annotations.append(dict(
+    #             x=date,
+    #             y=cumulative_returns.loc[date],
+    #             xref="x",
+    #             yref="y",
+    #             text=text,
+    #             showarrow=True,
+    #             arrowhead=2,
+    #             ax=0,
+    #             ay=ay,
+    #             arrowcolor=arrowcolor
+    #         ))
+    #         prev_pos = curr_pos
+    # # je suis obligé de le rajouter à la main sinon il n'affiche pas dans le graphe
+    # # annotations.extend([
+    # #     dict(
+    # #         x="1991-05-20",
+    # #         y=1.3259,
+    # #         xref="x",
+    # #         yref="y",
+    # #         text="Switch: Neutral SPX, Long RUT",
+    # #         showarrow=True,
+    # #         arrowhead=2,
+    # #         ax=0,
+    # #         ay=30,
+    # #         arrowcolor='red'
+    # #     ),
+    # #     dict(
+    # #         x="1992-05-14",
+    # #         y=1.5374,
+    # #         xref="x",
+    # #         yref="y",
+    # #         text="Switch: Neutral",
+    # #         showarrow=True,
+    # #         arrowhead=2,
+    # #         ax=0,
+    # #         ay=-20,
+    # #         arrowcolor='blue'
+    # #     )
+    # # ])
+    # print(f"Nombre de changements de position : {len(annotations)}")
 
-            annotations.append(dict(
-                x=date,
-                y=cumulative_returns.loc[date],
-                xref="x",
-                yref="y",
-                text=text,
-                showarrow=True,
-                arrowhead=2,
-                ax=0,
-                ay=ay,
-                arrowcolor=arrowcolor
-            ))
-            prev_pos = curr_pos
-    # je suis obligé de le rajouter à la main sinon il n'affiche pas dans le graphe
-    annotations.extend([
-        dict(
-            x="1991-05-20",
-            y=1.3259,
-            xref="x",
-            yref="y",
-            text="Switch: Neutral SPX, Long RUT",
-            showarrow=True,
-            arrowhead=2,
-            ax=0,
-            ay=30,
-            arrowcolor='red'
-        ),
-        dict(
-            x="1992-05-14",
-            y=1.5374,
-            xref="x",
-            yref="y",
-            text="Switch: Neutral",
-            showarrow=True,
-            arrowhead=2,
-            ax=0,
-            ay=-20,
-            arrowcolor='blue'
-        )
-    ])
-
+    fee_rate = 0.0005
+    # Calcul des frais de transaction
+    transaction_costs = (final_positions.diff().abs() * all_p).sum(axis=1) * fee_rate
+    transaction_costs = transaction_costs.fillna(0)  # Remplacer les NaN par 0
+    # Ajout des frais de transaction aux rendements du portefeuille
+    portfolio_returns = portfolio_returns - transaction_costs
+    # Recalcul des rendements cumulés
+    cumulative_returns = (1 + portfolio_returns).cumprod()
 
     # --- 4. Visualisation des résultats avec comparaison des portefeuilles et annotations ---
     fig_backtest = make_subplots(rows=2, cols=1, shared_xaxes=True,
@@ -270,25 +334,25 @@ if __name__ == "__main__":
 
     # Trace de la stratégie long/short SPX vs Russel
     fig_backtest.add_trace(
-        go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name="Stratégie Long/Neutral", line=dict(color='blue')),
+        go.Scatter(x=cumulative_returns.index, y=cumulative_returns, mode='lines', name="Stratégie Over/Under", line=dict(color='blue')),
         row=1, col=1
     )
 
     # Portefeuille long only SP500
     fig_backtest.add_trace(
-        go.Scatter(x=sp500_cumulative.index, y=sp500_cumulative, mode='lines', name="Long Only SP500", line=dict(color='purple')),
+        go.Scatter(x=sp500_cumulative.index, y=sp500_cumulative, mode='lines', name=f"Long Only {ticker1}", line=dict(color='purple')),
         row=1, col=1
     )
 
     # Portefeuille long only Russel
     fig_backtest.add_trace(
-        go.Scatter(x=russel_cumulative.index, y=russel_cumulative, mode='lines', name="Long Only Russel", line=dict(color='magenta')),
+        go.Scatter(x=russel_cumulative.index, y=russel_cumulative, mode='lines', name=f"Long Only {ticker2}", line=dict(color='magenta')),
         row=1, col=1
     )
 
     # Portefeuille 50/50 SP500 & Russel
     fig_backtest.add_trace(
-        go.Scatter(x=portfolio_50_50_cumulative.index, y=portfolio_50_50_cumulative, mode='lines', name="50/50 SPX & Russel", line=dict(color='brown')),
+        go.Scatter(x=portfolio_50_50_cumulative.index, y=portfolio_50_50_cumulative, mode='lines', name=f"50/50 {ticker1} & {ticker2}", line=dict(color='brown')),
         row=1, col=1
     )
 
@@ -300,19 +364,19 @@ if __name__ == "__main__":
 
     # Seuil de Rolling Critical
     fig_backtest.add_trace(
-        go.Scatter(x=rolling_critical.index, y=[1.62]*len(rolling_critical), mode='lines', name="Seuil 1.62", line=dict(color='red', dash='dash')),
+        go.Scatter(x=rolling_critical.index, y=[0.5]*len(rolling_critical), mode='lines', name="Seuil 0.5", line=dict(color='red', dash='dash')),
         row=2, col=1
     )
 
 
     # Ajout des annotations pour les changements de position
-    fig_backtest.update_layout(annotations=annotations)
+    # fig_backtest.update_layout(annotations=annotations)
 
-    fig_backtest.update_layout(title="Backtest SPX vs Russel & Comparaisons : Stratégie, Long Only, 50/50 (Minimum 1 an de maintien)",
+    fig_backtest.update_layout(title=f"Backtest {ticker1} vs {ticker2} & Comparaisons : Stratégie, Long Only, Over/Under",
                                  showlegend=True)
     fig_backtest.update_xaxes(title_text="Date", row=2, col=1)
     fig_backtest.update_yaxes(title_text="Cumulative Return", row=1, col=1)
-    fig_backtest.update_yaxes(title_text="Rolling Critical", row=2, col=1)
+    fig_backtest.update_yaxes(title_text="Rolling Hurst", row=2, col=1)
     fig_backtest.show()
 
 

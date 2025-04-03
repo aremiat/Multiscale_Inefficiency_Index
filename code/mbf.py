@@ -20,10 +20,7 @@ def fbm(T, H, N=1000):
     X = np.dot(L, W)  # Fractional Brownian motion
     return times, X
 
-
-
 if __name__ == "__main__":
-
     # Create a figure with multiple subplots
     fig = sp.make_subplots(rows=2, cols=5, subplot_titles=[f"H = {H}" for H in H_VALUES] + ["Autocorrelation"] * 5)
 
@@ -32,13 +29,28 @@ if __name__ == "__main__":
         times, X = fbm(T=1, H=H, N=1000)
         autocorr = acf(X, nlags=40, fft=True)
 
-        fig.add_trace(go.Scatter(x=times, y=X, mode='lines', name=f"H={H}"), row=1, col=i + 1)
+        # Plot fBm trajectory with a black line
+        fig.add_trace(
+            go.Scatter(
+                x=times, y=X, mode='lines', name=f"H={H}",
+                line=dict(color='black')
+            ),
+            row=1, col=i + 1
+        )
 
-        fig.add_trace(go.Bar(x=np.arange(len(autocorr)), y=autocorr, name=f"ACF H={H}"), row=2, col=i + 1)
+        # Plot autocorrelation as black bars
+        fig.add_trace(
+            go.Bar(
+                x=np.arange(len(autocorr)), y=autocorr, name=f"ACF H={H}",
+                marker_color='black'
+            ),
+            row=2, col=i + 1
+        )
 
-    fig.update_layout(title="Fractional Brownian Motion & Autocorrelation",
-                      height=800, width=1200, showlegend=False)
+    fig.update_layout(
+        title="Fractional Brownian Motion & Autocorrelation",
+        height=800, width=1200, showlegend=False
+    )
 
     pio.write_image(fig, f"{IMAGE_PATH}/fdm_autocorr.png", scale=5, width=1000, height=1000)
-
     fig.show()

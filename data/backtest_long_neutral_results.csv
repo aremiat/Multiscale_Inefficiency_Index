@@ -1,5 +1,7 @@
-Stratégie,Annual Return (%),Annual Vol (%),Sharpe,Max Drawdown (%)
-Long/Neutral (Crit. & Mom),8.67,19.09,0.53,-57.99
-Long Only SPX,8.58,17.57,0.56,-56.78
-Long Only Russell,7.56,20.91,0.45,-59.89
-Portefeuille 50/50,8.22,18.55,0.52,-57.99
+Stratégie,Annual Return,Annual Vol,Sharpe,Max Drawdown
+Modif_Overlap_120,8.82,18.7,0.55,-59.27
+Trad_Overlap_120,9.02,18.85,0.55,-58.42
+Modif_NonOverlap_120,8.53,19.1,0.52,-58.22
+Long Only SP500,8.66,17.55,0.56,-56.78
+Long Only Russell,7.6,20.89,0.46,-59.89
+Portefeuille 50/50,8.29,18.53,0.52,-57.99

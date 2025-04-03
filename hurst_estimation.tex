@@ -25,6 +25,16 @@
 
 \usetikzlibrary{backgrounds}
 
+% Configuration de pgfplotstable
+\pgfplotstableset{
+    col sep=comma, % Colonnes séparées par des virgules
+    string type,
+    every head row/.style={
+        before row=\toprule,
+        after row=\midrule},
+    every last row/.style={after row=\bottomrule},
+}
+
 \title{
     \hspace*{-12cm}
     \vspace*{1cm}
@@ -168,7 +178,7 @@ The R/S statistic, $Q_T$, is always positive. In various papers, Mandelbrot and 
 The R/S analysis leads to the Hurst exponent, where $T$ is the number of observations in the series.
 
 \[
-H = \frac{\log($Q_T$)}{\log(T)}
+H = \frac{\log(Q_T)}{\log(T)}
 \]
 
 \subsection{Modified R/S Analysis}
@@ -413,9 +423,8 @@ Both metrics are computed using a ten-year rolling window on monthly data.}
 
 Therefore, only one period in 2009 exhibits long memory, while the rest of the series remains below the critical value.
 The long memory properties of the Russell 2000 index are not stable over time and may be influenced by
-structural changes or market dynamics. The presence of long memory in the series is not a consistent feature.
-Given that the presence of long memory is not a consistent feature of the series, it is necessary to delve into a more
-nuanced analysis.
+structural changes or market dynamics. Given that the presence of long memory is not a consistent feature of the series,
+it is necessary to delve into a more nuanced analysis.
 
 
 Specifically, we will employ Multifractal Detrended Fluctuation Analysis (MF-DFA) to investigate the local behavior of
@@ -430,9 +439,9 @@ properties and provide deeper insights into the complex, scale-dependent dynamic
 The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series. The procedure can be summarized in five steps, as described below:
 
 \begin{enumerate}
-    \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean $\langle x \rangle$. We build the profile
+    \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean  \(\bar{x}\). We build the profile
     \[
-        Y(i) \;=\; \sum_{k=1}^{i} \bigl(x_k \;-\; \langle x \rangle\bigr),
+        Y(i) \;=\; \sum_{k=1}^{i} \bigl(x_k \;-\; \bar{x}\bigr),
         \quad i \;=\; 1,2,\dots,N.
     \]
     This cumulative sum helps to capture the local fluctuations in the data.
@@ -473,31 +482,6 @@ The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of 
 For \emph{monofractal} series, $h(q)$ is approximately constant for all $q$.
 For \emph{multifractals} series, $h(q)$ strongly depends on q, revealing heterogeneity in the scaling of fluctuations.
 
-
-\subsection{Holder Exponent}
-The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
-\begin{equation}
-\alpha(q) = h(q) + q h'(q).
-\end{equation}
-where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
-This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
-
-\subsection{Singularity Spectrum}
-The multifractal spectrum $f(\alpha)$ provides a measure of the fractal dimension of subsets characterized by a given $\alpha$:
-\begin{equation}
-f(\alpha) = q [\alpha(q) - h(q)] + 1.
-\end{equation}
-This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
-
-The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
-\begin{itemize}
-    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
-    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
-    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
-\end{itemize}
-Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
-
-
 \subsection{Multifractal Spectrum}
 
 \begin{figure}[htbp]
@@ -527,7 +511,7 @@ Thus, the multifractal approach offers a detailed and nuanced description of a s
                 y=h(q),
                 col sep=comma
             ]
-            {data/multifractal_spectrum.csv};
+            {data/multifractal_spectrum_daily_rut.csv};
             \legend{Multifractal Spectrum}
         \end{axis}
     \end{tikzpicture}
@@ -541,6 +525,32 @@ The curvature of the spectrum indicates the presence of heterogeneity in the dis
 Lower values of $q$ emphasize small fluctuations, while higher values highlight high fluctuations.
 Therefore, this spectrum showcases that during periods of small fluctuations the series is likely to exhibits long-term memory,
 whether for drastic changes in the series behavior the hurst exponent is likely not to be high.
+
+
+\subsection{Holder Exponent}
+The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
+\begin{equation}
+\alpha(q) = h(q) + q h'(q).
+\end{equation}
+where $h'(q)$ is the derivative of $h(q)$ with respect to $q$. This exponent quantifies the intensity of local singularities: lower values of $\alpha$ indicate highly irregular (or sharply singular) behavior, while higher values correspond to smoother regions of the signal. Thus, the Hölder exponent reveals the heterogeneity of fluctuations within the signal.
+This exponent describes the degree of singularity in different parts of the series, revealing the heterogeneity of fluctuations.
+
+\subsection{Singularity Spectrum}
+The multifractal spectrum $f(\alpha)$ provides a measure of the fractal dimension of subsets characterized by a given $\alpha$:
+\begin{equation}
+f(\alpha) = q [\alpha(q) - h(q)] + 1.
+\end{equation}
+This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
+
+The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
+\begin{itemize}
+    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
+    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
+    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
+\end{itemize}
+Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
+
+
 
 \begin{figure}[htbp]
     \centering
@@ -569,11 +579,11 @@ whether for drastic changes in the series behavior the hurst exponent is likely 
                 y=f_alpha,
                 col sep=comma
             ]
-            {data/f_alpha_alpha.csv};
+            {data/f_alpha_alpha_Russell 2000.csv};
             \legend{Multifractal Spectrum}
         \end{axis}
     \end{tikzpicture}
-    \caption{Multifractal spectrum $f(\alpha)$ for Russell 2000 returns.}
+    \caption{Multifractal spectrum $f(\alpha)$ original vs shuffle for Russell 2000 returns.}
 \end{figure}
 
 \FloatBarrier
@@ -591,6 +601,43 @@ short- to medium-term correlation, $\alpha = 0.5$ aligns with a standard Brownia
 and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.65 implies a
 moderately rough signal—neither purely random nor overly smooth—highlighting the presence of multifractal characteristics.
 This points to the coexistence of multiple scaling behaviors, where volatility clustering arises across different temporal scales.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            xlabel={$\alpha$},
+            ylabel={$f(\alpha)$},
+            grid=major,
+            legend style={
+                font=\footnotesize,
+                at={(0.5,-0.2)},
+                anchor=north,
+                legend columns=3
+            }
+        ]
+            \addplot[
+                blue,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha,
+                y=f_alpha,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_SP500.csv};
+            \legend{Multifractal Spectrum}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Multifractal spectrum $f(\alpha)$ original vs shuffled for SP500 returns.}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{Rolling Critical value and Alpha Width}
 
@@ -699,6 +746,22 @@ states of volatility that evolve stochastically. This makes it well-suited for f
 exhibiting both persistent volatility patterns and complex, multifractal behavior.
 
 
+\subsection{backtest}
+
+\begin{table}[H]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annual Return,Annual Vol,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_long_neutral_results.csv}
+    \caption{Performance metrics of the under/over strategies (20 bps transaction fees) compared to the long only SP500 portfolio, long only Russell 2000 portfolio, 50/50 portfolio.}
+    \label{tab:performance_table}
+\end{table}
+
 \section{Markov Switching Multifractal (MSM)}
 \label{sec:msm}
 
@@ -715,7 +778,7 @@ where $\sigma$ is a global scale parameter and $M_{k,t}$ denotes the multiplier 
     \label{eq:gamma_k}
     \gamma_k \;=\; 1 \;-\; \bigl(1 - \gamma_1\bigr)^{b^{\,k-1}},
 \end{equation}
-for some $0 < \gamma_1 < 1$ and $b \in  [0,1]$. Consequently, higher levels $k$ switch more frequently, introducing persistent high-frequency shocks to volatility.
+for some $0 < \gamma_1 < 1$ and $b \in  [1,+\infty]$. Consequently, higher levels $k$ switch more frequently, introducing persistent high-frequency shocks to volatility.
 
 
 \subsection{Probability of Switching}
