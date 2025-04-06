@@ -235,7 +235,7 @@ critical value table provided by Lo (1991), shown in Table~\ref{table:critical_v
 
 \subsection{Data}
 
-The data used in this analysis is montlhy and consists of the historical closing prices of five major stock market indices: the S\&P 500,
+The data used in this analysis is monthly and consists of the historical closing prices of five major stock market indices: the S\&P 500,
 Russell 2000, FTSE 100, Nikkei 225, and the DAX.
 The data spans the period from September 10th, 1987, to February 28, 2025, and was downloaded from Yahoo Finance.
 
@@ -364,7 +364,9 @@ properties and provide deeper insights into the complex, scale-dependent dynamic
 
 \section{Multifractal Detrended Fluctuation Analysis}
 
-The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard DFA approach designed to detect multifractality in time series proposed by (Jan W. Kantelhardt (2002)). The procedure can be summarized in five steps, as described below:
+The Multifractal Detrended Fluctuation Analysis (MF-DFA) is a generalization of the standard Detrended Fluctuation
+Analysis approach designed to detect multifractality in time series proposed by (Jan W. Kantelhardt (2002)).
+The procedure can be summarized in five steps, as described below:
 
 \begin{enumerate}
     \item \textbf{Profile construction.} Given a series $\{x_k\}_{k=1}^N$, we define its mean  \(\bar{x}\). We build the profile
@@ -518,7 +520,7 @@ share similar multifractal characteristics, subtle variations exist that could r
 Nonetheless, further analysis incorporating alternative methods and longer timeframes is required to robustly confirm
 these preliminary observations and to better understand the statistical significance of the multifractal effects observed.
 
-From the MF-DFA analysis, we can also compute the holder exponent and singularity spectrum.
+From the MF-DFA analysis, we can also compute the Holder exponent and singularity spectrum.
 
 \subsection{Holder exponent}
 The Holder exponent $\alpha(q)$ characterizes the local singularity strength of a signal and is obtained using the Legendre transform of $h(q)$:
@@ -537,13 +539,11 @@ f(\alpha) = q [\alpha(q) - h(q)] + 1.
 \end{equation}
 This spectrum describes the distribution of singularities in the time series. A wider spectrum indicates stronger multifractality.
 
-The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems. In particular, it enables one to:
-\begin{itemize}
-    \item Identify and quantify regions of strong singularity, which may correspond to extreme events or sudden changes in dynamics.
-    \item Describe the distribution and frequency of irregular behaviors in time series or spatial data.
-    \item Enhance the modeling of signals exhibiting multifractal structures, such as financial time series, physiological signals, or natural phenomena.
-\end{itemize}
-Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing essential insights for understanding and predicting its underlying dynamics. \\
+The analysis using the Hölder exponent and singularity spectrum is a powerful tool for studying complex systems.
+In particular, it enables one to identify and quantify regions of strong singularity, which may correspond to extreme
+events or sudden changes in dynamics and to describe the distribution and frequency of irregular behaviors in time series.
+Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing
+essential insights for understanding and predicting its underlying dynamics. \\
 
 We can distinguish two main contributions to the multifractal spectrum:
 \[
@@ -553,10 +553,10 @@ We can distinguish two main contributions to the multifractal spectrum:
 Therefore, in the literature, the multifractality is often reffered as two types :
 
 Type I multifractality stems from long-range correlations within the time series, whereas Type II multifractality arises
-from a broad probability density function of the series' values. This distinction enables us to identify and quantify
+from a broad probability density function of the series values. This distinction enables us to identify and quantify
 the type of multifractality present. By shuffling the series, we effectively eliminate the long-range correlations,
 retaining only the influence of the value distribution. In an ideal monofractal series, the Hölder exponent would peak
-at 0.5; thus, the difference between the exponents of the original and shuffled series reflects the contribution of
+at 0.5 thus, the difference between the exponents of the original and shuffled series reflects the contribution of
 long-range correlations to the multifractality. Moreover, if the shuffled series still exhibits a Hölder exponent
 greater than 0.5, this suggests the presence of Type II multifractality.
 
@@ -733,7 +733,7 @@ We start with a portfolio of 50\% Russell 2000 index and 50\% S\&P 500 index.
         a value above 0.5 and negative momentum indicates an under exposition to the S\&P 500 (20\% of the portfolio) and 
         over exposition to the Russell 2000 (80\% of the portfolio),
         and below 0.5 indicates a neutral position (50\% S\&P 500 and 50\% Russell 2000).
-        The backtest period is from 1998-03-28 to 2025-02-28.}
+        The backtest period is from 1988-03-28 to 2025-02-28.}
     \label{fig:cumulative_performance}
 \end{figure}
 
