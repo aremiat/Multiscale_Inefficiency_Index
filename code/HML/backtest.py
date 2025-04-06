@@ -133,6 +133,7 @@ if __name__ == "__main__":
     all_prices = all_prices.loc["1987-10-09": "2025-02-28"]
     all_p = all_prices.pct_change().dropna()
     all_p['Diff'] = all_p[ticker1] - all_p[ticker2]
+    all_p = all_p.loc["2018-12-31": "2025-02-28"]
     r = all_p['Diff']
     rebase_p = all_prices.loc["1987-10-09": "2025-02-28"].dropna()
     rebase_p = rebase_p / rebase_p.iloc[0]
@@ -170,33 +171,14 @@ if __name__ == "__main__":
     # # 3. Appliquer un forward-fill pour remplir les valeurs manquantes avec la dernière connue
     # rolling_modified_rs = rolling_modified_rs_full.ffill()
 
-
-    # --- 1. Calcul du momentum sur la Diff
-    # 12 mois sans prendre en compte le dernier mois
-    # momentum = all_p['Diff'].shift(20) / all_p['Diff'].shift(252) - 1
-    # avg_diff_220 = all_p['Diff'].rolling(window=220).mean()
-
-    # Calcul du momentum en décalant de 20 jours
-    # momentum = avg_diff_220 / avg_diff_220.shift(20) - 1
-    # momentum =  (1 +  all_p['Diff']).shift(20).rolling(window=252).apply(np.prod, raw=True) - 1
-    diff_shifted = all_p['Diff'].shift(20)
-
-    # Calculer la moyenne mobile sur 220 jours à partir de la série décalée
+    diff_shifted = r.shift(20)
     momentum = diff_shifted.rolling(window=220).mean()
-
-    # momentum = all_p['Diff'].rolling(window=20).mean()
-
     # on shift de 1 pour avoir le momentum du jour précédent
-    rolling_critical = rolling_modified_rs.shift(1)
-    # --- 2. Définition des positions
-    # Création d'un DataFrame positions avec une colonne pour SPX et une pour RUT.
+    # on doit shift ?
+    rolling_critical = rolling_modified_rs
     positions = pd.DataFrame(index=all_p.index, columns=[ticker1, ticker2])
-
-    # Par défaut, on est long sur les deux indices (position 0.5)
     positions[ticker1] = 0.5
     positions[ticker2] = 0.5
-
-    # Condition : lorsque la rolling critical > 1.62
     condition = rolling_critical > 0.5
 
     # On aligne le DataFrame "positions" avec "rolling_critical" et "momentum".
@@ -215,7 +197,7 @@ if __name__ == "__main__":
     positions.loc[condition & (momentum < 0), ticker2] = 0.8
 
     # --- 2bis. Application d'un minimum de 1 an de maintien avant reswitch ---
-    min_holding_days = 360
+    # min_holding_days = 360
     # On va créer une nouvelle série de positions qui respecte la contrainte
     final_positions = positions.copy()
     # last_switch_date = positions.index[0]
@@ -319,7 +301,7 @@ if __name__ == "__main__":
     # # ])
     # print(f"Nombre de changements de position : {len(annotations)}")
 
-    fee_rate = 0.0005
+    fee_rate = 0.005
     # Calcul des frais de transaction
     transaction_costs = (final_positions.diff().abs() * all_p).sum(axis=1) * fee_rate
     transaction_costs = transaction_costs.fillna(0)  # Remplacer les NaN par 0
@@ -428,4 +410,4 @@ if __name__ == "__main__":
 
     print("=== Tableau Récapitulatif des Stratégies ===")
     print(df_results)
-    df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
+    # df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)

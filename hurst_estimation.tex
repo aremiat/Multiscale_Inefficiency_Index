@@ -40,7 +40,7 @@
     \vspace*{1cm}
     \protect\\
     \vspace*{1cm}
-    \textbf{Long Term Memory Processes Using Hurst Estimation}
+    \textbf{Long term memory processes using Hurst exponent}
 }
 
 \author{Remiat Alexandre}
@@ -68,9 +68,9 @@
 \section*{Abstract}
 
 This paper presents a study on long-term memory processes in financial time series using Hurst estimation methods,
-specifically the traditional R/S statistic (Rescaled Range analysis) and the modified R/S statistic.
+specifically the traditional R/S statistic (Rescaled Range analysis) and the modified R/S statistic (M-R/S).
 The R/S statistic and the modified R/S statistic are computed to determine the presence of long-range dependence in the time series data.
-Unfortunately, the results are not very conclusive, as the single Hurst exponent computed for the whole series is not a very robust statistic and can be
+Unfortunately, the results are not very conclusive, as the single static Hurst exponent computed for the whole series is not a very robust statistic and can be
 influenced by the length of the series, the presence of trends, or structural breaks.
 To address these issues, we employed the Multifractal Detrended Fluctuation Analysis (MF-DFA) to investigate the
 local behavior of the series and characterize its singularity spectrum. The multifractal spectrum reveals that the series
@@ -101,7 +101,7 @@ to the Hurst exponent and \( H \in [0, 1] \) with the following properties:
 
 \begin{itemize}
     \item \( X_H(0) = 0 \).
-    \item The increments \( X_H(t) - X_H(s) \) follow a normal distribution with mean zero and variance \sigma^2:
+    \item The increments \( X_H(t) - X_H(s) \) follow a normal distribution with mean zero and variance \( \sigma^2 \):
     \begin{equation}
         \mathbb{E} \left[ (X_H(t) - X_H(s))^2 \right] = \sigma^2|t - s|^{2H},
     \end{equation}
@@ -155,13 +155,13 @@ of lag for the autocorrelation is 40.
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/fdm_autocorr}
-    \caption{Simulation of Fractional Brownian Motion with different Hurst exponent and its autocorrelation function.}
+    \caption{Simulation of fractional Brownian motion with different Hurst exponent and its autocorrelation function.}
     \label{fig:fbm_autocorr}
 \end{figure}
 
 \FloatBarrier
 
-The behavior of the fractional Brownian motion (fBm) varies significantly with the Hurst exponent \( H \).
+The behavior of the fractional Brownian motion varies significantly with the Hurst exponent \( H \).
 
 When \( H \) is small (close to 0), the fBm exhibits high local variability, resulting in a highly granular trajectory with frequent fluctuations. The autocorrelation of increments decays rapidly, indicating that future values are weakly influenced by past values. This suggests a short-memory process, similar to standard Brownian motion.
 
@@ -169,7 +169,6 @@ As \( H \) increases, the autocorrelation decays more slowly, meaning that past 
 
 In summary, a lower \( H \) leads to a more irregular and noisy path, characteristic of short-memory processes, while a higher \( H \) results in a smoother trajectory with stronger persistence.
 
-\subsection{Hurst exponent Calculation}
 \subsection{R/S and modified R/S Analysis}
 The R/S (Rescaled Range) analysis, introduced by Hurst and developed in various works by Mandelbrot, is certainly the most well-known method for estimating the Hurst exponent $H$. This statistic is defined as the range of the partial sums of deviations from the mean of a time series divided by its standard deviation. Consider a time series $Y_t$, $t = 1, ..., T$, with mean $\bar{Y}$. The range $R$ is defined as:
 
@@ -184,7 +183,7 @@ Q_T = \frac{R}{s_T} = \frac{\max_{1 \leq j \leq T} \left( Y_j - \bar{Y} \right) 
 \]
 
 
-Empirical studies by Mandelbrot and Wallis (1969e) have shown that \( Q_T \) scales with the number of observations \( T \) according to
+Empirical studies by Mandelbrot and Wallis (1969b) have shown that \( Q_T \) scales with the number of observations \( T \) according to
 \[
 Q_T \sim T^H,
 \]
@@ -313,7 +312,9 @@ more robust and reliable conclusions.
         columns/long memory/.style={column name=long memory, fixed, precision=3},
     ] {data/frequencies_results.csv}
     \caption{Results for Hurst exponent, modified Hurst exponent, critical value at 10\% and rejection of the null
-    hypothesis of long memory, different frequencies daily, weekly and montlhy.}
+    hypothesis of long memory, different frequencies daily, weekly and montlhy. The Hurst exponent can be equal for the R/S and
+modified R/S methods in the case where the autocorrelation coefficients are less than zero, in this
+case we set q equal to 0 and therefore the R/S and modified R/S share the same formula.}
     \label{tab:frequencies_results}
 \end{table}
 
@@ -334,7 +335,9 @@ more robust and reliable conclusions.
         columns/long memory/.style={column name=long memory, fixed, precision=3},
     ] {data/timestamp_analysis.csv}
     \caption{Results for Hurst exponent, modified Hurst exponent, critical value at 10\% and rejection of the null
-    hypothesis of long memory, different estimation periods.}
+    hypothesis of long memory, different estimation periods. The Hurst exponent can be equal for the R/S and
+modified R/S methods in the case where the autocorrelation coefficients are less than zero, in this
+case we set q equal to 0 and therefore the R/S and modified R/S share the same formula.}
     \label{tab:timestamp_analysis}
 \end{table}
 
@@ -701,20 +704,20 @@ strategy based on the Hurst exponent and the momentum of the series.
 
 The strategy is based on the Hurst exponent and the momentum of the series. The idea is to exploit the long-term memory
 properties and distinct multifractal characteristics of the Russell 2000 and S\&P 500 indices, with the expectation that
-these differences will be reflected in their Hurst exponents. The strategy is as follows:
+these differences will be reflected in the Hurst exponents. The strategy is as follows:
 
 We first compute the differential of the log returns of the Russell 2000 index and the S\&P 500 index.
 A positives value indicates that the S\&P 500 is outperforming the Russell 2000 index,
 and a negative value indicates that the Russell 2000 index is outperforming the S\&P 500 index.
 
 We then compute a rolling 6 months Hurst exponent and a rolling traditional momentum (mean of the 220 days lagged by 20
-days) of the differentiated returns.
+days) of the difference between returns. \\
 
 We start with a portfolio of 50\% Russell 2000 index and 50\% S\&P 500 index.
 
 \begin{itemize}
     \item If the Hurst exponent is greater than 0.5 and the momentum is positive, we over exposed ourselves (80\%) on the
-        S\&P 500 and a under exposed on the Russell 2000 index (20\%).
+        S\&P 500 and under exposed on the Russell 2000 index (20\%).
     \item If the Hurst exponent is greater than 0.5 and the momentum is negative, we under exposed ourselves (20\%) on the
         S\&P 500 and over exposed on the Russell 2000 (80\%).
     \item If the Hurst exponent is less than 0.5, we take a neutral position (50\% Russell 2000 and 50\% S\&P 500).
@@ -747,7 +750,7 @@ We start with a portfolio of 50\% Russell 2000 index and 50\% S\&P 500 index.
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_long_neutral_results.csv}
     \caption{Performance metrics of the over/under strategies (5 bps transaction fees) compared to the long only S\&P 500
-    portfolio, long only Russell 2000 portfolio, 50/50 Russell /S\&P 500 portfolio.}
+    portfolio, long only Russell 2000 portfolio, 50/50 Russell/S\&P 500 portfolio.}
     \label{tab:performance_table}
 \end{table}
 
@@ -769,7 +772,9 @@ suggest that, while most series display Hurst exponents greater than 0.5 implyin
 modified R/S approach indicates that only the Russell 2000 exhibits statistically significant long memory.
 In contrast, the S\&P 500 shows a more subdued multifractal behavior, with a narrower spectrum and lower extremal Hölder
 exponents. This difference may reflect underlying market microstructure characteristics, such as liquidity and the size
-of constituent companies, but these interpretations should be treated with caution.
+of constituent companies, but these interpretations should be treated with caution. The Hurst exponent seems to be able
+to capture differences in the multifractal spectrum between the two indices, with the Russell 2000 that appears to
+display a broader spectrum and more distinct multifractal characteristics compared to the S\&P 500.
 
 \section{Discussion}
 
@@ -843,9 +848,9 @@ Mandelbrot, B.B. and Wallis, J.R. (1968). "Noah, Joseph, and Operational Hydrolo
 
 Mandelbrot, B.B. (1973). "Le problème de la réalité des cycles lents et le syndrome de Joseph", \textit{Economie Appliquée}, vol. 26, pp. 349--365.
 
-Mandelbrot, B.B. and Wallis, J.R. (1969d). "Some Long-Run Properties of Geophysical Records", \textit{Water Resources Research}, vol. 5, pp. 321--340.
+Mandelbrot, B.B. and Wallis, J.R. (1969a). "Some Long-Run Properties of Geophysical Records", \textit{Water Resources Research}, vol. 5, pp. 321--340.
 
-Mandelbrot, B.B. and Wallis, J.R. (1969e). "Robustness of the Rescaled Range R/S in the Measurement of Noncyclic Long-Run Statistical Dependence", \textit{Water Resources Research}, vol. 5, pp. 967--988.
+Mandelbrot, B.B. and Wallis, J.R. (1969b). "Robustness of the Rescaled Range R/S in the Measurement of Noncyclic Long-Run Statistical Dependence", \textit{Water Resources Research}, vol. 5, pp. 967--988.
 
 Mandelbrot, B.B. and Taqqu, M.S. (1979). "Robust R/S Analysis of Long-Run Serial Correlation", \textit{Bulletin of the International Statistical Institute}, vol. 48, pp. 69--104.
 
