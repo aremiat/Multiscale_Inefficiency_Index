@@ -258,7 +258,7 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst, momentum):
     Combine la différence de largeur de spectre (delta_alpha_diff),
     l'écart absolu (rolling Hurst - 0.5) et le signal de momentum.
     """
-    return delta_alpha_diff * abs(rolling_hurst - 0.5) * np.sign(momentum)
+    return delta_alpha_diff * abs(rolling_hurst - 0.5)
 
 
 def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ticker1, ticker2,
@@ -280,8 +280,15 @@ def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ti
                 pos1.append(0.5)
                 pos2.append(0.5)
         else:
-            pos1.append(0.5)
-            pos2.append(0.5)
+            # if ineff < threshold_ineff and m_val > 0:
+            #     pos1.append(0.2)
+            #     pos2.append(0.8)
+            # elif ineff > -threshold_ineff and m_val < 0:
+            #     pos1.append(0.8)
+            #     pos2.append(0.2)
+            # else:
+                pos1.append(0.5)
+                pos2.append(0.5)
     positions[ticker1] = pos1
     positions[ticker2] = pos2
     return positions
@@ -316,6 +323,67 @@ def compute_performance_stats(daily_returns: pd.Series, freq=252):
     max_drawdown = drawdown.min()
     return annual_return, annual_vol, sharpe_ratio, max_drawdown
 
+# Plot the rolling Hurst signal and position switches
+# Plot the rolling Hurst signal and position switches
+def plot_positions_and_hurst(rolling_hurst, positions, ticker1, ticker2):
+    fig = go.Figure()
+
+    # Add rolling Hurst signal
+    fig.add_trace(go.Scatter(
+        x=rolling_hurst.index,
+        y=rolling_hurst,
+        mode='lines',
+        name='Rolling Hurst Signal',
+        line=dict(color='blue')
+    ))
+
+    # Add position switches for ticker1
+    fig.add_trace(go.Scatter(
+        x=positions.index,
+        y=positions[ticker1],
+        mode='lines',
+        name=f'{ticker1} Position',
+        line=dict(color='green')
+    ))
+
+    # Add position switches for ticker2
+    fig.add_trace(go.Scatter(
+        x=positions.index,
+        y=positions[ticker2],
+        mode='lines',
+        name=f'{ticker2} Position',
+        line=dict(color='orange')
+    ))
+
+    # Add layout details
+    fig.update_layout(
+        title="Rolling Hurst Signal and Position Switches",
+        xaxis_title="Date",
+        yaxis_title="Value",
+        template="plotly_white"
+    )
+
+    fig.show()
+
+# Count the number of position switches
+def count_position_switches(positions, ticker1, ticker2):
+    switches_ticker1 = (positions[ticker1].diff().abs() > 0).sum()
+    switches_ticker2 = (positions[ticker2].diff().abs() > 0).sum()
+    total_switches = switches_ticker1 + switches_ticker2
+    print(f"Number of position switches: {total_switches}")
+
+def compute_positions(rolling_signal, momentum, ticker1, ticker2, default=0.5, threshold=0.5):
+    # On suppose que les deux indices ont la même fréquence
+    positions = pd.DataFrame(index=rolling_signal.index, columns=[ticker1, ticker2])
+    positions[ticker1] = default
+    positions[ticker2] = default
+    condition = rolling_signal > threshold
+    positions.loc[condition & (momentum > 0), ticker1] = 0.8
+    positions.loc[condition & (momentum > 0), ticker2] = 0.2
+    positions.loc[condition & (momentum < 0), ticker1] = 0.2
+    positions.loc[condition & (momentum < 0), ticker2] = 0.8
+    return positions
+
 
 # =====================================================================
 # 6. Main : Chargement des données et exécution de la stratégie
@@ -347,13 +415,37 @@ if __name__ == "__main__":
                                           order=1)
     rolling_delta_ticker2 = mfdfa_rolling(np.log(all_prices[ticker2]).diff().dropna(), mfdfa_window, q_list, scales,
                                           order=1)
+
+    fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
+                        subplot_titles=(f"Rolling Spectrum Width Δα - {ticker1}",
+                                        f"Rolling Spectrum Width Δα - {ticker2}"))
+
+    # Plot for Ticker 1
+    fig.add_trace(go.Scatter(x=rolling_delta_ticker1.index, y=rolling_delta_ticker1,
+                             mode='lines', name=f'Rolling Δα {ticker1}',
+                             line=dict(color='blue')), row=1, col=1)
+
+    # Plot for Ticker 2
+    fig.add_trace(go.Scatter(x=rolling_delta_ticker2.index, y=rolling_delta_ticker2,
+                             mode='lines', name=f'Rolling Δα {ticker2}',
+                             line=dict(color='orange')), row=2, col=1)
+
+    fig.update_layout(height=800, width=1000, title_text="Comparison of Rolling Δα for Two Tickers",
+                      showlegend=True)
+
+    fig.update_xaxes(title_text="Date")
+    fig.update_yaxes(title_text="Δα Ticker1", row=1, col=1)
+    fig.update_yaxes(title_text="Δα Ticker2", row=2, col=1)
+
+    fig.show()
     common_dates_mfdfa = rolling_delta_ticker1.index.intersection(rolling_delta_ticker2.index)
     delta_alpha_diff = (
-                rolling_delta_ticker1.loc[common_dates_mfdfa] - rolling_delta_ticker2.loc[common_dates_mfdfa]).abs()
+                rolling_delta_ticker1.loc[common_dates_mfdfa] - rolling_delta_ticker2.loc[common_dates_mfdfa])
 
     # Configurations pour le rolling sur RS (exemple)
     rolling_configs = {
         "ModifOverlap120": {"method": "modified", "rolling_type": "overlapping", "window_size": 120},
+        # "TradOverlap120": {"method": "traditional", "rolling_type": "overlapping", "window_size": 120},
         "ModifOverlap252": {"method": "modified", "rolling_type": "overlapping", "window_size": 252},
     }
 
@@ -398,31 +490,80 @@ if __name__ == "__main__":
             "Sharpe": round(sharpe, 2),
             "Max Drawdown": round(max_dd * 100, 2)
         })
+        plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
+        count_position_switches(positions, ticker1, ticker2)
+
+    p = all_p.copy()
+    rolling_signal = compute_rolling_metric(r.shift(1), 120,
+                                            method="modified",
+                                            rolling_type="overlapping",
+                                            chin=False).dropna()
+    # On aligne avec la série du momentum (on garde les dates communes)
+    common_dates = rolling_signal.index.intersection(momentum.index)
+    signal = rolling_signal.loc[common_dates]
+    mom = momentum.loc[common_dates]
+
+    # Calcul des positions
+    positions = compute_positions(signal, mom, ticker1, ticker2, default=0.5, threshold=0.5)
+
+    # Pour le backtest, on utilise les rendements journaliers (all_p)
+    common_dates_bp = positions.index.intersection(p.index)
+    positions = positions.loc[common_dates_bp]
+    all_p_config = p.loc[common_dates_bp]
+
+    cum_returns, port_returns = run_backtest(all_p_config, positions, ticker1, ticker2, fee_rate=0.005)
+    cumulative_returns_dict["ModifOverlap120NoFilter"] = cum_returns
+
+    # Calcul des performances
+    ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
+    performance_results.append({
+        "Strategy": "ModifOverlap120NoFilter",
+        "Annualized Return": round(ann_ret * 100, 2),
+        "Annualized Volatility": round(ann_vol * 100, 2),
+        "Sharpe": round(sharpe, 2),
+        "Max Drawdown": round(max_dd * 100, 2)
+    })
+
+
+
+    # plot the inefficiency index
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=ineff_index.index, y=ineff_index,
+                             mode='lines', name='Inefficiency Index',
+                             line=dict(color='purple')))
+    fig.update_layout(title="Inefficiency Index",
+                      xaxis_title="Date",
+                      yaxis_title="Inefficiency Index",
+                      template="plotly_white")
+    fig.show()
 
     # =====================================================================
     # Visualisation des courbes cumulées des stratégies
     # =====================================================================
+    # Get the first strategy from the cumulative_returns_dict
+    first_strategy, cum_returns = list(cumulative_returns_dict.items())[0]
+
+    # Create a new figure and plot only that strategy
     fig_backtest = go.Figure()
-    colors = ["blue", "purple", "green", "red", "brown"]
-    for i, (strategy, cum_returns) in enumerate(cumulative_returns_dict.items()):
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=cum_returns.index,
-                y=cum_returns,
-                mode='lines',
-                name=strategy,
-                line=dict(color=colors[i % len(colors)])
-            )
+    fig_backtest.add_trace(
+        go.Scatter(
+            x=cum_returns.index,
+            y=np.log(cum_returns),
+            mode='lines',
+            name=first_strategy,
+            line=dict(color="blue")  # you can choose any color
         )
+    )
     fig_backtest.update_layout(
-        title="Comparison of Strategies (Cumulative Returns)",
+        title=f"Cumulative Returns - Strategy: {first_strategy}",
         xaxis_title="Date",
         yaxis_title="Cumulative Return",
         template="plotly_white"
     )
+    fig_backtest.show()
 
     # Ports de comparaison : SP500, Russell et portefeuille 50/50
-    new_p = all_p.loc[common_dates_bp]
+    new_p = all_p.loc["1988-10-18":"2025-02-28"]
     sp500_returns = new_p[ticker1]
     sp500_cumulative = (1 + sp500_returns).cumprod()
     russell_returns = new_p[ticker2]
@@ -433,25 +574,25 @@ if __name__ == "__main__":
     fig_backtest.add_trace(
         go.Scatter(
             x=sp500_cumulative.index,
-            y=sp500_cumulative,
+            y=np.log(sp500_cumulative),
             mode='lines',
             name="Long Only SP500",
             line=dict(color='red')
         )
     )
-    fig_backtest.add_trace(
-        go.Scatter(
-            x=russell_cumulative.index,
-            y=russell_cumulative,
-            mode='lines',
-            name="Long Only Russell",
-            line=dict(color='orange')
-        )
-    )
+    # fig_backtest.add_trace(
+    #     go.Scatter(
+    #         x=russell_cumulative.index,
+    #         y=russell_cumulative,
+    #         mode='lines',
+    #         name="Long Only Russell",
+    #         line=dict(color='orange')
+    #     )
+    # )
     fig_backtest.add_trace(
         go.Scatter(
             x=portfolio_50_50_cumulative.index,
-            y=portfolio_50_50_cumulative,
+            y=np.log(portfolio_50_50_cumulative),
             mode='lines',
             name="50/50 Portfolio",
             line=dict(color='black')
@@ -491,5 +632,5 @@ if __name__ == "__main__":
     df_results = pd.DataFrame(performance_results)
     print("=== Performance Summary ===")
     print(df_results)
-    # df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
+    df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
     # fig_backtest.write_image(f"{IMG_PATH}/backtest_long_neutral.png", width=1200, height=800)
