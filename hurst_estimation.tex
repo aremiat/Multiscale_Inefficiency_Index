@@ -133,7 +133,7 @@ where \( H \in [0, 1] \)  corresponds to the Hurst exponent with the following p
     \item For \( H < 0.5 \), the process has anti-persistent behavior, where an increase in the past is more likely to be followed by a decrease.
 \end{itemize}
 
-The covariance function of fBm is given by:
+The covariance function of fBm is given by (see Section~\ref{sec:covariance_fbm} for demonstration):
 
 \begin{equation}
     C_H(t, s) = \frac{\sigma^2}{2} \left( t^{2H} + s^{2H} - |t - s|^{2H} \right),
@@ -301,7 +301,7 @@ Specifically, MF-DFA allows us to investigate the variety of local behaviors pre
 spectrum. This spectrum reveals how "rough" or "smooth" different segments of the series are and indicates the prevalence of each level of
 irregularity. By examining the multifractal spectrum, we can determine whether the data exhibits a wide range of scaling behaviors, indicative
 of multifractality, or if it behaves more uniformly. This transition to MF-DFA thus provides a complementary perspective that deepens our understanding
-of the complex, scale-dependent dynamics governing the indices.
+of the complex, scale-dependent dynamics governing the indices and how it relates to the dynamisms of the Hurst exponent.
 
 \section{Multifractal Detrended Fluctuation Analysis}
 \label{sec:mfdfa}
@@ -700,9 +700,10 @@ reveal market inefficiencies that can be harnessed for trading.
 First, we compute the difference in the log returns of the Russell 2000 index and the S\&P 500 index. A positive value
 indicates that the S\&P 500 is outperforming the Russell 2000, while a negative value indicates the converse.
 
-Next, we calculate a rolling Hurst exponent using the modified R/S statistics to account for short-term autocorrelation
-bias over a six‐month window and a rolling momentum indicator (computed as the mean of the past 220 days returns with
-a 20‐day shift) on the difference series. We then construct the inefficiency index defined as
+Next, we calculate a rolling Hurst exponent on this spread using the modified R/S statistic, which helps correct for
+short-term autocorrelation bias over a six‐month window. In parallel, a rolling momentum indicator is derived from the
+same spread by taking the mean of the past 220 days returns with a 20‐day shift to not take into account the last month.
+We then construct the inefficiency index defined as
 \[
 I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
 \]
@@ -712,7 +713,7 @@ indices. This inefficiency index is considered statistically significant when it
 Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in the S\&P 500), the positions are adjusted as follows:
 
 \begin{itemize}
-    \item If the rolling Hurst exponent is greater than 0.5 and the momentum is positive (indicating that the S\&P 500 is
+    \item If the rolling Hurst exponent is greater than 0.5, the momentum is positive (indicating that the S\&P 500 is
     outperforming the Russell 2000), and if the inefficiency index exceeds one standard deviation (i.e., is greater than 0.01),
     then the alpha width of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
     persistence and a more complex fractal structure, suggesting inefficiency. In this case, we overweight the S\&P 500 by allocating
@@ -768,7 +769,8 @@ modified R/S statistic using a rolling window of 252 days, the ModifOverlap120No
 Hurst based modified R/S statistic using a rolling window of 120 days without using the inefficiency index as a signal filter.
 The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance}.
 All the strategies outperform the 50/50 portfolio and the long only Russell 2000 portfolio.
-The ModifOverlap120 and ModifOverlap252 strategy outperforms the long only S\&P 500 portfolio in all metrics.
+The ModifOverlap120 and ModifOverlap252 strategy outperforms the long only S\&P 500 portfolio in all metrics, except
+that it achieves a higher volatility over the period.
 
 
 \section{Conclusion}
@@ -799,6 +801,66 @@ should aim to extend this analysis to a broader set of assets (pair clustering) 
 to confirm the statistical significance of the observed multifractal effects.
 
 \section{Appendix}
+
+\subsection{Demonstration of the covariance of fractional Brownian motion (fBm)}
+\label{sec:covariance_fbm}
+
+The fractional Brownian motion (fBm), denoted by \( X_H(t) \), is defined as a zero-mean continuous-time Gaussian process whose increments are correlated. Its covariance function is given by:
+
+\[
+C_H(t,s) = \frac{\sigma^2}{2}\left(t^{2H}+s^{2H}-|t-s|^{2H}\right)
+\]
+
+where \( H \in (0,1) \) is the Hurst exponent.
+
+A fractional Brownian motion \( X_H(t) \) with \( X_H(0)=0 \) has increments that are normally distributed with zero mean, specifically:
+
+\[
+X_H(t)-X_H(s) \sim \mathcal{N}(0,\sigma^2|t-s|^{2H})
+\]
+
+Given that the process is centered (zero mean), the covariance is defined as:
+
+\[
+C_H(t,s) = \text{Cov}(X_H(t), X_H(s)) = \mathbb{E}[X_H(t)X_H(s)]
+\]
+
+Using the following algebraic identity:
+
+\[
+X_H(t)X_H(s) = \frac{1}{2}\left[X_H(t)^2 + X_H(s)^2 - (X_H(t)-X_H(s))^2\right]
+\]
+
+the covariance becomes:
+
+\[
+C_H(t,s) = \frac{1}{2}\left(\mathbb{E}[X_H(t)^2]+\mathbb{E}[X_H(s)^2]-\mathbb{E}[(X_H(t)-X_H(s))^2]\right)
+\]
+
+
+We have by definition of fBm:
+
+\[
+\mathbb{E}[X_H(t)^2] = \sigma^2 t^{2H}, \quad \mathbb{E}[X_H(s)^2] = \sigma^2 s^{2H}, \quad \mathbb{E}[(X_H(t)-X_H(s))^2] = \sigma^2 |t-s|^{2H}
+\]
+
+Substituting these into our covariance expression, we get:
+
+\[
+C_H(t,s) = \frac{1}{2}\left(\sigma^2 t^{2H} + \sigma^2 s^{2H} - \sigma^2 |t-s|^{2H}\right)
+\]
+
+
+Factoring out the term \( \sigma^2 \), we arrive at the final covariance formula:
+
+\[
+\boxed{C_H(t,s) = \frac{\sigma^2}{2}\left(t^{2H} + s^{2H} - |t-s|^{2H}\right)}
+\]
+
+This covariance function entirely characterizes the dependence structure of fractional Brownian motion, revealing long-term correlation when \(H>0.5\) (persistence) and anti-correlation when \(H<0.5\) (anti-persistence).
+To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
+
+\subsection{Critical Values for the Modified R/S Test}
 
 The critical values for the modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the modified R/S statistic.
 
@@ -865,7 +927,7 @@ The critical values for the modified R/S test are provided in the table below. T
     \centering
     \includegraphics[width=0.8\textwidth]{img/rolling_alpha_width.png}
     \caption{Rolling alpha width computed with a rolling window of 252 days
-        for the Russell 2000 (RUT in the graph) and S\&P 500 indices (GSPC in the graph).}
+        for the S\&P 500 indices (GSPC in the graph) and Russell 2000 (RUT in the graph).}
     \label{fig:rolling_alpha_width}
 \end{figure}
 \FloatBarrier
@@ -880,6 +942,92 @@ The critical values for the modified R/S test are provided in the table below. T
     \label{fig:position_switching}
 \end{figure}
 \FloatBarrier
+
+\subsection{Backtest different starting dates results}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_1995-01-02.csv}
+    \caption{1995-01-02-2025-02-28}
+    \label{tab:performance_table_1995-01-02}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_2000-01-02.csv}
+    \caption{2000-01-02-2025-02-28}
+    \label{tab:performance_table_2000-01-02}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_2005-01-02.csv}
+    \caption{2005-01-02-2025-02-28}
+    \label{tab:performance_table_2005-01-02}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_2010-01-02.csv}
+    \caption{2010-01-02-2025-02-28}
+    \label{tab:performance_table_2010-01-02}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_2015-01-02.csv}
+    \caption{2015-01-02-2025-02-28}
+    \label{tab:performance_table_2015-01-02}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_start_2020-01-02.csv}
+    \caption{2020-01-02-2025-02-28}
+    \label{tab:performance_table_2020-01-02}
+\end{table}
 
 \section{References}
 
