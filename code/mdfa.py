@@ -269,8 +269,8 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
 q_list = np.linspace(-5, 5, 21)
-scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
+scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(900), 20)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(900), 20)).astype(int))
 tickers = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
@@ -286,29 +286,29 @@ if __name__ == "__main__":
             name = "Russell 2000"
 
         # Calcul de la moyenne et de l'écart-type des rendements
-        mu = returns.mean()
-        sigma = returns.std()
+        # mu = returns.mean()
+        # sigma = returns.std()
 
         # Création d'un histogramme interactif avec Plotly Express
-        fig = px.histogram(returns, nbins=100, opacity=0.75,
-                           title="Histogramme des rendements de ^GSPC et densité gaussienne",
-                           labels={'value': "Rendements"})
-
-        # Création de la densité théorique d'une gaussienne
-        x_values = np.linspace(returns.min(), returns.max(), 200)
-        pdf = norm.pdf(x_values, loc=mu, scale=sigma)
-
-        # Normalisation : Pour superposer la densité sur l'histogramme,
-        # il faut l'ajuster au nombre d'observations et à la largeur des bins.
-        bin_width = (returns.max() - returns.min()) / 50
-        pdf_scaled = pdf * len(returns) * bin_width
-
-        # Ajout de la courbe gaussienne sur l'histogramme
-        fig.add_trace(go.Scatter(x=x_values, y=pdf_scaled, mode='lines', name='Gaussienne théorique',
-                                 line=dict(color='red', width=2)))
-
-        fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
-        fig.show()
+        # fig = px.histogram(returns, nbins=100, opacity=0.75,
+        #                    title="Histogramme des rendements de ^GSPC et densité gaussienne",
+        #                    labels={'value': "Rendements"})
+        #
+        # # Création de la densité théorique d'une gaussienne
+        # x_values = np.linspace(returns.min(), returns.max(), 200)
+        # pdf = norm.pdf(x_values, loc=mu, scale=sigma)
+        #
+        # # Normalisation : Pour superposer la densité sur l'histogramme,
+        # # il faut l'ajuster au nombre d'observations et à la largeur des bins.
+        # bin_width = (returns.max() - returns.min()) / 50
+        # pdf_scaled = pdf * len(returns) * bin_width
+        #
+        # # Ajout de la courbe gaussienne sur l'histogramme
+        # fig.add_trace(go.Scatter(x=x_values, y=pdf_scaled, mode='lines', name='Gaussienne théorique',
+        #                          line=dict(color='red', width=2)))
+        #
+        # fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
+        # fig.show()
 
 
         # --- 1. Calcul pour la série originale ---
@@ -357,7 +357,7 @@ if __name__ == "__main__":
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
         )
-        fig_h.show()
+        # fig_h.show()
 
         # Graphique 1 : Exposant de Hurst
         fig_h = go.Figure()
@@ -390,14 +390,14 @@ if __name__ == "__main__":
         # fig_diff.show()
 
         hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
-        hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
+        # hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
         df = pd.DataFrame({
         'f_alpha': f_alpha,
         'alpha': alpha,
         'f_alpha_shuf': f_alpha_shuf,
         'alpha_shuf': alpha_shuf,
         })
-        df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
+        # df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
 
 # data_price = pd.read_csv(f"{DATA_PATH}/russel_stocks.csv", index_col=0, parse_dates=True)
 
