@@ -764,10 +764,10 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
 \end{table}
 
 We tested severals strategies to see how robust the results are, the ModifOverlap120 correspond to the estimation of a
-Hurst based modified R/S statistic using a rolling window of 120 days, the ModifOverlap252 correspond to the
-modified R/S statistic using a rolling window of 252 days, the ModifOverlap120NoFilter correspond to the estimation of a
+Hurst based modified R/S statistic using a rolling window of 120 days and the ModifOverlap120NoFilter correspond to the estimation of a
 Hurst based modified R/S statistic using a rolling window of 120 days without using the inefficiency index as a signal filter.
-The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance}.
+The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance} (for a more detail analysis
+on backtest starting periods or window size see Table~\ref{tab:performance_table_1995-01-02}).
 All the strategies outperform the 50/50 portfolio and the long only Russell 2000 portfolio.
 The ModifOverlap120 and ModifOverlap252 strategy outperforms the long only S\&P 500 portfolio in all metrics, except
 that it achieves a higher volatility over the period.
@@ -791,9 +791,6 @@ It is important to emphasize that the methods used in our study both the static 
 analysis are highly sensitive to the chosen data frequency, evaluation period, and potential structural breaks. The
 apparent persistence observed in the Russell 2000, for instance, may be influenced by these factors, while the more
 stable behavior seen in the S\&P 500 could result from its larger, more liquid market composition.
-
-Additional tests, including robustness checks across different time frames and alternative multifractal estimation
-methods, are necessary to substantiate our preliminary observations.
 
 Overall, while our results provide an intriguing perspective on market dynamics and offer a foundation for a trading
 strategy based on these multifractal measures, they should be interpreted with a degree of caution. Future research
@@ -1028,6 +1025,79 @@ The critical values for the modified R/S test are provided in the table below. T
     \caption{2020-01-02-2025-02-28}
     \label{tab:performance_table_2020-01-02}
 \end{table}
+
+\subsection{Backtest different rolling window size results}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_window_120.csv}
+    \caption{1988-10-19-2025-02-28 | Window size 120 days}
+    \label{tab:performance_table_window_120}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_window_252.csv}
+    \caption{1988-10-19-2025-02-28 | Window size 252 days}
+    \label{tab:performance_table_window_252}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_window_504.csv}
+    \caption{1989-09-18-2025-02-28 | Window size 504 days}
+    \label{tab:performance_table_window_504}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_window_1260.csv}
+    \caption{1992-08-22-2025-02-28 | Window size 1260 days}
+    \label{tab:performance_table_window_1260}
+\end{table}
+
+\begin{table}[!h]
+    \centering
+    \pgfplotstabletypeset[
+        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
+        columns/Strategy/.style={string type,column name=Strategy},
+        columns/Annualized Return/.style={column name=Annualized Return},
+        columns/Annualized Volatility/.style={column name=Annualized Volatility},
+        columns/Sharpe/.style={column name=Sharpe},
+        columns/Max Drawdown /.style={column name=Max Drawdown}
+    ]{data/backtest_results_window_2520.csv}
+    \caption{1997-06-18-2025-02-28 | Window size 2520 days}
+    \label{tab:performance_table_window_2520}
+\end{table}
+
 
 \section{References}
 

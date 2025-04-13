@@ -205,13 +205,57 @@ if __name__ == "__main__":
     )
     # On conserve ^GSPC et ^RUT
     df_prices = df_prices[['^GSPC','^RUT']].dropna()
-
+    # On prend les prix log
     # 2) Calcul des rendements journaliers
     daily_returns = df_prices.pct_change().dropna()
 
     # 3) Différence de rendements
     diff_series = daily_returns['^GSPC'] - daily_returns['^RUT']
     diff_series = diff_series.dropna()
+
+    cumulative_returns_sp500 = (1 + daily_returns['^GSPC']).cumprod()
+    cumulative_returns_russell = (1 + daily_returns['^RUT']).cumprod()
+
+    # 4) Calculate log cumulative returns
+    log_cumulative_returns_sp500 = np.log(cumulative_returns_sp500)
+    log_cumulative_returns_russell = np.log(cumulative_returns_russell)
+
+    # 5) Plot the log cumulative returns using Plotly
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=log_cumulative_returns_sp500.index,
+            y=log_cumulative_returns_sp500,
+            mode='lines',
+            name="Log Cumulative Returns S&P 500",
+            line=dict(color='blue')
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=log_cumulative_returns_russell.index,
+            y=log_cumulative_returns_russell,
+            mode='lines',
+            name="Log Cumulative Returns Russell 2000",
+            line=dict(color='red')
+        )
+    )
+
+    fig.update_layout(
+        title="Log Cumulative Returns for S&P 500 and Russell 2000",
+        xaxis_title="Date",
+        yaxis_title="Log Cumulative Returns",
+        template="plotly_white"
+    )
+
+    fig.show()
+
+    concat_returns = pd.concat([cumulative_returns_sp500, cumulative_returns_russell], axis=1)
+    concat_returns.columns = ['^GSPC', '^RUT']
+    concat_returns = concat_returns.dropna()
+    concat_returns.to_csv(os.path.join(DATA_PATH, "log_cumulative_returns.csv"))
 
     # 4) Agrégation mensuelle (dernier point du mois)
     diff_monthly = diff_series.resample('M').last().dropna()

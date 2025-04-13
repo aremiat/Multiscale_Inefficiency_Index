@@ -95,7 +95,7 @@ def compute_rolling_metric(series, window_size, method='modified', rolling_type=
     - rolling_type : 'overlapping' ou 'nonoverlapping'
     """
     # On décale la série d'un jour pour utiliser le signal du jour précédent
-    series_shifted = series.shift(1)
+    series_shifted = series
     if rolling_type == 'overlapping':
         if method == 'modified':
             roll = series_shifted.rolling(window_size).apply(
@@ -198,9 +198,12 @@ def compute_performance_stats(daily_returns: pd.Series, freq=252):
 # -----------------------------
 # Main : chargement des données et test de plusieurs configurations de rolling
 # -----------------------------
+
+
 if __name__ == "__main__":
     # Chemin d'accès aux données
     DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
+    IMG_PATH = os.path.join(os.path.dirname(__file__), "../../img")
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
     ticker1 = "^GSPC"
     ticker2 = "^RUT"
@@ -210,10 +213,6 @@ if __name__ == "__main__":
     all_p = all_prices.pct_change().dropna()
     # Calcul de la différence entre les deux indices
     all_p['Diff'] = all_p[ticker1] - all_p[ticker2]
-
-    # Pour le backtest, on rebase les prix
-    rebase_p = all_prices.loc["1987-10-09": "2025-02-28"].dropna()
-    rebase_p = rebase_p / rebase_p.iloc[0]
 
     # Définition de la série sur laquelle appliquer le rolling (ici la Différence)
     r = all_p['Diff']
@@ -227,10 +226,13 @@ if __name__ == "__main__":
     # - rolling_type : 'overlapping' ou 'nonoverlapping'
     # - window_size
     rolling_configs = {
-        "ModifOverlap_120": {"method": "modified", "rolling_type": "overlapping", "window_size": 120},
-        "TradOverlap_120": {"method": "traditional", "rolling_type": "overlapping", "window_size": 120},
-        "ModifNonOverlap_120": {"method": "traditional", "rolling_type": "nonoverlapping", "window_size": 120},
-        # On peut ajouter d'autres configurations...
+        "ModifOverlap120": {"method": "modified", "rolling_type": "overlapping", "window_size": 120},
+        "TradOverlap120": {"method": "traditional", "rolling_type": "overlapping", "window_size": 120},
+        "ModifNonOverlap120": {"method": "traditional", "rolling_type": "nonoverlapping", "window_size": 120},
+        "ModifOverlap252": {"method": "modified", "rolling_type": "overlapping", "window_size": 252},
+        "ModifOverlap504": {"method": "modified", "rolling_type": "overlapping", "window_size": 504},
+        "ModifOverlap1260": {"method": "modified", "rolling_type": "overlapping", "window_size": 1260},
+        "ModifOverlap2520": {"method": "modified", "rolling_type": "overlapping", "window_size": 2520},
     }
 
     # Dictionnaires pour stocker les résultats
@@ -241,10 +243,10 @@ if __name__ == "__main__":
     for config_name, config in rolling_configs.items():
         # Calcul du rolling metric (signal) sur r
         p = all_p.copy()
-        rolling_signal = compute_rolling_metric(r, config["window_size"],
+        rolling_signal = compute_rolling_metric(r.shift(1), config["window_size"],
                                                 method=config["method"],
                                                 rolling_type=config["rolling_type"],
-                                                chin=False)
+                                                chin=False).dropna()
         # On aligne avec la série du momentum (on garde les dates communes)
         common_dates = rolling_signal.index.intersection(momentum.index)
         signal = rolling_signal.loc[common_dates]
@@ -258,7 +260,7 @@ if __name__ == "__main__":
         positions = positions.loc[common_dates_bp]
         all_p_config = p.loc[common_dates_bp]
 
-        cum_returns, port_returns = run_backtest(all_p_config, positions, ticker1, ticker2, fee_rate=0.0005)
+        cum_returns, port_returns = run_backtest(all_p_config, positions, ticker1, ticker2, fee_rate=0.005)
         cumulative_returns_dict[config_name] = cum_returns
 
         # Calcul des performances
@@ -312,7 +314,7 @@ if __name__ == "__main__":
             x=sp500_cumulative.index,
             y=sp500_cumulative,
             mode='lines',
-            name="SP500",
+            name="Long Only SP500",
             line=dict(color='red')
         )
     )
@@ -321,7 +323,7 @@ if __name__ == "__main__":
             x=russel_cumulative.index,
             y=russel_cumulative,
             mode='lines',
-            name="Russel",
+            name="Long Only Russel",
             line=dict(color='orange')
         )
     )
@@ -332,7 +334,7 @@ if __name__ == "__main__":
             y=portfolio_50_50_cumulative,
             mode='lines',
             name="Portefeuille 50/50",
-            line=dict(color='brown')
+            line=dict(color='black')
         )
     )
 
@@ -344,25 +346,25 @@ if __name__ == "__main__":
     ann_ret_50_50, ann_vol_50_50, sharpe_50_50, max_dd_50_50 = compute_performance_stats(portfolio_50_50_returns)
 
     performance_results.append({
-        "Stratégie": "Long Only SP500",
-        "Annual Return (%)": round(ann_ret_sp500 * 100, 2),
-        "Annual Vol (%)": round(ann_vol_sp500 * 100, 2),
+        "Strategy": "Long Only SP500",
+        "Annualized Return": round(ann_ret_sp500 * 100, 2),
+        "Annualized Volatility": round(ann_vol_sp500 * 100, 2),
         "Sharpe": round(sharpe_sp500, 2),
-        "Max Drawdown (%)": round(max_dd_sp500 * 100, 2)
+        "Max Drawdown": round(max_dd_sp500 * 100, 2)
     })
     performance_results.append({
-        "Stratégie": "Long Only Russell",
-        "Annual Return (%)": round(ann_ret_russel * 100, 2),
-        "Annual Vol (%)": round(ann_vol_russel * 100, 2),
+        "Strategy": "Long Only Russell",
+        "Annualized Return": round(ann_ret_russel * 100, 2),
+        "Annualized Volatility": round(ann_vol_russel * 100, 2),
         "Sharpe": round(sharpe_russel, 2),
-        "Max Drawdown (%)": round(max_dd_russel * 100, 2)
+        "Max Drawdown": round(max_dd_russel * 100, 2)
     })
     performance_results.append({
-        "Stratégie": "50/50 Portfolio",
-        "Annual Return (%)": round(ann_ret_50_50 * 100, 2),
-        "Annual Vol (%)": round(ann_vol_50_50 * 100, 2),
+        "Strategy": "50/50 Portfolio",
+        "Annualized Return": round(ann_ret_50_50 * 100, 2),
+        "Annualized Volatility": round(ann_vol_50_50 * 100, 2),
         "Sharpe": round(sharpe_50_50, 2),
-        "Max Drawdown (%)": round(max_dd_50_50 * 100, 2)
+        "Max Drawdown": round(max_dd_50_50 * 100, 2)
     })
 
     # Création d'un DataFrame récapitulatif des performances
@@ -370,4 +372,8 @@ if __name__ == "__main__":
     print("=== Tableau Récapitulatif des Stratégies ===")
     print(df_results)
     df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
+
+    # graphique des performances
+    fig_backtest.write_image(f"{IMG_PATH}/backtest_long_neutral.png", width=1200, height=800)
+
 

@@ -27,7 +27,17 @@ all_results = pd.DataFrame()
 
 if __name__ == "__main__":
 
-    tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GSPTSE"]
+    tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
+    # fait un dictionnaire pour les vrais non tickers
+
+    noms_indices = {
+        "^GSPC": "S\&P 500",
+        "^RUT": "Russell 2000",
+        "^FTSE": "FTSE 100",
+        "^N225": "Nikkei 225",
+        "^GDAXI": "DAX"
+    }
+
     adf_data = pd.DataFrame()
     # for ticker in tickers:
     # "1987-09-10": "2025-02-28"
@@ -46,8 +56,7 @@ if __name__ == "__main__":
         p_ticker = p[ticker].dropna()
         # ticker = ticker.replace("^", "")
         #
-        # p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
-        print(p_ticker.first_valid_index())
+        p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
         log_p = np.log(p_ticker)
         r = log_p.diff().dropna()
         r = r.resample('M').last().dropna()
@@ -74,16 +83,17 @@ if __name__ == "__main__":
 
         #
 
-        # p_val_before = adf_test(log_p)
-        #
+        p_val_before = adf_test(log_p)
+
         # Stationarity test of the series (Dickey-Fuller)
-        # p_val_after = adf_test(r)
-        # #
-        # adf_data = pd.concat([adf_data, pd.DataFrame({
-        #     "Ticker": [ticker],
-        #     "P-Value on prices": [round(p_val_before, 3)],  # Round for clarity
-        #     "P-Value on log differentiated return": [round(p_val_after, 3)]
-        # })], ignore_index=True)
+        p_val_after = adf_test(r)
+        #
+        adf_data = pd.concat([adf_data, pd.DataFrame({
+            "Ticker": [ticker],
+            "P-Value on log prices": [format(p_val_before, ".3f")],
+            "P-Value on log differentiated return": [format(p_val_after, ".3f")]
+        })], ignore_index=True)
+
 
         Q_tild = ComputeRS.rs_modified_statistic(r, window_size=len(r), chin=False)  # R-s modified
         rs_value = ComputeRS.rs_statistic(r, window_size=len(r))  # R/S
@@ -105,18 +115,20 @@ if __name__ == "__main__":
             # print(f"Critical Value of the Modified Hurst Exponent: {critical_value} \n")
             # print("Long memory: ", h_true)
 
-    #     df_results = pd.DataFrame({
-    #         "Ticker": [ticker],
-    #         "R/S": [f"{rs_value:.3f}"],  # Format to 3 decimal places
-    #         "Hurst Exponent": [f"{hurst_rs:.3f}"],  # Format to 3 decimal places
-    #         "Modified Hurst Exponent": [f"{hurst_rs_modified:.3f}"],  # Format to 3 decimal places
-    #         "Critical Value": [f"{critical_value:.3f}"],  # Format to 3 decimal places
-    #         "Long Memory": [h_true]
-    #     })
+        df_results = pd.DataFrame({
+            "Ticker": [ticker],
+            "R/S": [f"{rs_value:.3f}"],  # Format to 3 decimal places
+            "Hurst Exponent": [f"{hurst_rs:.3f}"],  # Format to 3 decimal places
+            "Modified Hurst Exponent": [f"{hurst_rs_modified:.3f}"],  # Format to 3 decimal places
+            "Critical Value": [f"{critical_value:.3f}"],  # Format to 3 decimal places
+            "Long Memory": [h_true]
+        })
     #
-    #     all_results = pd.concat([all_results, df_results])
-    # all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
-    # adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
+        all_results = pd.concat([all_results, df_results])
+    all_results["Ticker"] = all_results["Ticker"].map(noms_indices)
+    all_results.to_csv(f"{DATA_PATH}/hurst_results.csv", index=False)
+    adf_data["Ticker"] = adf_data["Ticker"].map(noms_indices)
+    adf_data.to_csv(f"{DATA_PATH}/adf_results.csv", index=False)
 
     # Study of timestamp choice on the estimation
 

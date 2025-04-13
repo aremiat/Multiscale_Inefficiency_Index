@@ -1,6 +1,6 @@
 Ticker,R/S,Hurst Exponent,Modified Hurst Exponent,Critical Value,Long Memory
-GSPC,30.166,0.558,0.501,1.007,False
-RUT,51.373,0.645,0.588,1.714,True
-FTSE,40.236,0.605,0.548,1.341,False
-N225,22.234,0.508,0.508,1.048,False
-GSPTSE,35.912,0.586,0.586,1.693,True
+S\&P 500,30.166,0.558,0.501,1.007,False
+Russell 2000,51.373,0.645,0.588,1.714,True
+FTSE 100,40.236,0.605,0.548,1.341,False
+Nikkei 225,22.234,0.508,0.508,1.048,False
+DAX,26.985,0.540,0.540,1.278,False

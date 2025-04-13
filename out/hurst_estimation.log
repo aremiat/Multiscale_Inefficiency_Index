@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  13 APR 2025 10:26
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  10 APR 2025 17:21
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **hurst_estimation.tex
 (./hurst_estimation.tex
@@ -878,7 +879,8 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count359
 \l__pdf_internal_box=\box71
 )
-(./hurst_estimation.aux)
+(C:/Users/admin/Desktop/cours dauphine/projet_perso/Hurst/out/hurst_estimation.
+aux)
 \openout1 = `hurst_estimation.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -907,8 +909,7 @@ Package french.ldf Info: Setting StandardEnumerateEnv=true for
 (french.ldf)             compatibility with enumitem package,
 (french.ldf)             reported on input line 58.
 LaTeX Info: Redefining \up on input line 58.
-
-(c:/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+ (c:/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count360
 \scratchdimen=\dimen321
@@ -972,14 +973,17 @@ s been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring ON on input line 58.
-(./hurst_estimation.out) (./hurst_estimation.out)
+
+(C:/Users/admin/Desktop/cours dauphine/projet_perso/Hurst/out/hurst_estimation.
+out)
+(C:/Users/admin/Desktop/cours dauphine/projet_perso/Hurst/out/hurst_estimation.
+out)
 \@outlinefile=\write4
 \openout4 = `hurst_estimation.out'.
 
 LaTeX Font Info:    Trying to load font information for U+msa on input line 63.
 
-
-(c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
+ (c:/texlive/2024/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 63.
@@ -997,10 +1001,10 @@ texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 [2]
 
 [3]
-<img/fdm_autocorr.png, id=121, 5018.75pt x 5018.75pt>
+<img/fdm_autocorr.png, id=108, 5018.75pt x 5018.75pt>
 File: img/fdm_autocorr.png Graphic file (type png)
 <use img/fdm_autocorr.png>
-Package pdftex.def Info: img/fdm_autocorr.png  used on input line 174.
+Package pdftex.def Info: img/fdm_autocorr.png  used on input line 172.
 (pdftex.def)             Requested size: 375.80544pt x 375.77737pt.
 
 
@@ -1009,13 +1013,13 @@ Package pdftex.def Info: img/fdm_autocorr.png  used on input line 174.
 [5 <./img/fdm_autocorr.png>]
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 264--265
+Underfull \hbox (badness 10000) in paragraph at lines 259--260
 
  []
 
 PGFPlots: reading {data/Hurst_results.csv}
 
-Overfull \hbox (22.26482pt too wide) in paragraph at lines 280--283
+Overfull \hbox (22.26482pt too wide) in paragraph at lines 275--278
  [][] 
  []
 
@@ -1031,7 +1035,7 @@ PGFPlots: reading {data/multifractal_spectrum_daily_SP500.csv}
 [9]
 
 [10]
-Underfull \hbox (badness 10000) in paragraph at lines 495--500
+Underfull \hbox (badness 10000) in paragraph at lines 488--493
 
  []
 
@@ -1044,20 +1048,20 @@ PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
 [12]
 
 [13]
-<img/inefficiency_index.png, id=223, 1394.20876pt x 612.78937pt>
+<img/inefficiency_index.png, id=206, 1394.20876pt x 612.78937pt>
 File: img/inefficiency_index.png Graphic file (type png)
 <use img/inefficiency_index.png>
-Package pdftex.def Info: img/inefficiency_index.png  used on input line 732.
+Package pdftex.def Info: img/inefficiency_index.png  used on input line 724.
 (pdftex.def)             Requested size: 375.80544pt x 165.17482pt.
-<img/backtest_long_neutral.png, id=224, 1282.7925pt x 589.4522pt>
+<img/backtest_long_neutral.png, id=207, 1282.7925pt x 589.4522pt>
 File: img/backtest_long_neutral.png Graphic file (type png)
 <use img/backtest_long_neutral.png>
-Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 742.
+Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 734.
 
 (pdftex.def)             Requested size: 375.80544pt x 172.68166pt.
 PGFPlots: reading {data/backtest_long_neutral_results.csv}
 
-Overfull \hbox (11.98218pt too wide) in paragraph at lines 760--762
+Overfull \hbox (11.98218pt too wide) in paragraph at lines 752--754
  [][] 
  []
 
@@ -1069,126 +1073,31 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 [14 <./img/inefficiency_index.png> <./img/backtest_long_neutral.png>]
 
 [15]
-Underfull \hbox (badness 10000) in paragraph at lines 857--859
-
- []
-
 PGFPlots: reading {data/adf_results.csv}
+Package pgfplots info on input line 842: Using 'lua backend=false' for axis: x 
+coord trafo unsupported.
+PGFPlots: reading {data/log_cumulative_returns.csv}
+Package pgfplots info on input line 854: dateplot: setting 'date ZERO={1987-09-
+11}' for this axis.
+PGFPlots: reading {data/log_cumulative_returns.csv}
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
+./hurst_estimation.tex:870: TeX capacity exceeded, sorry [main memory size=5000
+000].
+<to be read again> 
+                   {
+l.870 \end{axis}
+                
+If you really absolutely need more capacity,
+you can ask a wizard to enlarge me.
 
-<img/cumulative_profile_segment_partitioning.png, id=247, 1295.59032pt x 605.26
-125pt>
-File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
-<use img/cumulative_profile_segment_partitioning.png>
-Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
-on input line 901.
-(pdftex.def)             Requested size: 375.80544pt x 175.56743pt.
-
-
-[16]
-
-[17 <./img/cumulative_profile_segment_partitioning.png>]
-<img/log_cumulative_returns.png, id=259, 1199.23032pt x 590.205pt>
-File: img/log_cumulative_returns.png Graphic file (type png)
-<use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 913
-.
-(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-<img/rolling_alpha_width.png, id=262, 587.94656pt x 520.94624pt>
-File: img/rolling_alpha_width.png Graphic file (type png)
-<use img/rolling_alpha_width.png>
-Package pdftex.def Info: img/rolling_alpha_width.png  used on input line 925.
-(pdftex.def)             Requested size: 375.80544pt x 332.98317pt.
-
-
-[18
-
- <./img/log_cumulative_returns.png>]
-<img/position_switching.png, id=268, 1274.51157pt x 586.44093pt>
-File: img/position_switching.png Graphic file (type png)
-<use img/position_switching.png>
-Package pdftex.def Info: img/position_switching.png  used on input line 935.
-(pdftex.def)             Requested size: 375.80544pt x 172.91803pt.
-
-
-[19 <./img/rolling_alpha_width.png> <./img/position_switching.png>]
-PGFPlots: reading {data/backtest_results_start_1995-01-02.csv}
-PGFPlots: reading {data/backtest_results_start_2000-01-02.csv}
-PGFPlots: reading {data/backtest_results_start_2005-01-02.csv}
-PGFPlots: reading {data/backtest_results_start_2010-01-02.csv}
-PGFPlots: reading {data/backtest_results_start_2015-01-02.csv}
-PGFPlots: reading {data/backtest_results_start_2020-01-02.csv}
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-PGFPlots: reading {data/backtest_results_window_120.csv}
-
-
-[20
-
-]
-PGFPlots: reading {data/backtest_results_window_252.csv}
-PGFPlots: reading {data/backtest_results_window_504.csv}
-PGFPlots: reading {data/backtest_results_window_1260.csv}
-PGFPlots: reading {data/backtest_results_window_2520.csv}
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 1104--1105
-
- []
-
-
-
-[21]
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1116--1117
-[]\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
-Prop-er-ties of Geo-phys-i-cal Records",
- []
-
-
-
-[22] (./hurst_estimation.aux)
- ***********
-LaTeX2e <2024-11-01>
-L3 programming layer <2024-11-02>
- ***********
-Package rerunfilecheck Info: File `hurst_estimation.out' has not changed.
-(rerunfilecheck)             Checksum: DEDB673893501E662322A2AF5BF25614;3892.
- ) 
+ 
 Here is how much of TeX's memory you used:
- 36403 strings out of 473362
- 852944 string characters out of 5725050
- 1358660 words of memory out of 5000000
- 58796 multiletter control sequences out of 15000+600000
- 574116 words of font info for 74 fonts, out of 8000000 for 9000
+ 36313 strings out of 473362
+ 850993 string characters out of 5725050
+ 5000000 words of memory out of 5000000
+ 58753 multiletter control sequences out of 15000+600000
+ 573427 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,733b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
-<c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/tex
-live/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2024
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb><c:/texlive/2024/texmf-dis
-t/fonts/type1/public/amsfonts/cm/cmmi8.pfb><c:/texlive/2024/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmr10.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmr6.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmr8.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pf
-b><c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb><c:/texl
-ive/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb><c:/texlive/
-2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb><c:/texlive/2024/texmf
--dist/fonts/type1/public/cm-super/sfbx1200.pfb><c:/texlive/2024/texmf-dist/font
-s/type1/public/cm-super/sfbx1440.pfb><c:/texlive/2024/texmf-dist/fonts/type1/pu
-blic/cm-super/sfbx1728.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-su
-per/sfrm0800.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm09
-00.pfb><c:/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:
-/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2
-024/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on hurst_estimation.pdf (22 pages, 1573086 bytes).
-PDF statistics:
- 412 PDF objects out of 1000 (max. 8388607)
- 328 compressed objects within 4 object streams
- 108 named destinations out of 1000 (max. 500000)
- 216 words of extra memory for PDF output out of 10000 (max. 10000000)
-
+./hurst_estimation.tex:870:  ==> Fatal error occurred, no output PDF file produ
+ced!

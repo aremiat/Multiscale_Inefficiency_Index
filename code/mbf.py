@@ -22,7 +22,8 @@ def fbm(T, H, N=1000):
 
 if __name__ == "__main__":
     # Create a figure with multiple subplots
-    fig = sp.make_subplots(rows=2, cols=5, subplot_titles=[f"H = {H}" for H in H_VALUES] + ["Autocorrelation"] * 5)
+    fig = sp.make_subplots(rows=2, cols=5, subplot_titles=[f"H = {H}" for H in H_VALUES] + ["Autocorrelation"] * 5,
+                           vertical_spacing=0.1)
 
     # Generate and display fBms and their autocorrelations
     for i, H in enumerate(H_VALUES):

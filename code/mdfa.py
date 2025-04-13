@@ -270,15 +270,15 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 # Paramètres
 q_list = np.linspace(-5, 5, 21)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(2000), 20)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
     # Lecture des données pour '^RUT'
     for ticker in tickers:
         data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)[ticker]
-        # data = data.loc["1987-09-10":"2024-12-31"]
-        returns = np.log(data).diff().dropna()
+        df_ticker = data.loc["1987-09-10":"2025-02-28"]
+        returns = np.log(df_ticker).diff().dropna()
         scales = scales_rut if ticker == '^RUT' else scales_gspc
         if ticker == '^GSPC':
             name = "SP500"
@@ -286,29 +286,29 @@ if __name__ == "__main__":
             name = "Russell 2000"
 
         # Calcul de la moyenne et de l'écart-type des rendements
-        # mu = returns.mean()
-        # sigma = returns.std()
-        #
-        # # Création d'un histogramme interactif avec Plotly Express
-        # fig = px.histogram(returns, nbins=50, opacity=0.75,
-        #                    title="Histogramme des rendements de ^GSPC et densité gaussienne",
-        #                    labels={'value': "Rendements"})
-        #
-        # # Création de la densité théorique d'une gaussienne
-        # x_values = np.linspace(returns.min(), returns.max(), 200)
-        # pdf = norm.pdf(x_values, loc=mu, scale=sigma)
-        #
-        # # Normalisation : Pour superposer la densité sur l'histogramme,
-        # # il faut l'ajuster au nombre d'observations et à la largeur des bins.
-        # bin_width = (returns.max() - returns.min()) / 50
-        # pdf_scaled = pdf * len(returns) * bin_width
-        #
-        # # Ajout de la courbe gaussienne sur l'histogramme
-        # fig.add_trace(go.Scatter(x=x_values, y=pdf_scaled, mode='lines', name='Gaussienne théorique',
-        #                          line=dict(color='red', width=2)))
-        #
-        # fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
-        # fig.show()
+        mu = returns.mean()
+        sigma = returns.std()
+
+        # Création d'un histogramme interactif avec Plotly Express
+        fig = px.histogram(returns, nbins=100, opacity=0.75,
+                           title="Histogramme des rendements de ^GSPC et densité gaussienne",
+                           labels={'value': "Rendements"})
+
+        # Création de la densité théorique d'une gaussienne
+        x_values = np.linspace(returns.min(), returns.max(), 200)
+        pdf = norm.pdf(x_values, loc=mu, scale=sigma)
+
+        # Normalisation : Pour superposer la densité sur l'histogramme,
+        # il faut l'ajuster au nombre d'observations et à la largeur des bins.
+        bin_width = (returns.max() - returns.min()) / 50
+        pdf_scaled = pdf * len(returns) * bin_width
+
+        # Ajout de la courbe gaussienne sur l'histogramme
+        fig.add_trace(go.Scatter(x=x_values, y=pdf_scaled, mode='lines', name='Gaussienne théorique',
+                                 line=dict(color='red', width=2)))
+
+        fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
+        fig.show()
 
 
         # --- 1. Calcul pour la série originale ---
@@ -346,7 +346,7 @@ if __name__ == "__main__":
         fig_h = go.Figure()
         fig_h.add_trace(go.Scatter(
             x=q_list,
-            y=h_cor,
+            y=h_q,
             mode='lines+markers',
             name='h(q) - h(q)_shuf',
             line=dict(color='purple')
@@ -357,34 +357,34 @@ if __name__ == "__main__":
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
         )
-        # fig_h.show()
+        fig_h.show()
 
         # Graphique 1 : Exposant de Hurst
         fig_h = go.Figure()
         fig_h.add_trace(go.Scatter(x=q_list, y=h_q, mode='lines+markers',
                                    name='h(q) original', line=dict(color='blue')))
-        fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
-                                   name='h(q) shuffled', line=dict(color='orange')))
+        # fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
+        #                            name='h(q) shuffled', line=dict(color='orange')))
         fig_h.update_layout(title=f'Hurst Exponent h(q): Original vs Shuffled {name}',
                             xaxis_title='q', yaxis_title='h(q)', template='plotly_white')
-        # fig_h.show()
+        fig_h.show()
 
         # Graphique 2 : Spectre multifractal f(α)
         fig_f = go.Figure()
         fig_f.add_trace(go.Scatter(x=alpha, y=f_alpha, mode='lines+markers',
                                    name='f(α) original', line=dict(color='blue')))
-        fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
-                                   name='f(α) shuffled', line=dict(color='orange')))
+        # fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
+        #                            name='f(α) shuffled', line=dict(color='orange')))
         fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
-        # fig_f.show()
+        fig_f.show()
 
         # Graphique 3 : Différences dans α et f(α)
         fig_diff = go.Figure()
         fig_diff.add_trace(go.Scatter(x=q_list, y=alpha_diff, mode='lines+markers',
                                       name='α - α_shuf', line=dict(color='green')))
-        fig_diff.add_trace(go.Scatter(x=q_list, y=f_alpha_diff, mode='lines+markers',
-                                      name='f(α) - f(α)_shuf', line=dict(color='red')))
+        # fig_diff.add_trace(go.Scatter(x=q_list, y=f_alpha_diff, mode='lines+markers',
+        #                               name='f(α) - f(α)_shuf', line=dict(color='red')))
         fig_diff.update_layout(title=f'Differences in α and f(α) between Original and Shuffled {name}',
                                xaxis_title='q', yaxis_title='Différence', template='plotly_white')
         # fig_diff.show()

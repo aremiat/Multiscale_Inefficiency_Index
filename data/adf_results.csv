@@ -1,6 +1,6 @@
-Ticker,P-Value on prices,P-Value on log differentiated return
-GSPC,0.863,0.0
-RUT,0.695,0.0
-FTSE,0.226,0.0
-N225,0.66,0.0
-GSPTSE,0.755,0.0
+Ticker,P-Value on log prices,P-Value on log differentiated return
+S\&P 500,0.863,0.000
+Russell 2000,0.695,0.000
+FTSE 100,0.226,0.000
+Nikkei 225,0.660,0.000
+DAX,0.663,0.000

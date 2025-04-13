@@ -133,7 +133,7 @@ if __name__ == "__main__":
     all_prices = all_prices.loc["1987-10-09": "2025-02-28"]
     all_p = all_prices.pct_change().dropna()
     all_p['Diff'] = all_p[ticker1] - all_p[ticker2]
-    all_p = all_p.loc["2018-12-31": "2025-02-28"]
+    # all_p = all_p.loc["2018-12-31": "2025-02-28"]
     r = all_p['Diff']
     rebase_p = all_prices.loc["1987-10-09": "2025-02-28"].dropna()
     rebase_p = rebase_p / rebase_p.iloc[0]
