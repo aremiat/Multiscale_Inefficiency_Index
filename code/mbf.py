@@ -8,7 +8,7 @@ import os
 IMAGE_PATH = os.path.dirname(__file__) + "/../img"
 
 np.random.seed(42)
-H_VALUES = [0.2, 0.3, 0.5, 0.6, 0.8]
+H_VALUES = [0.2, 0.35, 0.5, 0.65, 0.8]
 
 # Function to generate fBm using Cholesky increments
 def fbm(T, H, N=1000):
@@ -52,6 +52,8 @@ if __name__ == "__main__":
         title="Fractional Brownian Motion & Autocorrelation",
         height=800, width=1200, showlegend=False
     )
+    for i in range(1, 6):
+        fig.update_yaxes(range=[-2.2, 3], row=1, col=i),
 
-    pio.write_image(fig, f"{IMAGE_PATH}/fdm_autocorr.png", scale=5, width=1000, height=1000)
+    pio.write_image(fig, f"{IMAGE_PATH}/fdm_autocorr.png", scale=5, width=1200, height=1000)
     fig.show()

@@ -215,9 +215,9 @@ if __name__ == "__main__":
     mfdfa_window = 252
     q_list = np.linspace(-3, 3, 13)
     scales = np.unique(np.logspace(np.log10(10), np.log10(50), 10, dtype=int))
-    rolling_delta_ticker1 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker1]).diff().dropna().shift(1),
+    rolling_delta_ticker1 = ComputeMFDFA.mfdfa_rolling(all_prices[ticker1].dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
-    rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker2]).diff().dropna().shift(1),
+    rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling(all_prices[ticker2].dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
     rolling_delta_ticker1.index.name = "Date"
     rolling_delta_ticker2.index.name = "Date"
@@ -249,6 +249,17 @@ if __name__ == "__main__":
     common_dates_mfdfa = rolling_delta_ticker1.index.intersection(rolling_delta_ticker2.index)
     delta_alpha_diff = (
                 rolling_delta_ticker1.loc[common_dates_mfdfa] - rolling_delta_ticker2.loc[common_dates_mfdfa])
+
+    # do a plot of the difference between the two rolling delta alpha
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=delta_alpha_diff.index, y=delta_alpha_diff,
+                                mode='lines', name='Delta Alpha Difference',
+                                line=dict(color='blue')))
+    fig.update_layout(title="Delta Alpha Difference",
+                        xaxis_title="Date",
+                        yaxis_title="Delta Alpha Difference",
+                        template="plotly_white")
+    fig.show()
 
     # Configurations pour le rolling sur RS
     rolling_configs = {
@@ -442,5 +453,5 @@ if __name__ == "__main__":
         print("=== Performance Summary ===")
         print(df_results)
         # df_results.to_csv(f"{DATA_PATH}/backtest_results_start_{start_date}.csv", index=False)
-        df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
+        # df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
         # fig_backtest.write_image(f"{IMG_PATH}/backtest_long_neutral.png", width=1200, height=800)

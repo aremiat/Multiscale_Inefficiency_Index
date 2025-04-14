@@ -9,7 +9,7 @@ class ComputeMFDFA:
         Calcule le MF-DFA pour une série temporelle.
 
         Paramètres:
-            signal : tableau numpy, la série (par exemple, rendements) à analyser.
+            signal : tableau numpy, la série (par exemple, prix) à analyser.
             scales : liste des échelles (tailles de segments) à utiliser.
             q_list : liste des ordres q pour lesquels calculer la fonction de fluctuation.
             order : ordre du polynôme pour le detrending (1 = linéaire par défaut).
@@ -120,7 +120,7 @@ class ComputeMFDFA:
             for j, q in enumerate(q_list):
                 log_Fq = np.log(Fq[j, :])
                 # Ajustement linéaire pour trouver la pente = h(q)
-                coeffs = np.polyfit(log_scales, log_Fq, 1)
+                coeffs = np.polyfit(log_scales, log_Fq, 1) - 1
                 h_q.append(coeffs[0])
             h_q = np.array(h_q)
 

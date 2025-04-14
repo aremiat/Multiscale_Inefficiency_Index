@@ -3,9 +3,18 @@ import os.path
 import numpy as np
 import plotly.graph_objects as go
 import os
+import plotly.io as pio
+from utils.MFDFA import ComputeMFDFA
+import fathon
+from fathon import fathonUtils as fu
+import matplotlib as plt
+import pandas as pd
+
+
 
 if __name__ == "__main__":
     IMG_PATH = os.path.dirname(__file__) + "/../img/"
+    DATA_PATH = os.path.dirname(__file__) + "/../data/"
     # Generate a random walk and compute its cumulative profile
     np.random.seed(42)
     N = 5000
@@ -15,10 +24,21 @@ if __name__ == "__main__":
     returns = np.diff(random_walk)
     returns_centered = returns - np.mean(returns)
     Y = np.cumsum(returns_centered)
-
+    q_list = np.linspace(-5, 5, 21)
+    scales= np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
+    ticker = ['^RUT']
+    data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)[ticker]
+    df_ticker = data.loc["1987-09-10":"2025-02-28"]
+    df_ticker = df_ticker.dropna()
+    returns = np.log(df_ticker).diff().dropna()
+    # Compute the cumulative profile
+    returns_centered = returns - np.mean(returns)
+    Y = np.cumsum(returns_centered)
+    # Normalize the returns
+    Y = Y.values.flatten()
     # Parameter: segment size (scale)
-    s_example = 990
-    n_segments = len(Y) // s_example
+    s_example = 800
+    n_segments = len(returns) // s_example
 
     # Create the Plotly figure
     fig = go.Figure()
@@ -62,4 +82,29 @@ if __name__ == "__main__":
         yaxis_title="Cumulative Profile"
     )
     fig.show()
-    fig.write_image(f"{IMG_PATH}cumulative_profile_segment_partitioning.png")
+
+    # q_list = np.linspace(-5, 5, 21)
+    # scales = np.unique(np.logspace(np.log10(10), np.log10(900), 10, dtype=int))
+    # order = 1
+    # # Compute MFDFA
+    # Fq = ComputeMFDFA.mfdfa(random_walk, scales, q_list, order=order)
+    #
+    # h_q = []
+    # log_scales = np.log(scales)
+    # for i, q in enumerate(q_list):
+    #     log_Fq = np.log(Fq[i, :])
+    #     slope, _ = np.polyfit(log_scales, log_Fq, 1) - 1
+    #     h_q.append(slope)
+    # h_q = np.array(h_q)
+    # alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
+    #
+    # fig_h = go.Figure()
+    # fig_h.add_trace(go.Scatter(x=q_list, y=h_q, mode='lines+markers',
+    #                            name='h(q) original', line=dict(color='blue')))
+    # # fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
+    # #                            name='h(q) shuffled', line=dict(color='orange')))
+    #
+    # fig_h.show()
+
+    # pio.write_image(fig, f"{IMG_PATH}/fdm_autocorr.png", scale=5, width=1200, height=1000)
+    # fig.write_image(f"{IMG_PATH}cumulative_profile_segment_partitioning.png")

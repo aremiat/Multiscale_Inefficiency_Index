@@ -8,7 +8,8 @@ from plotly.subplots import make_subplots
 import os
 import plotly.express as px
 from scipy.stats import norm
-
+# from MFDFA import MFDFA
+from fathon import MFDFA
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
@@ -269,8 +270,8 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
 q_list = np.linspace(-5, 5, 21)
-scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(900), 20)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(900), 20)).astype(int))
+scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
@@ -278,12 +279,31 @@ if __name__ == "__main__":
     for ticker in tickers:
         data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)[ticker]
         df_ticker = data.loc["1987-09-10":"2025-02-28"]
+        df_ticker = df_ticker.dropna()
         returns = np.log(df_ticker).diff().dropna()
         scales = scales_rut if ticker == '^RUT' else scales_gspc
         if ticker == '^GSPC':
             name = "SP500"
         else:
             name = "Russell 2000"
+
+        # Calcul de F(q,s)
+        Fq = mfdfa(returns.values, scales, q_list, order=1)  # Fq est un tableau de forme (len(q_list), len(scales))
+
+        # Créer une grille pour le plot 3D :
+        Q, S = np.meshgrid(q_list, scales, indexing='ij')
+
+        # Création de la surface avec Plotly :
+        fig = go.Figure(data=[go.Surface(x=S, y=Q, z=Fq)])
+        fig.update_layout(
+            title='Surface de F(q,s)',
+            scene=dict(
+                xaxis_title='Échelle s',
+                yaxis_title='Ordre q',
+                zaxis_title='F(q,s)'
+            )
+        )
+        # fig.show()
 
         # Calcul de la moyenne et de l'écart-type des rendements
         # mu = returns.mean()
@@ -322,13 +342,13 @@ if __name__ == "__main__":
         h_q = np.array(h_q)
         alpha, f_alpha = compute_alpha_falpha(q_list, h_q)
 
-        # --- 2. Calcul pour la série mélangée (shuffle) ---
+        # # --- 2. Calcul pour la série mélangée (shuffle) ---
         returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
         Fq_shuf = mfdfa(returns_shuf.values, scales, q_list, order=1)
         h_q_shuf = []
         for i, q in enumerate(q_list):
             log_Fq_shuf = np.log(Fq_shuf[i, :])
-            slope_shuf, _ = np.polyfit(log_scales, log_Fq_shuf, 1)
+            slope_shuf, _ = np.polyfit(log_scales, log_Fq_shuf, 1) - 1
             h_q_shuf.append(slope_shuf)
         h_q_shuf = np.array(h_q_shuf)
         alpha_shuf, f_alpha_shuf = compute_alpha_falpha(q_list, h_q_shuf)

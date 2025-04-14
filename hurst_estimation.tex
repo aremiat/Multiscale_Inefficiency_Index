@@ -40,7 +40,7 @@
     \vspace*{1cm}
     \protect\\
     \vspace*{1cm}
-    \textbf{Beyond Random Walks: Revealing the Fractal Memory of Financial Markets with Hurst Analysis}
+    \textbf{Beyond Random Walks: Revealing the Fractal Memory of Financial Markets}
 }
 
 \author{Remiat Alexandre}
@@ -166,13 +166,14 @@ The steps of the simulation are as follows:
     \item Obtain the fBm path by computing \( X = L W \).
 \end{enumerate}
 
-The params used for this simulation are N = 1000 number of points, T = 1, Hurst exponents \( H = 0.2, 0.3, 0.5, 0.6, 0.8 \), the number
+The params used for this simulation are N = 1000 number of points, T = 1 day, Hurst exponents \( H = 0.2, 0.35, 0.5, 0.65, 0.8 \), the number
 of lag for the autocorrelation is 40.
 
 \begin{figure}[!ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/fdm_autocorr}
-    \caption{Simulation of fractional Brownian motion with different Hurst exponent and its autocorrelation function.}
+    \caption{Simulation of fractional Brownian motion with different Hurst exponent and its autocorrelation function.
+    Value of H = 0.2, 0.35, 0.5, 0.65, 0.8 and 1000 points is simulated over a day.}
     \label{fig:fbm_autocorr}
 \end{figure}
 
@@ -336,6 +337,12 @@ Analysis approach designed to detect multifractality in time series (Kantelhardt
     \end{equation}
     Varying \(q\) allows us to emphasize large (\(q>0\)) or small (\(q<0\)) fluctuations.
 
+    In the special case \(q=0\), the fluctuation function is defined by a logarithmic averaging:
+    \begin{equation}
+        F_0(s) = \exp\left(\frac{1}{4N_s} \sum_{\nu=1}^{2N_s} \ln\Bigl[F^2\bigl(s,\nu\bigr)\Bigr]\right).
+    \end{equation}
+
+
     \item \textbf{Scaling behavior.} Finally, on double-logarithmic axes, we examine the dependence of \(F_q(s)\) on \(s\). If
     \begin{equation}
         F_q(s) \;\sim\; s^{h(q)},
@@ -376,7 +383,7 @@ For this analysis, we will use the daily returns of the Russell 2000 index, S\&P
             grid=major,
             legend style={
             font=\footnotesize,
-            at={(0.5,-0.2)},
+            at={(0.5,-0.25)},
             anchor=north,
             legend columns=3
             }
@@ -429,7 +436,7 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
             grid=major,
             legend style={
             font=\footnotesize,
-            at={(0.5,-0.2)},
+            at={(0.5,-0.25)},
             anchor=north,
             legend columns=3
             }
@@ -898,9 +905,9 @@ The critical values for the modified R/S test are provided in the table below. T
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/cumulative_profile_segment_partitioning.png}
+    \includegraphics[width=0.8\textwidth]{img/cumulative_profile_segment_partitioning}
     \caption{Simulation of a random walk (5000 points, increments are normally distributed between 0 and 1, the series is
-    split into segments of length 990) with a
+    split into segments of length 800) with a
     partitioning of the series into segments to represents the steps of MF-DFA.
         The blue line represents the cumulative sum of the series, while the coloured lines represent the polynomial fit for
     each segment. To come back where you left off, see Section~\ref{sec:mfdfa}.}
@@ -922,9 +929,9 @@ The critical values for the modified R/S test are provided in the table below. T
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/rolling_alpha_width.png}
-    \caption{Rolling alpha width computed with a rolling window of 252 days
-        for the S\&P 500 indices (GSPC in the graph) and Russell 2000 (RUT in the graph).}
+    \includegraphics[width=0.8\textwidth]{img/delta_alpha_resample_m.png}
+    \caption{Rolling alpha width difference computed with a rolling window of 252 days
+        for the S\&P 500 and Russell 2000. The data in this example is resampled to monthly for better clarity}
     \label{fig:rolling_alpha_width}
 \end{figure}
 \FloatBarrier
