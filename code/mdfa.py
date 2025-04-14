@@ -8,8 +8,6 @@ from plotly.subplots import make_subplots
 import os
 import plotly.express as px
 from scipy.stats import norm
-# from MFDFA import MFDFA
-from fathon import MFDFA
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
