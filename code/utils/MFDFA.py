@@ -47,7 +47,6 @@ class ComputeMFDFA:
                 F_seg.append(np.mean((segment - fit) ** 2))
 
             F_seg = np.array(F_seg)
-            # Éviter les valeurs nulles
             F_seg[F_seg < 1e-10] = 1e-10
 
             # Calcul de F_q(s) pour chaque valeur de q

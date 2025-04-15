@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  14 APR 2025 13:34
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  15 APR 2025 17:07
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1082,17 +1082,13 @@ File: img/inefficiency_index.png Graphic file (type png)
 <use img/inefficiency_index.png>
 Package pdftex.def Info: img/inefficiency_index.png  used on input line 739.
 (pdftex.def)             Requested size: 375.80544pt x 165.17482pt.
-<img/backtest_long_neutral.png, id=225, 1282.7925pt x 589.4522pt>
+<img/backtest_long_neutral.png, id=225, 1750.54pt x 847.165pt>
 File: img/backtest_long_neutral.png Graphic file (type png)
 <use img/backtest_long_neutral.png>
 Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 749.
 
-(pdftex.def)             Requested size: 375.80544pt x 172.68166pt.
+(pdftex.def)             Requested size: 375.80544pt x 181.86546pt.
 PGFPlots: reading {data/backtest_long_neutral_results.csv}
-
-Overfull \hbox (11.98218pt too wide) in paragraph at lines 767--769
- [][] 
- []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1198,17 +1194,13 @@ Prop-er-ties of Geo-phys-i-cal Records",
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
  ***********
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `hurst_estimation.out' has not changed.
 (rerunfilecheck)             Checksum: DEDB673893501E662322A2AF5BF25614;3892.
  ) 
 Here is how much of TeX's memory you used:
  36409 strings out of 473362
  856779 string characters out of 5720989
- 1358704 words of memory out of 5000000
+ 1350731 words of memory out of 5000000
  58801 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1232,7 +1224,7 @@ ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
 4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
 texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on out/hurst_estimation.pdf (21 pages, 1780291 bytes).
+Output written on out/hurst_estimation.pdf (21 pages, 1773900 bytes).
 PDF statistics:
  409 PDF objects out of 1000 (max. 8388607)
  326 compressed objects within 4 object streams

@@ -9,6 +9,7 @@ import fathon
 from fathon import fathonUtils as fu
 import matplotlib as plt
 import pandas as pd
+from utils.ADF import adf_test
 
 
 
@@ -32,10 +33,11 @@ if __name__ == "__main__":
     df_ticker = df_ticker.dropna()
     returns = np.log(df_ticker).diff().dropna()
     # Compute the cumulative profile
-    returns_centered = returns - np.mean(returns)
+    returns_centered = df_ticker - np.mean(df_ticker)
     Y = np.cumsum(returns_centered)
     # Normalize the returns
     Y = Y.values.flatten()
+    adf_test(Y)
     # Parameter: segment size (scale)
     s_example = 800
     n_segments = len(returns) // s_example

@@ -9,6 +9,7 @@ import os
 import plotly.express as px
 from scipy.stats import norm
 
+
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
 def mfdfa(signal, scales, q_list, order=1):
@@ -168,10 +169,10 @@ def fa(x, scales, qs):
         Ns = N // s
 
         # Calcul des fluctuations locales dans chaque segment
-        # Pour κ=1,..., Ns, on a F_FA(s, κ) = |Y(κ*s) - Y((κ-1)*s)|
+        # Pour κ=1,..., Ns, on a F_FA(s, v) = |Y(v*s) - Y((v-1)*s)|
         F_loc = np.empty(Ns)
-        for k in range(1, Ns + 1):
-            F_loc[k - 1] = np.abs(Y[k * s] - Y[(k - 1) * s])
+        for v in range(1, Ns + 1):
+            F_loc[v - 1] = np.abs(Y[v * s] - Y[(v - 1) * s])
 
         # Calcul de la fonction de fluctuation d'ordre q
         for i, q in enumerate(qs):
@@ -267,7 +268,7 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
-q_list = np.linspace(-5, 5, 21)
+q_list = np.linspace(-3, 3, 13)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
@@ -286,30 +287,47 @@ if __name__ == "__main__":
             name = "Russell 2000"
 
         # Calcul de F(q,s)
-        Fq = mfdfa(returns.values, scales, q_list, order=1)  # Fq est un tableau de forme (len(q_list), len(scales))
-
-        # Créer une grille pour le plot 3D :
-        Q, S = np.meshgrid(q_list, scales, indexing='ij')
-
-        # Création de la surface avec Plotly :
-        fig = go.Figure(data=[go.Surface(x=S, y=Q, z=Fq)])
-        fig.update_layout(
-            title='Surface de F(q,s)',
-            scene=dict(
-                xaxis_title='Échelle s',
-                yaxis_title='Ordre q',
-                zaxis_title='F(q,s)'
-            )
-        )
+        # Fa = fa(returns.values, scales, q_list)  # Fq est un tableau de forme (len(q_list), len(scales))
+        # h_q = []
+        # log_scales = np.log(scales)
+        # for i, q in enumerate(q_list):
+        #     log_Fq = np.log(Fa[i, :])
+        #     slope, _ = np.polyfit(log_scales, log_Fq, 1)
+        #     h_q.append(slope)
+        # h_q = np.array(h_q)
+        # alpha, f_alpha = compute_alpha_falpha(q_list, h_q)
+        #
+        # fig_f = go.Figure()
+        # fig_f.add_trace(go.Scatter(x=alpha, y=f_alpha, mode='lines+markers',
+        #                            name='f(α) original', line=dict(color='blue')))
+        # # fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
+        # #                            name='f(α) shuffled', line=dict(color='orange')))
+        # fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
+        #                     xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
+        # fig_f.show()
+        #
+        # # Créer une grille pour le plot 3D :
+        # Q, S = np.meshgrid(q_list, scales, indexing='ij')
+        #
+        # # Création de la surface avec Plotly :
+        # fig = go.Figure(data=[go.Surface(x=S, y=Q, z=Fq)])
+        # fig.update_layout(
+        #     title='Surface de F(q,s)',
+        #     scene=dict(
+        #         xaxis_title='Échelle s',
+        #         yaxis_title='Ordre q',
+        #         zaxis_title='F(q,s)'
+        #     )
+        # )
         # fig.show()
 
         # Calcul de la moyenne et de l'écart-type des rendements
         # mu = returns.mean()
         # sigma = returns.std()
-
-        # Création d'un histogramme interactif avec Plotly Express
+        #
+        # # Création d'un histogramme interactif avec Plotly Express
         # fig = px.histogram(returns, nbins=100, opacity=0.75,
-        #                    title="Histogramme des rendements de ^GSPC et densité gaussienne",
+        #                    title=f"Histogramme des rendements de {name} et densité gaussienne",
         #                    labels={'value': "Rendements"})
         #
         # # Création de la densité théorique d'une gaussienne
@@ -346,7 +364,7 @@ if __name__ == "__main__":
         h_q_shuf = []
         for i, q in enumerate(q_list):
             log_Fq_shuf = np.log(Fq_shuf[i, :])
-            slope_shuf, _ = np.polyfit(log_scales, log_Fq_shuf, 1) - 1
+            slope_shuf, _ = np.polyfit(log_scales, log_Fq_shuf, 1)
             h_q_shuf.append(slope_shuf)
         h_q_shuf = np.array(h_q_shuf)
         alpha_shuf, f_alpha_shuf = compute_alpha_falpha(q_list, h_q_shuf)
@@ -375,7 +393,7 @@ if __name__ == "__main__":
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
         )
-        # fig_h.show()
+        fig_h.show()
 
         # Graphique 1 : Exposant de Hurst
         fig_h = go.Figure()
@@ -401,21 +419,21 @@ if __name__ == "__main__":
         fig_diff = go.Figure()
         fig_diff.add_trace(go.Scatter(x=q_list, y=alpha_diff, mode='lines+markers',
                                       name='α - α_shuf', line=dict(color='green')))
-        # fig_diff.add_trace(go.Scatter(x=q_list, y=f_alpha_diff, mode='lines+markers',
-        #                               name='f(α) - f(α)_shuf', line=dict(color='red')))
+        fig_diff.add_trace(go.Scatter(x=q_list, y=f_alpha_diff, mode='lines+markers',
+                                      name='f(α) - f(α)_shuf', line=dict(color='red')))
         fig_diff.update_layout(title=f'Differences in α and f(α) between Original and Shuffled {name}',
                                xaxis_title='q', yaxis_title='Différence', template='plotly_white')
         # fig_diff.show()
 
         hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
-        # hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
+        hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
         df = pd.DataFrame({
         'f_alpha': f_alpha,
         'alpha': alpha,
         'f_alpha_shuf': f_alpha_shuf,
         'alpha_shuf': alpha_shuf,
         })
-        # df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
+        df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
 
 # data_price = pd.read_csv(f"{DATA_PATH}/russel_stocks.csv", index_col=0, parse_dates=True)
 
