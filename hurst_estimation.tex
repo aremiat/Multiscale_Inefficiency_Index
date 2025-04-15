@@ -399,11 +399,11 @@ For this analysis, we will use the daily returns of the Russell 2000 index, S\&P
                 y=h(q),
                 col sep=comma
             ]
-            {data/multifractal_spectrum_daily_rut.csv};
+            {data/multifractal_spectrum_daily_Russell 2000.csv};
             \legend{Multifractal Spectrum}
         \end{axis}
     \end{tikzpicture}
-    \caption{Multifractal Spectrum $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -5 and 5.
+    \caption{Multifractal Spectrum $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -3 and 3.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
@@ -456,7 +456,7 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
             \legend{Multifractal Spectrum}
         \end{axis}
     \end{tikzpicture}
-    \caption{Multifractal Spectrum $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -5 and 5.
+    \caption{Multifractal Spectrum $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -3 and 3.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
@@ -566,7 +566,7 @@ behavior. Furthermore,
 the approximate symmetry of the curve around its maximum implies that both large and small fluctuations are represented,
 albeit with varying intensity. Overall, this bell-shaped spectrum underscores the complex, multi-scale nature of the
 Russell 2000 returns, in line with multifractal processes often observed in financial markets.
-A peak of the multifractal spectrum at $\alpha \approx 0.554$ indicates that the most common local Hölder exponent
+A peak of the multifractal spectrum at $\alpha \approx 0.55$ indicates that the most common local Hölder exponent
 in the Russell 2000 returns is around 0.56. In general, $\alpha > 0.5$ suggests a certain degree of persistence or
 short to medium term correlation, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk),
 and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.56 may implies a
@@ -631,7 +631,7 @@ The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a simila
 2000 returns, indicating multiple scaling behaviors in the data. However, the spectrum is narrower and less pronounced,
 suggesting a possibly weaker multifractal nature, the difference between alpha min and alpha max if lower than the Russell 2000 ones
 therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000.
-The peak near the center for the original series is around 0.491. This may imply that the S\&P 500 returns exhibit a more stable
+The peak near the center for the original series is around 0.486. This may imply that the S\&P 500 returns exhibit a more stable
 behavior compared to the Russell 2000, with less pronounced volatility clustering across multiple timescales.
 Additionally, the approximate symmetry of the curve around its maximum indicates that both large and small fluctuations
 are present, though with lower intensity than in the Russell 2000.
@@ -715,19 +715,19 @@ We then construct the inefficiency index defined as
 I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
 \]
 where \(\Delta \alpha_{\text{diff}}\) represents the absolute difference between the multifractal spectrum widths of the two
-indices. This inefficiency index is considered statistically significant when its value exceeds one standard deviation, approximately 0.01.
+indices.
 
 Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in the S\&P 500), the positions are adjusted as follows:
 
 \begin{itemize}
     \item If the rolling Hurst exponent is greater than 0.5, the momentum is positive (indicating that the S\&P 500 is
-    outperforming the Russell 2000), and if the inefficiency index exceeds one standard deviation (i.e., is greater than 0.01),
-    then the alpha width of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
+    outperforming the Russell 2000), and if the inefficiency is positive,
+    then the alpha width ($\alpha$max - $\alpha$min) of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
     persistence and a more complex fractal structure, suggesting inefficiency. In this case, we overweight the S\&P 500 by allocating
     80\% to it and 20\% to the Russell 2000.
 
     \item If the rolling Hurst exponent is greater than 0.5 and the momentum is negative (indicating that the Russell 2000 is
-    outperforming the S\&P 500), the inefficiency index will be less than \(-0.01\) (meaning that the alpha width of the
+    outperforming the S\&P 500), the inefficiency index will be less than 0 (meaning that the alpha width of the
     Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 80\% to it and 20\% to the S\&P 500.
 
     \item If the rolling Hurst exponent is below 0.5, implying no clear persistence, we maintain a neutral allocation (50\% in each index).

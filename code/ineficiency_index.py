@@ -281,9 +281,9 @@ if __name__ == "__main__":
                           xaxis_title="Date",
                           yaxis_title="Inefficiency Index",
                           template="plotly_white")
-        # fig.show()
+        fig.show()
         ineff_index.index.name = "Date"
-        ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
+        # ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
 
         positions = compute_positions_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2,
                                                         threshold_h=0.5, threshold_ineff=1e-6)
@@ -304,8 +304,8 @@ if __name__ == "__main__":
             "Sharpe": round(sharpe, 3),
             "Max Drawdown": round(max_dd * 100, 3)
         })
-        plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
-        count_position_switches(positions, ticker1, ticker2)
+        # plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
+        # count_position_switches(positions, ticker1, ticker2)
 
         # fig_backtest = make_subplots(
         #     rows=2, cols=1, shared_xaxes=True,
@@ -409,39 +409,39 @@ if __name__ == "__main__":
             )
         )
 
-        ticker_cols = positions.columns.tolist()
-
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=positions.index,
-                y=positions[ticker_cols[0]],
-                mode='lines',
-                name=f'Position {ticker_cols[0]}',
-                line=dict(color='green')
-            ),
-            row=2, col=1
-        )
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=positions.index,
-                y=positions[ticker_cols[1]],
-                mode='lines',
-                name=f'Position {ticker_cols[1]}',
-                line=dict(color='orange')
-            ),
-            row=2, col=1
-        )
+        # ticker_cols = positions.columns.tolist()
+        #
+        # fig_backtest.add_trace(
+        #     go.Scatter(
+        #         x=positions.index,
+        #         y=positions[ticker_cols[0]],
+        #         mode='lines',
+        #         name=f'Position {ticker_cols[0]}',
+        #         line=dict(color='green')
+        #     ),
+        #     row=2, col=1
+        # )
+        # fig_backtest.add_trace(
+        #     go.Scatter(
+        #         x=positions.index,
+        #         y=positions[ticker_cols[1]],
+        #         mode='lines',
+        #         name=f'Position {ticker_cols[1]}',
+        #         line=dict(color='orange')
+        #     ),
+        #     row=2, col=1
+        # )
 
         # Mise en forme
         fig_backtest.update_layout(
-            title="Cumulative Return and Positions",
+            title="Cumulative Return",
             template="plotly_white",
         )
 
         # Légendes axes
-        fig_backtest.update_xaxes(title_text="Date", row=2, col=1)
-        fig_backtest.update_yaxes(title_text="Log Cum Return", row=1, col=1)
-        fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
+        fig_backtest.update_xaxes(title_text="Date")
+        fig_backtest.update_yaxes(title_text="Log Cumulative Return")
+        # fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
         fig_backtest.show()
 
         # =====================================================================

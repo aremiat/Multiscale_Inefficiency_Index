@@ -268,7 +268,7 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
-q_list = np.linspace(-3, 3, 13)
+q_list = np.linspace(-5, 5, 21)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
@@ -393,7 +393,7 @@ if __name__ == "__main__":
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
         )
-        fig_h.show()
+        # fig_h.show()
 
         # Graphique 1 : Exposant de Hurst
         fig_h = go.Figure()
@@ -426,14 +426,14 @@ if __name__ == "__main__":
         # fig_diff.show()
 
         hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
-        hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
+        # hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
         df = pd.DataFrame({
         'f_alpha': f_alpha,
         'alpha': alpha,
         'f_alpha_shuf': f_alpha_shuf,
         'alpha_shuf': alpha_shuf,
         })
-        df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
+        # df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
 
 # data_price = pd.read_csv(f"{DATA_PATH}/russel_stocks.csv", index_col=0, parse_dates=True)
 
