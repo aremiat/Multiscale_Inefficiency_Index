@@ -227,15 +227,16 @@ if __name__ == "__main__":
                 rolling_delta_ticker1.loc[common_dates_mfdfa] - rolling_delta_ticker2.loc[common_dates_mfdfa])
 
     # do a plot of the difference between the two rolling delta alpha
-    # fig = go.Figure()
-    # fig.add_trace(go.Scatter(x=delta_alpha_diff.index, y=delta_alpha_diff,
-    #                             mode='lines', name='Delta Alpha Difference',
-    #                             line=dict(color='blue')))
-    # fig.update_layout(title="Delta Alpha Difference",
-    #                     xaxis_title="Date",
-    #                     yaxis_title="Delta Alpha Difference",
-    #                     template="plotly_white")
-    # fig.show()
+    delta_alpha_diff_m = delta_alpha_diff.resample('M').last()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=delta_alpha_diff_m.index, y=delta_alpha_diff_m,
+                                mode='lines', name='Delta Alpha Difference',
+                                line=dict(color='blue')))
+    fig.update_layout(title="Delta Alpha Difference",
+                        xaxis_title="Date",
+                        yaxis_title="Delta Alpha Difference",
+                        template="plotly_white")
+    fig.show()
 
     # Configurations pour le rolling sur RS
     rolling_configs = {
@@ -246,11 +247,11 @@ if __name__ == "__main__":
         # "ModifOverlap1260": {"method": "modified", "rolling_type": "overlapping", "window_size": 1260},
         # "ModifOverlap2520": {"method": "modified", "rolling_type": "overlapping", "window_size": 2520},
     }
-    start_dates = ["1995-01-02", "2000-01-02", "2005-01-02", "2010-01-02", "2015-01-02", "2020-01-02"]
+    start_dates = ["1995-01-02", "2000-01-02", "2005-01-02", "2010-01-02", "2015-01-02"]
 
     # for start_date in start_dates:
-    # cumulative_returns_dict = {}
-    # performance_results = []
+    #     cumulative_returns_dict = {}
+    #     performance_results = []
     for config_name, config in rolling_configs.items():
         cumulative_returns_dict = {}
         performance_results = []
@@ -281,7 +282,7 @@ if __name__ == "__main__":
                           xaxis_title="Date",
                           yaxis_title="Inefficiency Index",
                           template="plotly_white")
-        fig.show()
+        # fig.show()
         ineff_index.index.name = "Date"
         # ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
 
@@ -304,7 +305,7 @@ if __name__ == "__main__":
             "Sharpe": round(sharpe, 3),
             "Max Drawdown": round(max_dd * 100, 3)
         })
-        # plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
+        plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
         # count_position_switches(positions, ticker1, ticker2)
 
         # fig_backtest = make_subplots(
@@ -333,32 +334,32 @@ if __name__ == "__main__":
         )
 
         # Modif Overlap 120 No Filter
-        p = all_p.copy()
-        rolling_signal = compute_rolling_metric(r.shift(1), 120,
-                                                method="modified",
-                                                rolling_type="overlapping",
-                                                chin=False).dropna()
-        common_dates = rolling_signal.index.intersection(momentum.index)
-        signal = rolling_signal.loc[common_dates]
-        mom = momentum.loc[common_dates]
-        positions = compute_positions(signal, mom, ticker1, ticker2, default=0.5, threshold=0.5)
-        common_dates_bp = positions.index.intersection(p.index)
-        positions = positions.loc[common_dates_bp]
-        p_config_filtered = p_config.loc[first_valid_index:]
-        common_dates_bp = positions_filtered.index.intersection(p_config_filtered.index)
-        positions_final = positions_filtered.loc[common_dates_bp]
-        all_p_config_final = p_config_filtered.loc[common_dates_bp]
-        # all_p_config = p.loc[common_dates_bp]
-        cum_returns, port_returns = run_backtest(all_p_config_final, positions, ticker1, ticker2, fee_rate=0.005)
-        cumulative_returns_dict["ModifOverlap120NoFilter"] = cum_returns
-        ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
-        performance_results.append({
-            "Strategy": "ModifOverlap120NoFilter",
-            "Annualized Return": round(ann_ret * 100, 3),
-            "Annualized Volatility": round(ann_vol * 100, 3),
-            "Sharpe": round(sharpe, 3),
-            "Max Drawdown": round(max_dd * 100, 3)
-        })
+        # p = all_p.copy()
+        # rolling_signal = compute_rolling_metric(r.shift(1), 120,
+        #                                         method="modified",
+        #                                         rolling_type="overlapping",
+        #                                         chin=False).dropna()
+        # common_dates = rolling_signal.index.intersection(momentum.index)
+        # signal = rolling_signal.loc[common_dates]
+        # mom = momentum.loc[common_dates]
+        # positions = compute_positions(signal, mom, ticker1, ticker2, default=0.5, threshold=0.5)
+        # common_dates_bp = positions.index.intersection(p.index)
+        # positions = positions.loc[common_dates_bp]
+        # p_config_filtered = p_config.loc[first_valid_index:]
+        # common_dates_bp = positions_filtered.index.intersection(p_config_filtered.index)
+        # positions_final = positions_filtered.loc[common_dates_bp]
+        # all_p_config_final = p_config_filtered.loc[common_dates_bp]
+        # # all_p_config = p.loc[common_dates_bp]
+        # cum_returns, port_returns = run_backtest(all_p_config_final, positions, ticker1, ticker2, fee_rate=0.005)
+        # cumulative_returns_dict["ModifOverlap120NoFilter"] = cum_returns
+        # ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
+        # performance_results.append({
+        #     "Strategy": "ModifOverlap120NoFilter",
+        #     "Annualized Return": round(ann_ret * 100, 3),
+        #     "Annualized Volatility": round(ann_vol * 100, 3),
+        #     "Sharpe": round(sharpe, 3),
+        #     "Max Drawdown": round(max_dd * 100, 3)
+        # })
 
         # Ports de comparaison : SP500, Russell et portefeuille 50/50
         new_p = all_p.loc[first_valid_index:]
@@ -399,15 +400,15 @@ if __name__ == "__main__":
         #     ),
         #     row=1, col=1
         # )
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=portfolio_50_50_cumulative.index,
-                y=np.log(portfolio_50_50_cumulative),
-                mode='lines',
-                name="50/50 Portfolio",
-                line=dict(color='black')
-            )
-        )
+        # fig_backtest.add_trace(
+        #     go.Scatter(
+        #         x=portfolio_50_50_cumulative.index,
+        #         y=np.log(portfolio_50_50_cumulative),
+        #         mode='lines',
+        #         name="50/50 Portfolio",
+        #         line=dict(color='black')
+        #     )
+        # )
 
         # ticker_cols = positions.columns.tolist()
         #
@@ -433,14 +434,14 @@ if __name__ == "__main__":
         # )
 
         # Mise en forme
-        fig_backtest.update_layout(
-            title="Cumulative Return",
-            template="plotly_white",
-        )
+        # fig_backtest.update_layout(
+        #     title="Cumulative Return",
+        #     template="plotly_white",
+        # )
 
         # Légendes axes
-        fig_backtest.update_xaxes(title_text="Date")
-        fig_backtest.update_yaxes(title_text="Log Cumulative Return")
+        # fig_backtest.update_xaxes(title_text="Date")
+        # fig_backtest.update_yaxes(title_text="Log Cumulative Return")
         # fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
         fig_backtest.show()
 
@@ -476,6 +477,7 @@ if __name__ == "__main__":
         df_results = pd.DataFrame(performance_results)
         print("=== Performance Summary ===")
         print(df_results)
-        # df_results.to_csv(f"{DATA_PATH}/backtest_results_start_{start_date}.csv", index=False)
-        df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
+        df_results.to_csv(f"{DATA_PATH}/backtest_results_start_{start_date}.csv", index=False)
+        # df_results.to_csv(f"{DATA_PATH}/backtest_results_window_{w_s}.csv", index=False)
+        # df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
         # fig_backtest.write_image(f"{IMG_PATH}/backtest_long_neutral.png", width=1200, height=800)

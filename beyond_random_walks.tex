@@ -75,13 +75,13 @@ across the entire time series lacks sufficient robustness and can be influenced 
 To address these issues, we employed the Multifractal Detrended Fluctuation Analysis (MF-DFA) to investigate the
 local behavior of the series and characterize its multifractal spectrum. The multifractal spectrum reveals that the series
 might exhibit multifractal properties. To take advantage of this, we propose a trading strategy based on the Hurst
-exponent ,the multifractal spectrum and a proposed inefficiency index that combines the multifractality and the Hurst exponent.
+exponent, the multifractal spectrum and a proposed inefficiency index that combines the multifractality and the Hurst exponent.
 We look into pairs with different patterns or behaviors that changes
 when you view data at different sizes or over different time periods behavior (S\&P 500 and Russell 2000).
 The inefficiency index is used as a filter to determine the significance of our trading signal.
 The strategy (ModifOverlap120) outperforms the long-only S\&P 500 portfolio, the long-only Russell 2000 portfolio and
 50/50 portfolio (our benchmark). Moreover, the strategies that used the inefficiency index as a filter
-outperform the strategies that do not use it.
+outperform the strategies that did not use it on Sharpe and max drawdown.
 
 
 
@@ -207,6 +207,14 @@ which implies that by taking logarithms, the Hurst exponent \(H\) can be obtaine
 \begin{equation}
     H \sim \frac{\log(Q_T)}{\log(T)}.
 \end{equation}
+
+Unfortunately, the asymptotic distribution of the R/S statistic is not known, making it difficult to establish a
+statistical test for the null hypothesis of short memory against the alternative hypothesis of long memory. Moreover,
+the R/S statistic does not explicitly account for short-term autocorrelation in the data, which can inflate (or reduce)
+the overall range and misrepresent the true variability of the series. Standard deviation estimates likewise ignore
+autocorrelated structure over short horizons, compounding the bias.
+As a result, the R/S measure can erroneously detect long memory when, in fact, short-term effects are responsible.
+This shortfall motivated Lo’s Modified R/S procedure.
 
 \subsection{Modified R/S Analysis}
 \label{sec:modified_rs}
@@ -362,15 +370,15 @@ The S\&P 500 and Russell 2000 are ideal candidates for multifractal analysis.
 The modified R/S statistic (M-R/S) for the S\&P 500 is approximately 0.501 very close to 0.5 which suggests that its
 dynamics are consistent with efficient market behavior. In contrast, the Russell 2000 has a modified Hurst exponent of
 approximately 0.588, indicating significant long-range dependencies and a less efficient market. Moreover, it is interesting
-to observe that, in our graphical analysis refer to Figure~\ref{fig:cumulative_returns} , there are periods when the S\&P 500 displays bullish trends while the Russell 2000 remains relatively flat
-for no apparent reason.
+to observe that, in the graphical analysis (refer to Figure~\ref{fig:cumulative_returns}), there are periods when the Russell 2000
+displays bullish trends while the S\&P 500 remains relatively flat for no apparent reason.
 
 These discrepancies between the two series highlight their distinct scaling properties and market efficiencies. Our aim with
 the multifractal analysis is to capture and quantify these differences in local scaling behavior. By analyzing the multifractal spectrum
 of each index, we hope to match these structural discrepancies, thereby providing deeper insights into the dynamics of each market.
 By analyzing both the S\&P 500 and Russell 2000, we gain insight into how differences in efficiency and persistence
 affect their multifractal characteristics, thereby allowing us to exploit these structural differences in our trading strategy.
-For this analysis, we will use the daily returns of the Russell 2000 index, S\&P 500 index from 1987 to 2025 (about 10 000 data points)
+For this analysis, we will use the daily returns of the Russell 2000 index, S\&P 500 index from September 10th, 1987, to February 28th, 2025 (about 10 000 data points).
 
 \begin{figure}[htbp]
     \centering
@@ -417,8 +425,8 @@ Variation of h(q) with q indicates that small and large fluctuations scale diffe
 The curvature of the line indicates the presence of heterogeneity in the distribution of singularities, with
 different regions of the series characterized by varying degrees of irregularity.
 Lower values of $q$ emphasize small fluctuations, while higher values highlight high fluctuations.
-Therefore, this spectrum showcases that during periods of small fluctuations the series is likely to exhibit long-term
-memory as the Hurst exponent is greater than 0.5, whether for drastic changes in the series behavior the Hurst exponent
+Therefore, this spectrum showcases that during periods of small fluctuations (q < 0) the series is likely to exhibit long-term
+memory as the Hurst exponent is greater than 0.5, whether for drastic changes (q > 0) in the series behavior the Hurst exponent
 is likely not to be high.
 This result is consistent with our simulation of the fractional Brownian motion, where we can see that the
 series exhibits smooth and regular behavior (calm fluctuations) for high Hurst exponent and sharply irregular behavior
@@ -463,7 +471,7 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
 \FloatBarrier
 
 The multifractal spectrum for the S\&P 500 returns exhibits a similar behavior to that of the Russell 2000 returns,
-except that it is less pronounced. At q = -5, the series exhibits a Hurst exponent of 0.58 compared to 0.67 for the
+except that it is less pronounced. At q = -3, the series exhibits a Hurst exponent of 0.56 compared to 0.65 for the
 Russell 2000, those series seems to slightly differs in their behavior.
 This difference, albeit modest, may hint at distinct market microstructure characteristics between the two indices.
 For instance, the S\&P 500, with its larger and more liquid companies, might experience a smoothing effect on return
@@ -473,8 +481,6 @@ However, these interpretations remain speculative given the sensitivity of the m
 parameters and evaluation period.
 Overall, our findings provide an interesting perspective on market behavior, suggesting that although both indices
 share similar multifractal characteristics, subtle variations exist that could reflect underlying market differences.
-Nonetheless, further analysis incorporating alternative methods and longer timeframes is required to robustly confirm
-these preliminary observations and to better understand the statistical significance of the multifractal effects observed.
 
 From the MF-DFA analysis, we can also compute the Hölder exponent and multifractal spectrum.
 Calculating the Hölder exponent and multifractal spectrum extends MF-DFA by detailing local behavior.
@@ -505,6 +511,20 @@ events or sudden changes in dynamics and to describe the distribution and freque
 Thus, the multifractal approach offers a detailed and nuanced description of a signal's local variability, providing
 essential insights for understanding and predicting its underlying dynamics. \\
 
+We can distinguish two main contributions to the multifractal spectrum:
+\[
+\mathcal{M}(q) \propto \underbrace{f_{\text{corr}}(q)}_{\substack{\text{Temporal correlations} \\ \text{in the series}}} + \underbrace{f_{\text{tail}}(q)}_{\substack{\text{Strongly non-Gaussian} \\ \text{distribution}}}
+\]
+
+Therefore, in the literature, the multifractality is often reffered as two types :
+
+Type I multifractality stems from long-range correlations within the time series, whereas Type II multifractality arises
+from a broad probability density function of the series values Jan W. Kantelhardt (2002) and al. This distinction enables us to identify and quantify
+the type of multifractality present. By shuffling the series, we effectively eliminate the long-range correlations,
+retaining only the influence of the value distribution. In an ideal monofractal series, the Hölder exponent would peak
+at 0.5 thus, the difference between the exponents of the original and shuffled series reflects the contribution of
+long-range correlations to the multifractality.
+
 
 \begin{figure}[htbp]
     \centering
@@ -523,18 +543,18 @@ essential insights for understanding and predicting its underlying dynamics. \\
             }
         ]
             % Draw the multifractal spectrum of the shuffled signal (in red)
-%            \addplot[
-%                red,
-%                thick,
-%                mark=square*,
-%                mark size=1.5pt
-%            ]
-%            table[
-%                x=alpha_shuf,
-%                y=f_alpha_shuf,
-%                col sep=comma
-%            ]
-%            {data/f_alpha_alpha_russell 2000.csv};
+            \addplot[
+                red,
+                thick,
+                mark=square*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha_shuf,
+                y=f_alpha_shuf,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_russell 2000.csv};
 
             % Draw the multifractal spectrum of the original signal (in blue)
             \addplot[
@@ -550,7 +570,7 @@ essential insights for understanding and predicting its underlying dynamics. \\
             ]
             {data/f_alpha_alpha_russell 2000.csv};
 
-            \legend{Spectrum}
+            \legend{Shuffle, Original}
         \end{axis}
     \end{tikzpicture}
     \caption{Multifractal spectrum $f(\alpha)$ for the Russell 2000 returns.}
@@ -558,20 +578,25 @@ essential insights for understanding and predicting its underlying dynamics. \\
 
 \FloatBarrier
 
-The multifractal spectrum $f(\alpha)$ for the Russell 2000 returns exhibits a characteristic bell-shaped curve,
+The multifractal spectrum $f(\alpha)$ for the Russell 2000 returns exhibits a bell-shaped curve,
 indicating multiple scaling behaviors in the data. The peak near the center represents the most common local Hölder
 exponent, while the spread around this peak highlights the diversity of singularities present in the series. A wider
 spectrum suggests stronger multifractality, reflecting volatility clustering across multiple timescales and signaling diversified
 behavior. Furthermore,
 the approximate symmetry of the curve around its maximum implies that both large and small fluctuations are represented,
 albeit with varying intensity. Overall, this bell-shaped spectrum underscores the complex, multi-scale nature of the
-Russell 2000 returns, in line with multifractal processes often observed in financial markets.
+Russell 2000 returns.
 A peak of the multifractal spectrum at $\alpha \approx 0.55$ indicates that the most common local Hölder exponent
-in the Russell 2000 returns is around 0.56. In general, $\alpha > 0.5$ suggests a certain degree of persistence or
+in the Russell 2000 returns is around 0.55. In general, $\alpha > 0.5$ suggests a certain degree of persistence or
 short to medium term correlation, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk),
-and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.56 may implies a
+and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.55 may implies a
 moderately rough signal neither purely random nor overly smooth highlighting the presence of multifractal characteristics.
-This points the coexistence of multiple scaling behaviors, where volatility clustering arises across different temporal scales.
+Comparing it with the shuffle series, we observe that the $\alpha$ peak is lower than the original series, indicating that the
+shuffled series exhibits a more uniform behavior. This suggests that the multifractality in the original series is primarily
+driven by long-range correlations, while the shuffled series lacks this structure. It is still higher than 0.5, indicating
+that the series is still multifractal but only because of the non-gaussian nature of returns (Kurtosis is 12.71). Moreover, the width spectrum
+is approximately 0.2, in a random walk the width of the spectrum would be close to 0.15 (refer to Lukasz Czarnecki, Dariusz Grech 2009),
+indicating that when shuffling the series, it behaves more like a random walk suggesting market efficiency.
 
 
 
@@ -592,18 +617,18 @@ This points the coexistence of multiple scaling behaviors, where volatility clus
             }
         ]
             % Draw the multifractal spectrum of the shuffled signal (in red)
-%            \addplot[
-%                red,
-%                thick,
-%                mark=square*,
-%                mark size=1.5pt
-%            ]
-%            table[
-%                x=alpha_shuf,
-%                y=f_alpha_shuf,
-%                col sep=comma
-%            ]
-%            {data/f_alpha_alpha_SP500.csv};
+            \addplot[
+                red,
+                thick,
+                mark=square*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha_shuf,
+                y=f_alpha_shuf,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_SP500.csv};
 
             % Draw the multifractal spectrum of the original signal (in blue)
             \addplot[
@@ -619,7 +644,7 @@ This points the coexistence of multiple scaling behaviors, where volatility clus
             ]
             {data/f_alpha_alpha_SP500.csv};
 
-            \legend{Spectrum}
+            \legend{Shuffle, Original}
         \end{axis}
     \end{tikzpicture}
     \caption{Multifractal spectrum $f(\alpha)$ for S\&P 500 returns.}
@@ -627,24 +652,34 @@ This points the coexistence of multiple scaling behaviors, where volatility clus
 
 \FloatBarrier
 
-The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a similar bell-shaped curve to that of the Russell
-2000 returns, indicating multiple scaling behaviors in the data. However, the spectrum is narrower and less pronounced,
-suggesting a possibly weaker multifractal nature, the difference between alpha min and alpha max if lower than the Russell 2000 ones
-therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000.
+The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a different curve shortened on the right side.
+The spectrum is narrower (0.27 between the maximum and minimum) compared to the Russell 2000 (0.4),
+suggesting a possibly weaker multifractal nature, the difference between alpha min and alpha max is lower than the Russell 2000 ones
+therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000. Let's recall that for
+a random walk the alpha pic would be close to 0.5 and the spectrum width narrow (close to 0.15, refer to Lukasz Czarnecki, Dariusz Grech 2009,
+where they tested the MF-DFA on RMD random midpoint displacement algorithm).
 The peak near the center for the original series is around 0.486. This may imply that the S\&P 500 returns exhibit a more stable
 behavior compared to the Russell 2000, with less pronounced volatility clustering across multiple timescales.
-Additionally, the approximate symmetry of the curve around its maximum indicates that both large and small fluctuations
-are present, though with lower intensity than in the Russell 2000.
+The fact that the curve is shortened on the right but stretches deeper on the left means that the market exhibits fewer
+ultra-calm intervals in favor of a greater propensity for abrupt or extreme fluctuations otherwise saying that this series
+exhibit fatter tails.
+Interestingly, the peak of the shuffled series is higher than the original one (0.53). It may seems counterintuitive at first
+but it actually makes sense. Let's recall that from our analysis with M-R/S, the S\&P 500 had a Hurst exponent of 0.501
+,indicating that the series is likely to be a random walk. Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
+reinforcing our first result via Hurst.
+For both series, the width of the spectrum is approximately 0.27, if you look back at the Russell 2000, the width of the spectrum
+shrinks to 0.2 when shuffling the series, indicating that the multifractality is primarily driven by long-range correlations.
+In this spectrum, there is no long term correlation, the multifractality is only due to the non-gaussian nature of returns.
+Therefore, the width is not affected by a shuffling procedure. The fact that the peak of the shuffled series is higher than the original one
+is due to the artificial creation of long-range correlations in the randomly shuffled series. If you shuffle the series many time,
+the spectre will not shrinks but you will observe different $\alpha$ peaks that comes from artificially created long term correlation. \\
 
-It is important to exercise caution when interpreting these results. The estimation of multifractal parameters is highly
-sensitive to the chosen scaling ranges sampling variability..
+From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior close to the one of a random walk and
+that it's multifractality comes from the non-gaussian nature of the returns (Kurtosis is estimated 28.41) since the width
+of the spectrum doesn't change much with the shuffling series. Whereas for the Russell 2000 it clearly comes from the long-range
+correlations (Kurtosis is estimated 12.71) since the width of the spectrum shrinks when shuffling the series.
+Therefore, the inefficency could be measured by the width of the spectrum rather than the $\alpha$ peak of the series.
 
-
-The observed difference in multifractality between the Russell 2000 and S\&P 500 suggests exploitable structural
-disparities. A wider multifractal spectrum in the Russell indicates stronger persistence and local memory,
-suitable for momentum-based strategies. Conversely, the S\&P 500's narrow spectrum reflects more stable, less predictable
-dynamics. This sets the stage for a trading strategy that capitalizes on shifts in persistence, guided by the Hurst
-exponent market inefficiency and multifractal indicators.
 
 \subsection{Proposition of an Inefficiency Index}
 
@@ -669,15 +704,13 @@ To capture market inefficiency, we propose combining two key structural componen
     \end{equation}
 \end{enumerate}
 
-\subsection*{Inefficiency Index Definition}
-
 We define the inefficiency index $I$ as
 \begin{equation}
 I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
 \end{equation}
 where $\Delta\alpha_{\text{diff}}$ is the absolute difference between the multifractal spectrum widths of two indices (for example, S\&P 500 versus Russell 2000).
+It gives us insights on which market seems to be more inefficient.
 
-\subsection*{Interpretation and Usage}
 
 An efficient market should exhibit
 \begin{equation}
@@ -715,19 +748,20 @@ We then construct the inefficiency index defined as
 I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
 \]
 where \(\Delta \alpha_{\text{diff}}\) represents the absolute difference between the multifractal spectrum widths of the two
-indices.
+indices. It is computed as a rolling window of 4 years since in provides the best compromise between significance of the results
+and number of data points required.
 
 Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in the S\&P 500), the positions are adjusted as follows:
 
 \begin{itemize}
     \item If the rolling Hurst exponent is greater than 0.5, the momentum is positive (indicating that the S\&P 500 is
     outperforming the Russell 2000), and if the inefficiency is positive,
-    then the alpha width ($\alpha$max - $\alpha$min) of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
+    then the spectrum width ($\alpha$max - $\alpha$min) of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
     persistence and a more complex fractal structure, suggesting inefficiency. In this case, we overweight the S\&P 500 by allocating
     80\% to it and 20\% to the Russell 2000.
 
     \item If the rolling Hurst exponent is greater than 0.5 and the momentum is negative (indicating that the Russell 2000 is
-    outperforming the S\&P 500), the inefficiency index will be less than 0 (meaning that the alpha width of the
+    outperforming the S\&P 500), if the inefficiency index is negative (meaning that the alpha width of the
     Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 80\% to it and 20\% to the S\&P 500.
 
     \item If the rolling Hurst exponent is below 0.5, implying no clear persistence, we maintain a neutral allocation (50\% in each index).
@@ -737,7 +771,9 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/inefficiency_index.png}
-    \caption{Inefficiency index}
+    \caption{Inefficiency index computed based on the difference between the spectrum width ($\alpha$max - $\alpha$min) between the
+    S\&P 500 and Russell 2000, from 1991-11-15 to 2025-02-28. The window used here is 4 years as it provides the best compromise between significance of the results
+    and number of data points required.}
     \label{fig:inefficiency_index}
 \end{figure}
 \FloatBarrier
@@ -747,9 +783,8 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/backtest_long_neutral.png}
-    \caption{Comparison of the performance of the ModifOverlap120 strategy (blue) with the long only S\&P 500 portfolio (red),
-        and 50/50 portfolio (black).
-        The backtest period is from 1988-10-18 to 2025-02-28.}
+    \caption{Comparison of the performance of the ModifOverlap120 strategy (blue) with the 50/50 portfolio (black).
+        The backtest period is from 1991-11-15 to 2025-02-28.}
     \label{fig:cumulative_performance}
 \end{figure}
 
@@ -765,19 +800,25 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
         columns/Sharpe/.style={column name=Sharpe},
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_long_neutral_results.csv}
-    \caption{Performance metrics of the strategies (5 bps transaction fees) compared to the long only S\&P 500
-    portfolio, long only Russell 2000 portfolio, 50/50 Russell/S\&P 500 portfolio.}
+    \caption{Performance metrics of the strategies ModifOverlap120 (5 bps transaction fees) compared to 50/50 Russell/S\&P 500 portfolio
+    from 1991-11-15 to 2025-02-28.}
     \label{tab:performance_table}
 \end{table}
 
+\FloatBarrier
+
+\label{sec:backtest_results}
 We tested severals strategies to see how robust the results are, the ModifOverlap120 correspond to the estimation of a
-Hurst based modified R/S statistic using a rolling window of 120 days and the ModifOverlap120NoFilter correspond to the estimation of a
+Hurst based modified R/S statistic using a rolling window of 120 days and the ModifOverlap120NoFilter corresponds to the estimation of a
 Hurst based modified R/S statistic using a rolling window of 120 days without using the inefficiency index as a signal filter.
 The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance} (for a more detail analysis
-on backtest starting periods or window size see Table~\ref{tab:performance_table_1995-01-02}).
-All the strategies outperform the 50/50 portfolio and the long only Russell 2000 portfolio.
-The ModifOverlap120 and ModifOverlap252 strategy outperforms the long only S\&P 500 portfolio in all metrics, except
-that it achieves a higher volatility over the period.
+on window size see Table~\ref{tab:performance_table_window_120}).
+All the strategies outperform the 50/50 portfolio and the long only Russell 2000 portfolio. The portfolio composition and position switching
+for the ModifOverlap120 can be seen in Figure~\ref{fig:position_switching}.
+The ModifOverlap120 strategy outperforms the 50/50 portfolio in all metrics, except
+that it achieves a slightly higher volatility over the period. The ModifOverlap120 and ModifOverlap120NoFilter strategies
+shows similar results except that the use of the inefficency index as a filter improve the performance of the strategy by
+achieving a lower max drawdown.
 
 
 \section{Conclusion}
@@ -790,7 +831,9 @@ In contrast, the S\&P 500 shows a more subdued multifractal behavior, with a nar
 exponents. This difference may reflect underlying market microstructure characteristics, such as liquidity and the size
 of constituent companies, but these interpretations should be treated with caution. The Hurst exponent seems to be able
 to capture differences in the multifractal spectrum between the two indices, with the Russell 2000 that appears to
-display a broader spectrum and more distinct multifractal characteristics compared to the S\&P 500.
+display a broader spectrum and more distinct multifractal characteristics compared to the S\&P 500. Overall, the outperformance
+of the strategies seems to hold depending on the window size used, and the proposed inefficiency brings value as a risk
+limiting filter.
 
 \section{Discussion}
 
@@ -896,7 +939,7 @@ The critical values for the modified R/S test are provided in the table below. T
         columns/P-Value of log prices/.style={column name=P-Value of log Prices, fixed, precision=3},
         columns/P-Value of log differentiated return/.style={column name=P-Value of Log Differentiated Return, fixed, precision=3}
     ] {data/adf_results.csv}
-    \caption{P-values from the Augmented Dickey-Fuller (ADF) test for stationarity. The P-value of prices refers to the Augmented Dickey Fuller test (ADF) on the original series,
+    \caption{P-values from the Augmented Dickey-Fuller (ADF) test for stationarity. The P-value of log prices refers to the Augmented Dickey Fuller test (ADF) on log prices,
      while the P-value of log-differentiated prices indicates the ADF test on log-differentiated returns. The null hypothesis is non-stationarity.
     To come back where you left off, see Section~\ref{sec:data}}
     \label{table:adf_results}
@@ -906,10 +949,9 @@ The critical values for the modified R/S test are provided in the table below. T
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/cumulative_profile_segment_partitioning}
-    \caption{Simulation of a random walk (5000 points, increments are normally distributed between 0 and 1, the series is
-    split into segments of length 800) with a
-    partitioning of the series into segments to represents the steps of MF-DFA.
-        The blue line represents the cumulative sum of the series, while the coloured lines represent the polynomial fit for
+    \caption{Simulation of the MF-DFA steps, the series is the Russell 2000 returns
+    split into segments of length 880 to represents the steps of MF-DFA.
+        The blue line represents the cumulative sum of the centered returns, while the coloured lines represent the polynomial fit for
     each segment. To come back where you left off, see Section~\ref{sec:mfdfa}.}
     \label{fig:cumulative_profile_segment_partitioning}
 \end{figure}
@@ -930,8 +972,8 @@ The critical values for the modified R/S test are provided in the table below. T
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\textwidth]{img/delta_alpha_resample_m.png}
-    \caption{Rolling alpha width difference computed with a rolling window of 252 days
-        for the S\&P 500 and Russell 2000. The data in this example is resampled to monthly for better clarity}
+    \caption{Rolling alpha width difference computed with a rolling window of 1008 days (4 years)
+        for the S\&P 500 and Russell 2000. The data in this example is resampled to monthly for better clarity.}
     \label{fig:rolling_alpha_width}
 \end{figure}
 \FloatBarrier
@@ -941,97 +983,13 @@ The critical values for the modified R/S test are provided in the table below. T
     \centering
     \includegraphics[width=0.8\textwidth]{img/position_switching.png}
     \caption{Composition of our portfolio
-        (Russell 2000 in yellow, S\&P 500 in green) based on the inefficiency index.
-        The portfolio is long only and the weights are adjusted daily.}
+        (Russell 2000 in yellow, S\&P 500 in green) based on the inefficiency index, the blue line corresponds to the
+        modified rolling hurst with a rolling window of 120 days. The position start to change in 1991-10-18 because we need
+        4 years of data to compute the $\Delta\alpha_{\text{diff}}$. The portfolio is long only and the weights are adjusted daily.
+        To comeback where you left off, see Section~\ref{sec:backtest_results}.}
     \label{fig:position_switching}
 \end{figure}
 \FloatBarrier
-
-\subsection{Backtest different starting dates results}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_1995-01-02.csv}
-    \caption{1995-01-02-2025-02-28}
-    \label{tab:performance_table_1995-01-02}
-\end{table}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_2000-01-02.csv}
-    \caption{2000-01-02-2025-02-28}
-    \label{tab:performance_table_2000-01-02}
-\end{table}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_2005-01-02.csv}
-    \caption{2005-01-02-2025-02-28}
-    \label{tab:performance_table_2005-01-02}
-\end{table}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_2010-01-02.csv}
-    \caption{2010-01-02-2025-02-28}
-    \label{tab:performance_table_2010-01-02}
-\end{table}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_2015-01-02.csv}
-    \caption{2015-01-02-2025-02-28}
-    \label{tab:performance_table_2015-01-02}
-\end{table}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_start_2020-01-02.csv}
-    \caption{2020-01-02-2025-02-28}
-    \label{tab:performance_table_2020-01-02}
-\end{table}
 
 \subsection{Backtest different rolling window size results}
 
@@ -1045,9 +1003,10 @@ The critical values for the modified R/S test are provided in the table below. T
         columns/Sharpe/.style={column name=Sharpe},
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_results_window_120.csv}
-    \caption{1988-10-19-2025-02-28 | Window size 120 days}
+    \caption{1991-11-15 to 2025-02-28 | Window size 120 days. To comeback where you left off, see Section~\ref{sec:backtest_results}.}
     \label{tab:performance_table_window_120}
 \end{table}
+\FloatBarrier
 
 \begin{table}[!h]
     \centering
@@ -1059,9 +1018,10 @@ The critical values for the modified R/S test are provided in the table below. T
         columns/Sharpe/.style={column name=Sharpe},
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_results_window_252.csv}
-    \caption{1988-10-19-2025-02-28 | Window size 252 days}
+    \caption{1991-11-15 to 2025-02-28 | Window size 252 days}
     \label{tab:performance_table_window_252}
 \end{table}
+\FloatBarrier
 
 \begin{table}[!h]
     \centering
@@ -1073,9 +1033,10 @@ The critical values for the modified R/S test are provided in the table below. T
         columns/Sharpe/.style={column name=Sharpe},
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_results_window_504.csv}
-    \caption{1989-09-18-2025-02-28 | Window size 504 days}
+    \caption{1991-11-15 to 2025-02-28 | Window size 504 days}
     \label{tab:performance_table_window_504}
 \end{table}
+\FloatBarrier
 
 \begin{table}[!h]
     \centering
@@ -1090,6 +1051,7 @@ The critical values for the modified R/S test are provided in the table below. T
     \caption{1992-08-22-2025-02-28 | Window size 1260 days}
     \label{tab:performance_table_window_1260}
 \end{table}
+\FloatBarrier
 
 \begin{table}[!h]
     \centering
@@ -1104,7 +1066,7 @@ The critical values for the modified R/S test are provided in the table below. T
     \caption{1997-06-18-2025-02-28 | Window size 2520 days}
     \label{tab:performance_table_window_2520}
 \end{table}
-
+\FloatBarrier
 
 \section{References}
 
@@ -1113,6 +1075,9 @@ Lo, A.W. (1991). \textit{\href{http://www.e-m-h.org/Lo\_\_91.pdf}{Long-Term Memo
 Mignon, V. (2003). \textit{\href{https://www.persee.fr/doc/ecop_0249-4744_1998_num_132_1_5909}{Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières}}, Économie \& Prévision.
 
 Kantelhardt, J.W., Zschiegner, S.A., Koscielny-Bunde, E., Bunde, A., Havlin, S., \& Stanley, H.E. (2002). \textit{Multifractal Detrended Fluctuation Analysis of Nonstationary Time Series}. \textit{Physica A: Statistical Mechanics and its Applications}, 316(1--4), 87--114.
+
+Lukasz Czarnecki, Dariusz Grech, Multifractal dynamics of stock markets, 2009, Acta Physica Polonica Series.
+
 
 Andrews, D.W.K. (1991). \textit{\href{https://www.jstor.org/stable/2938229}{Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation}}. \textit{Econometrica}, 59(3), 817-858.
 

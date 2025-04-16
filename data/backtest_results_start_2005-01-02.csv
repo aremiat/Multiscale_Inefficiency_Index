@@ -1,5 +1,5 @@
 Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown
-ModifOverlap120,8.235,21.379,0.385,-55.982
-Long Only SP500,7.947,18.813,0.422,-56.775
-Long Only Russell,5.933,24.227,0.245,-59.889
-50/50 Portfolio,7.096,20.984,0.338,-57.993
+ModifOverlap120,9.386,19.339,0.485,-56.26
+Long Only SP500,8.196,17.875,0.458,-56.775
+Long Only Russell,7.368,21.726,0.339,-59.889
+50/50 Portfolio,7.941,19.134,0.415,-57.993

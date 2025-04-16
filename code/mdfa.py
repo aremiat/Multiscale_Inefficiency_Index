@@ -7,7 +7,7 @@ from utils.RS import ComputeRS
 from plotly.subplots import make_subplots
 import os
 import plotly.express as px
-from scipy.stats import norm
+from scipy.stats import norm, skew, kurtosis
 
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
@@ -268,7 +268,7 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
-q_list = np.linspace(-5, 5, 21)
+q_list = np.linspace(-3, 3, 13)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
@@ -346,6 +346,16 @@ if __name__ == "__main__":
         # fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
         # fig.show()
 
+        stats = {
+            'Mean': returns.mean(),
+            'Std Dev': returns.std(),
+            'Skewness': skew(returns),
+            'Kurtosis': kurtosis(returns, fisher=False)  # Fisher=False pour obtenir la kurtosis "classique"
+        }
+        # Création du DataFrame
+        stats_df = pd.DataFrame(stats, index=['Returns'])
+
+        print(stats_df)
 
         # --- 1. Calcul pour la série originale ---
         Fq = mfdfa(returns.values, scales, q_list, order=1)
@@ -360,7 +370,9 @@ if __name__ == "__main__":
 
         # # --- 2. Calcul pour la série mélangée (shuffle) ---
         returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
-        Fq_shuf = mfdfa(returns_shuf.values, scales, q_list, order=1)
+        new_returns_shuf = returns_shuf.sample(frac=1, random_state=56).reset_index(drop=True)
+        new_new_returns_shuf = new_returns_shuf.sample(frac=1, random_state=25).reset_index(drop=True)
+        Fq_shuf = mfdfa(new_new_returns_shuf.values, scales, q_list, order=1)
         h_q_shuf = []
         for i, q in enumerate(q_list):
             log_Fq_shuf = np.log(Fq_shuf[i, :])
@@ -399,21 +411,21 @@ if __name__ == "__main__":
         fig_h = go.Figure()
         fig_h.add_trace(go.Scatter(x=q_list, y=h_q, mode='lines+markers',
                                    name='h(q) original', line=dict(color='blue')))
-        # fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
-        #                            name='h(q) shuffled', line=dict(color='orange')))
+        fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
+                                   name='h(q) shuffled', line=dict(color='orange')))
         fig_h.update_layout(title=f'Hurst Exponent h(q): Original vs Shuffled {name}',
                             xaxis_title='q', yaxis_title='h(q)', template='plotly_white')
-        fig_h.show()
+        # fig_h.show()
 
         # Graphique 2 : Spectre multifractal f(α)
         fig_f = go.Figure()
         fig_f.add_trace(go.Scatter(x=alpha, y=f_alpha, mode='lines+markers',
                                    name='f(α) original', line=dict(color='blue')))
-        # fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
-        #                            name='f(α) shuffled', line=dict(color='orange')))
+        fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
+                                   name='f(α) shuffled', line=dict(color='orange')))
         fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
-        fig_f.show()
+        # fig_f.show()
 
         # Graphique 3 : Différences dans α et f(α)
         fig_diff = go.Figure()

@@ -33,50 +33,54 @@ if __name__ == "__main__":
     df_ticker = df_ticker.dropna()
     returns = np.log(df_ticker).diff().dropna()
     # Compute the cumulative profile
-    returns_centered = df_ticker - np.mean(df_ticker)
+    returns_centered = returns - np.mean(returns)
     Y = np.cumsum(returns_centered)
     # Normalize the returns
     Y = Y.values.flatten()
     adf_test(Y)
     # Parameter: segment size (scale)
-    s_example = 800
+    s_example = 880
     n_segments = len(returns) // s_example
+
+    dates = pd.date_range(start="1987-09-10", periods=len(returns), freq='B')
 
     # Create the Plotly figure
     fig = go.Figure()
 
     # Plot the cumulative profile
     fig.add_trace(go.Scatter(
-        x=np.arange(len(Y)),
+        x=dates,
         y=Y,
         mode='lines',
         name='Cumulative Profile'
     ))
 
+    # Cumulative profile
+    Y = pd.Series(Y, index=dates)
+
     # For each segment, plot the segment boundaries and the linear fit
     for v in range(n_segments):
-        # Segment indices
         start = v * s_example
         end = (v + 1) * s_example
-        idx = np.arange(start, end)
-        segment = Y[start:end]
+        segment = Y.iloc[start:end]
+        idx = segment.index
 
-        # Linear fit (polynomial of order 1)
-        coeffs = np.polyfit(np.arange(s_example), segment, 1)
+        # Fit linéaire
+        coeffs = np.polyfit(np.arange(s_example), segment.values, 1)
         fit = np.polyval(coeffs, np.arange(s_example))
 
+        # Tracé du fit
         fig.add_trace(go.Scatter(
             x=idx,
-            y=fit + np.mean(returns),
+            y=fit + np.mean(returns),  # facultatif selon ce que tu veux montrer
             mode='lines',
-            line=dict(dash='dash')
+            line=dict(dash='dash'),
+            name=f"Segment {v}"
         ))
 
-
-        # Add a vertical line to mark the beginning of the segment
-        fig.add_vline(x=start, line=dict(color='gray', dash='dot'))
-        # Add a vertical line to mark the end of the segment
-        fig.add_vline(x=end, line=dict(color='gray', dash='dot'))
+        # Ajout des bornes de segment avec dates
+        fig.add_vline(x=idx[0], line=dict(color='gray', dash='dot'))
+        fig.add_vline(x=idx[-1], line=dict(color='gray', dash='dot'))
 
     fig.update_layout(
         title=f"Cumulative Profile with Segment Partitioning (segment size = {s_example}) and Trend Removal, Random Walk",
