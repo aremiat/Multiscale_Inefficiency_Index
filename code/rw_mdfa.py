@@ -17,7 +17,7 @@ if __name__ == "__main__":
     IMG_PATH = os.path.dirname(__file__) + "/../img/"
     DATA_PATH = os.path.dirname(__file__) + "/../data/"
     # Generate a random walk and compute its cumulative profile
-    np.random.seed(42)
+    # np.random.seed(42)
     N = 5000
     increments = np.random.normal(0, 1, N)
     random_walk = np.cumsum(increments)
@@ -87,30 +87,58 @@ if __name__ == "__main__":
         xaxis_title="Index",
         yaxis_title="Cumulative Profile"
     )
-    fig.show()
+    # fig.show()
 
-    # q_list = np.linspace(-5, 5, 21)
-    # scales = np.unique(np.logspace(np.log10(10), np.log10(900), 10, dtype=int))
-    # order = 1
-    # # Compute MFDFA
-    # Fq = ComputeMFDFA.mfdfa(random_walk, scales, q_list, order=order)
-    #
-    # h_q = []
-    # log_scales = np.log(scales)
-    # for i, q in enumerate(q_list):
-    #     log_Fq = np.log(Fq[i, :])
-    #     slope, _ = np.polyfit(log_scales, log_Fq, 1) - 1
-    #     h_q.append(slope)
-    # h_q = np.array(h_q)
-    # alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
-    #
-    # fig_h = go.Figure()
-    # fig_h.add_trace(go.Scatter(x=q_list, y=h_q, mode='lines+markers',
-    #                            name='h(q) original', line=dict(color='blue')))
-    # # fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
-    # #                            name='h(q) shuffled', line=dict(color='orange')))
-    #
-    # fig_h.show()
+    for i in range(1, 6):
+
+        q_list = np.linspace(-3, 3, 13)
+        scales = np.unique(np.logspace(np.log10(10), np.log10(1000), 10, dtype=int))
+        order = 1
+        # Compute MFDFA
+        increments = np.random.randn(10000)
+        x = np.cumsum(increments)
+        df = pd.DataFrame(x, columns=['Price'])
+        returns = np.log(df['Price']).diff().dropna() / 100
+        Fq = ComputeMFDFA.mfdfa(x, scales, q_list, order=order)
+
+        h_q = []
+        log_scales = np.log(scales)
+        for i, q in enumerate(q_list):
+            log_Fq = np.log(Fq[i, :])
+            slope, _ = np.polyfit(log_scales, log_Fq, 1) - 1
+            h_q.append(slope)
+        h_q = np.array(h_q)
+        alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
+
+        fig_f = go.Figure()
+        fig_f.add_trace(go.Scatter(x=alpha, y=f_alpha, mode='lines+markers',
+                                   name='f(α) original', line=dict(color='blue')))
+        fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, random walk',
+                            xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
+        fig_f.show()
+
+
+    returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
+    Fq_shuf = ComputeMFDFA.mfdfa(returns_shuf.values, scales, q_list, order=1)
+    h_q_shuf = []
+    for i, q in enumerate(q_list):
+        log_Fq_shuf = np.log(Fq_shuf[i, :])
+        slope_shuf, _ = np.polyfit(log_scales, log_Fq_shuf, 1)
+        h_q_shuf.append(slope_shuf)
+    h_q_shuf = np.array(h_q_shuf)
+    alpha_shuf, f_alpha_shuf = ComputeMFDFA.compute_alpha_falpha(q_list, h_q_shuf)
+
+    # fig_f = go.Figure()
+    # fig_f.add_trace(go.Scatter(x=alpha, y=f_alpha, mode='lines+markers',
+    #                            name='f(α) original', line=dict(color='blue')))
+    # fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
+    #                            name='f(α) shuffled', line=dict(color='orange')))
+    # fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, random walk',
+    #                     xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
+    # fig_f.show()
+
+
+
 
     # pio.write_image(fig, f"{IMG_PATH}/fdm_autocorr.png", scale=5, width=1200, height=1000)
     # fig.write_image(f"{IMG_PATH}cumulative_profile_segment_partitioning.png")

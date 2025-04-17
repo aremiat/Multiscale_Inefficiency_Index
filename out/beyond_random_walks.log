@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  16 APR 2025 17:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  17 APR 2025 09:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1128,95 +1128,112 @@ on input line 951.
 
 
 [18]
-<img/log_cumulative_returns.png, id=259, 1199.23032pt x 590.205pt>
+<img/log_variance_log_scale.png, id=259, 1727.45375pt x 856.19875pt>
+File: img/log_variance_log_scale.png Graphic file (type png)
+<use img/log_variance_log_scale.png>
+Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 962
+.
+(pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
+
+
+[19 <./img/cumulative_profile_segment_partitioning.png> <./img/log_variance_log
+_scale.png>]
+<img/log_cumulative_returns.png, id=267, 1199.23032pt x 590.205pt>
 File: img/log_cumulative_returns.png Graphic file (type png)
 <use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 962
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 971
 .
 (pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-<img/delta_alpha_resample_m.png, id=262, 1839.87375pt x 908.39375pt>
+<img/delta_alpha_resample_m.png, id=270, 1839.87375pt x 908.39375pt>
 File: img/delta_alpha_resample_m.png Graphic file (type png)
 <use img/delta_alpha_resample_m.png>
-Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 974
+Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 983
 .
 (pdftex.def)             Requested size: 375.80544pt x 185.54274pt.
-
-
-[19 <./img/cumulative_profile_segment_partitioning.png> <./img/log_cumulative_r
-eturns.png>]
-<img/position_switching.png, id=270, 1754.555pt x 857.2025pt>
+<img/position_switching.png, id=271, 1754.555pt x 857.2025pt>
 File: img/position_switching.png Graphic file (type png)
 <use img/position_switching.png>
-Package pdftex.def Info: img/position_switching.png  used on input line 984.
+Package pdftex.def Info: img/position_switching.png  used on input line 993.
 (pdftex.def)             Requested size: 375.80544pt x 183.60172pt.
 
 
-[20 <./img/delta_alpha_resample_m.png> <./img/position_switching.png>]
+[20
+
+ <./img/log_cumulative_returns.png> <./img/delta_alpha_resample_m.png>]
 PGFPlots: reading {data/backtest_results_window_120.csv}
 PGFPlots: reading {data/backtest_results_window_252.csv}
 PGFPlots: reading {data/backtest_results_window_504.csv}
-PGFPlots: reading {data/backtest_results_window_1260.csv}
-PGFPlots: reading {data/backtest_results_window_2520.csv}
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 
-[21
+[21 <./img/position_switching.png>]
+PGFPlots: reading {data/backtest_results_window_1260.csv}
+PGFPlots: reading {data/backtest_results_window_2520.csv}
 
-]
-Underfull \hbox (badness 10000) in paragraph at lines 1073--1074
+Underfull \hbox (badness 10000) in paragraph at lines 1082--1083
 
  []
 
 
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1088--1089
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1097--1098
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
 
 
 
-[22] (out/beyond_random_walks.aux)
+[22]
+
+[23] (out/beyond_random_walks.aux)
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
  ***********
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
 Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
 (rerunfilecheck)             Checksum: 6225B376C3C97A783680C5F53B5FBD5A;3617.
  ) 
 Here is how much of TeX's memory you used:
- 36391 strings out of 473362
- 856277 string characters out of 5720989
+ 36406 strings out of 473362
+ 856739 string characters out of 5720989
  1354651 words of memory out of 5000000
- 58803 multiletter control sequences out of 15000+600000
+ 58815 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,736b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
-></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
-usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
-r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
-local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loc
-al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/
-texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
-exlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/tex
-live/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local
-/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/t
-exlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/tex
-live/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texli
-ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
-/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2
-024/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/202
-4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
-texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
-xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on out/beyond_random_walks.pdf (22 pages, 1989250 bytes).
+
+pdfTeX warning (dest): name{table.caption.17} has been referenced but does not 
+exist, replaced by a fixed one
+
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
+/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></
+usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
+r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/lo
+cal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local
+/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/te
+xlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texli
+ve/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/t
+exlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texli
+ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive
+/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive/2
+024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/202
+4/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2024/
+texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/te
+xmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/texm
+f-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on out/beyond_random_walks.pdf (23 pages, 2160701 bytes).
 PDF statistics:
- 405 PDF objects out of 1000 (max. 8388607)
- 319 compressed objects within 4 object streams
- 100 named destinations out of 1000 (max. 500000)
- 208 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 414 PDF objects out of 1000 (max. 8388607)
+ 325 compressed objects within 4 object streams
+ 103 named destinations out of 1000 (max. 500000)
+ 213 words of extra memory for PDF output out of 10000 (max. 10000000)
 

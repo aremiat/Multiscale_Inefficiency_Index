@@ -269,8 +269,8 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
 q_list = np.linspace(-3, 3, 13)
-scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
+scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(200), 10)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(200), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
@@ -286,7 +286,7 @@ if __name__ == "__main__":
         else:
             name = "Russell 2000"
 
-        # Calcul de F(q,s)
+        # # Calcul de F(q,s)
         # Fa = fa(returns.values, scales, q_list)  # Fq est un tableau de forme (len(q_list), len(scales))
         # h_q = []
         # log_scales = np.log(scales)
@@ -346,16 +346,16 @@ if __name__ == "__main__":
         # fig.update_layout(template="plotly_white", xaxis_title="Rendements", yaxis_title="Fréquence")
         # fig.show()
 
-        stats = {
-            'Mean': returns.mean(),
-            'Std Dev': returns.std(),
-            'Skewness': skew(returns),
-            'Kurtosis': kurtosis(returns, fisher=False)  # Fisher=False pour obtenir la kurtosis "classique"
-        }
-        # Création du DataFrame
-        stats_df = pd.DataFrame(stats, index=['Returns'])
-
-        print(stats_df)
+        # stats = {
+        #     'Mean': returns.mean(),
+        #     'Std Dev': returns.std(),
+        #     'Skewness': skew(returns),
+        #     'Kurtosis': kurtosis(returns, fisher=False)  # Fisher=False pour obtenir la kurtosis "classique"
+        # }
+        # # Création du DataFrame
+        # stats_df = pd.DataFrame(stats, index=['Returns'])
+        #
+        # print(stats_df)
 
         # --- 1. Calcul pour la série originale ---
         Fq = mfdfa(returns.values, scales, q_list, order=1)
@@ -367,6 +367,25 @@ if __name__ == "__main__":
             h_q.append(slope)
         h_q = np.array(h_q)
         alpha, f_alpha = compute_alpha_falpha(q_list, h_q)
+
+        # plot de la log variance against log s
+        # fig_var = go.Figure()
+        # for i, q in enumerate(q_list):
+        #     log_Fq = np.log(Fq[i, :])
+        #
+        #     fig_var.add_trace(go.Scatter(
+        #         x=log_scales,
+        #         y=log_Fq,
+        #         mode='markers+lines',
+        #         name=f'q={q}'
+        #     ))
+        # fig_var.update_layout(
+        #     title=f'Log-Variance vs Log-Scale pour {name}',
+        #     xaxis_title='log(s)',
+        #     yaxis_title='log(variance)',
+        #     template='plotly_white'
+        # )
+        # fig_var.show()
 
         # # --- 2. Calcul pour la série mélangée (shuffle) ---
         returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
@@ -405,7 +424,7 @@ if __name__ == "__main__":
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
         )
-        # fig_h.show()
+        fig_h.show()
 
         # Graphique 1 : Exposant de Hurst
         fig_h = go.Figure()
