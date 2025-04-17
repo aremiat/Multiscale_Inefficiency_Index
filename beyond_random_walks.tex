@@ -269,6 +269,7 @@ The purpose of using this data is to evaluate the long-term memory properties of
 
 
 \subsection{Results}
+\label{sec:results}
 
 The following table summarizes the results of the R/S statistic, modified R/S statistic, and the estimated Hurst exponents for each of the five indices analyzed: \\
 
@@ -289,7 +290,7 @@ The following table summarizes the results of the R/S statistic, modified R/S st
     ] {data/Hurst_results.csv}
     \caption{Results for R/S, Hurst exponent, modified Hurst exponent, critical value at 10\%, and rejection of the null
     hypothesis of long memory from 1987-09-10 to 2025-02-28. The Hurst exponent can be equal for the R/S and modified R/S methods in the case where
-    the autocorrelation coefficients are less than zero, in this case we set $q$ equal to 0 and therefore the R/S and modified R/S share the same formula.}
+    the autocorrelation coefficients are less than zero (refer to Section~\ref{sec:long_range_dependence}), in this case we set $q$ equal to 0 and therefore the R/S and modified R/S share the same formula.}
     \label{tab:Hurst_results}
 \end{table}
 
@@ -926,6 +927,25 @@ The critical values for the modified R/S test are provided in the table below. T
 \caption{Critical values for the modified R/S Statistic (Lo, 1991). To come back where you left off, see Section~\ref{sec:modified_rs}}
     \label{table:critical_values}
 \end{table}
+
+\subsection{Definition (Time Domain)}
+\label{sec:long_range_dependence}
+A stationary process \(X_t\) is said to exhibit long‐range dependence (long memory) if there exist constants
+
+\[
+a\in(0,1),\quad c>0,
+\]
+such that its autocorrelation function \(\rho(k)\) satisfies
+
+\begin{equation}
+\lim_{k \to \infty}
+\frac{\rho(k)}{c\,k^{-\alpha}}
+=1
+\end{equation}
+where \(\rho(k)\) is the autocovariance function, \(c\) is a constant (V.Mignon 2003). To comeback where you left off,
+see Section~\ref{sec:results}.
+
+
 
 \begin{table}[h!]
     \centering
