@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  17 APR 2025 17:46
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  28 APR 2025 16:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1030,7 +1030,7 @@ al/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 [2]
 
 [3]
-<img/fdm_autocorr.png, id=121, 6022.5pt x 5018.75pt>
+<img/fdm_autocorr.png, id=125, 6022.5pt x 5018.75pt>
 File: img/fdm_autocorr.png Graphic file (type png)
 <use img/fdm_autocorr.png>
 Package pdftex.def Info: img/fdm_autocorr.png  used on input line 174.
@@ -1079,7 +1079,7 @@ PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
 
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 656--677
+Underfull \hbox (badness 10000) in paragraph at lines 660--684
 
  []
 
@@ -1088,108 +1088,125 @@ Underfull \hbox (badness 10000) in paragraph at lines 656--677
 [13]
 
 [14]
-<img/inefficiency_index.png, id=228, 1868.9825pt x 886.31125pt>
+<img/inefficiency_index.png, id=233, 1868.9825pt x 886.31125pt>
 File: img/inefficiency_index.png Graphic file (type png)
 <use img/inefficiency_index.png>
-Package pdftex.def Info: img/inefficiency_index.png  used on input line 774.
+Package pdftex.def Info: img/inefficiency_index.png  used on input line 787.
 (pdftex.def)             Requested size: 375.80544pt x 178.20578pt.
-<img/backtest_long_neutral.png, id=229, 1753.55125pt x 882.29625pt>
+
+
+[15]
+<img/backtest_long_neutral.png, id=238, 1753.55125pt x 882.29625pt>
 File: img/backtest_long_neutral.png Graphic file (type png)
 <use img/backtest_long_neutral.png>
-Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 786.
+Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 799.
 
 (pdftex.def)             Requested size: 375.80544pt x 189.08417pt.
-
-
-[15 <./img/inefficiency_index.png>]
 PGFPlots: reading {data/backtest_long_neutral_results.csv}
 
-Overfull \hbox (11.98218pt too wide) in paragraph at lines 803--805
+Overfull \hbox (11.98218pt too wide) in paragraph at lines 816--818
  [][] 
  []
 
 
+LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-[16 <./img/backtest_long_neutral.png>]
+
+
+[16 <./img/inefficiency_index.png> <./img/backtest_long_neutral.png>]
 
 [17]
-Underfull \hbox (badness 10000) in paragraph at lines 908--910
+Underfull \hbox (badness 10000) in paragraph at lines 921--923
 
  []
 
+
+
+[18]
 PGFPlots: reading {data/adf_results.csv}
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<img/cumulative_profile_segment_partitioning.png, id=259, 1759.57375pt x 875.27
+<img/cumulative_profile_segment_partitioning.png, id=268, 1759.57375pt x 875.27
 pt>
 File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
 <use img/cumulative_profile_segment_partitioning.png>
 Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
-on input line 971.
+on input line 984.
 (pdftex.def)             Requested size: 375.80544pt x 186.93732pt.
 
 
-[18]
-<img/log_variance_log_scale.png, id=267, 1727.45375pt x 856.19875pt>
+[19]
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 994.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 994.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 994.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\to' on input line 994.
+
+<img/log_variance_log_scale.png, id=278, 1727.45375pt x 856.19875pt>
 File: img/log_variance_log_scale.png Graphic file (type png)
 <use img/log_variance_log_scale.png>
-Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 982
-.
+Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 102
+9.
 (pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
 
 
-[19 <./img/cumulative_profile_segment_partitioning.png>]
-
-[20 <./img/log_variance_log_scale.png>]
-<img/log_cumulative_returns.png, id=280, 1199.23032pt x 590.205pt>
+[20 <./img/cumulative_profile_segment_partitioning.png>]
+<img/log_cumulative_returns.png, id=287, 1199.23032pt x 590.205pt>
 File: img/log_cumulative_returns.png Graphic file (type png)
 <use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 991
-.
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 103
+8.
 (pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-<img/delta_alpha_resample_m.png, id=283, 1839.87375pt x 908.39375pt>
+<img/delta_alpha_resample_m.png, id=290, 1839.87375pt x 908.39375pt>
 File: img/delta_alpha_resample_m.png Graphic file (type png)
 <use img/delta_alpha_resample_m.png>
-Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 100
-3.
+Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 105
+0.
 (pdftex.def)             Requested size: 375.80544pt x 185.54274pt.
-<img/position_switching.png, id=284, 1754.555pt x 857.2025pt>
+
+
+[21 <./img/log_variance_log_scale.png> <./img/log_cumulative_returns.png>]
+<img/position_switching.png, id=299, 1754.555pt x 857.2025pt>
 File: img/position_switching.png Graphic file (type png)
 <use img/position_switching.png>
-Package pdftex.def Info: img/position_switching.png  used on input line 1013.
+Package pdftex.def Info: img/position_switching.png  used on input line 1060.
 (pdftex.def)             Requested size: 375.80544pt x 183.60172pt.
 
 
-[21
-
- <./img/log_cumulative_returns.png> <./img/delta_alpha_resample_m.png>]
+[22 <./img/delta_alpha_resample_m.png> <./img/position_switching.png>]
 PGFPlots: reading {data/backtest_results_window_120.csv}
 PGFPlots: reading {data/backtest_results_window_252.csv}
 PGFPlots: reading {data/backtest_results_window_504.csv}
+PGFPlots: reading {data/backtest_results_window_1260.csv}
+PGFPlots: reading {data/backtest_results_window_2520.csv}
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 
-[22 <./img/position_switching.png>]
-PGFPlots: reading {data/backtest_results_window_1260.csv}
-PGFPlots: reading {data/backtest_results_window_2520.csv}
+[23
 
-Underfull \hbox (badness 10000) in paragraph at lines 1102--1103
+]
+Underfull \hbox (badness 10000) in paragraph at lines 1149--1150
 
  []
 
 
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1117--1118
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1164--1165
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
 
 
-
-[23]
 
 [24] (out/beyond_random_walks.aux)
  ***********
@@ -1197,39 +1214,41 @@ LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
  ***********
 Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
-(rerunfilecheck)             Checksum: 0BAE9F7D603360FB1E995E07D69904BA;3807.
+(rerunfilecheck)             Checksum: DD7E9361E9B2BAC7976B83CB1B239E74;3983.
  ) 
 Here is how much of TeX's memory you used:
- 36411 strings out of 473362
- 856811 string characters out of 5720989
- 1355070 words of memory out of 5000000
- 58818 multiletter control sequences out of 15000+600000
+ 36417 strings out of 473362
+ 856917 string characters out of 5720989
+ 1354127 words of memory out of 5000000
+ 58823 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,736b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 ></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
-</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
-usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
-r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
-local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loc
-al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/
-texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
-exlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/tex
-live/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local
-/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/t
-exlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/tex
-live/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texli
-ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
-/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2
-024/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/202
-4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
-texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
-xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on out/beyond_random_walks.pdf (24 pages, 2162602 bytes).
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
+/usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></u
+sr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr
+/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/l
+ocal/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/loc
+al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/
+texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texliv
+e/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local/te
+xlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/texl
+ive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/texliv
+e/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texlive/
+2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive/20
+24/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2024
+/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/2024/t
+exmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/tex
+mf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/texmf
+-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on out/beyond_random_walks.pdf (24 pages, 2185876 bytes).
 PDF statistics:
- 425 PDF objects out of 1000 (max. 8388607)
- 334 compressed objects within 4 object streams
- 105 named destinations out of 1000 (max. 500000)
- 221 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 441 PDF objects out of 1000 (max. 8388607)
+ 346 compressed objects within 4 object streams
+ 106 named destinations out of 1000 (max. 500000)
+ 229 words of extra memory for PDF output out of 10000 (max. 10000000)
 

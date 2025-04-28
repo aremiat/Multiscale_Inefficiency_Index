@@ -346,7 +346,7 @@ Analysis approach designed to detect multifractality in time series (Kantelhardt
     \end{equation}
     Varying \(q\) allows us to emphasize large (\(q>0\)) or small (\(q<0\)) fluctuations.
 
-    In the special case \(q=0\), the fluctuation function is defined by a logarithmic averaging:
+    In the special case \(q=0\), the fluctuation function is defined by a logarithmic averaging (see proof in Appendix Section~\ref{sec:proof_F0}):
     \begin{equation}
         F_0(s) = \exp\left(\frac{1}{4N_s} \sum_{\nu=1}^{2N_s} \ln\Bigl[F^2\bigl(s,\nu\bigr)\Bigr]\right).
     \end{equation}
@@ -514,13 +514,17 @@ essential insights for understanding and predicting its underlying dynamics. \\
 
 We can distinguish two main contributions to the multifractal spectrum:
 \[
-\mathcal{M}(q) \propto \underbrace{f_{\text{corr}}(q)}_{\substack{\text{Temporal correlations} \\ \text{in the series}}} + \underbrace{f_{\text{tail}}(q)}_{\substack{\text{Strongly non-Gaussian} \\ \text{distribution}}}
+\mathcal{M}(q) \propto
+\underbrace{f_{\text{tail}}(q)}_{\substack{\text{Strongly non-Gaussian} \\ \text{distribution}}}
++
+\underbrace{f_{\text{corr}}(q)}_{\substack{\text{Temporal correlations} \\ \text{in the series}}}
 \]
 
 Therefore, in the literature, the multifractality is often reffered as two types :
 
-Type I multifractality stems from long-range correlations within the time series, whereas Type II multifractality arises
-from a broad probability density function of the series values Jan W. Kantelhardt (2002) and al. This distinction enables us to identify and quantify
+Type I multifractality arises
+from a broad probability density function of the series values Jan W. Kantelhardt (2002) and al whereas Type II
+multifractality stems from long-range correlations within the time series. This distinction enables us to identify and quantify
 the type of multifractality present. By shuffling the series, we effectively eliminate the long-range correlations,
 retaining only the influence of the value distribution. In an ideal monofractal series, the Hölder exponent would peak
 at 0.5 thus, the difference between the exponents of the original and shuffled series reflects the contribution of
@@ -664,22 +668,31 @@ behavior compared to the Russell 2000, with less pronounced volatility clusterin
 The fact that the curve is shortened on the right but stretches deeper on the left means that the market exhibits fewer
 ultra-calm intervals in favor of a greater propensity for abrupt or extreme fluctuations otherwise saying that this series
 exhibit fatter tails.
-Interestingly, the peak of the shuffled series is higher than the original one (0.53). It may seems counterintuitive at first
-but it actually makes sense. Let's recall that from our analysis with M-R/S, the S\&P 500 had a Hurst exponent of 0.501
+Interestingly, the peak of the shuffled series is higher than the original one (0.53). Let's recall that from our analysis
+with M-R/S, the S\&P 500 had a Hurst exponent of 0.501
 ,indicating that the series is likely to be a random walk. Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
 reinforcing our first result via Hurst.
 For both series, the width of the spectrum is approximately 0.27, if you look back at the Russell 2000, the width of the spectrum
 shrinks to 0.2 when shuffling the series, indicating that the multifractality is primarily driven by long-range correlations.
 In this spectrum, there is no long term correlation, the multifractality is only due to the non-gaussian nature of returns.
-Therefore, the width is not affected by a shuffling procedure. The fact that the peak of the shuffled series is higher than the original one
-is due to the artificial creation of long-range correlations in the randomly shuffled series. If you shuffle the series many time,
-the spectre will not shrinks but you will observe different $\alpha$ peaks that comes from artificially created long term correlation. \\
+In the original returns, large jumps cluster together, creating many consecutive “rough” segments with low Hölder exponents.
+Shuffling breaks up these clusters, so extreme returns become isolated among calmer data.
+This reduces the frequency of very low h(t) and increases the share of intermediate h(t).
+As a result, the modal Hölder exponent shifts upward even though the overall width remains unchanged. Shuffling the
+series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values simply because
+the returns are randomly redistributed. \\
 
 From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior close to the one of a random walk and
 that it's multifractality comes from the non-gaussian nature of the returns (Kurtosis is estimated 28.41) since the width
 of the spectrum doesn't change much with the shuffling series. Whereas for the Russell 2000 it clearly comes from the long-range
 correlations (Kurtosis is estimated 12.71) since the width of the spectrum shrinks when shuffling the series.
 Therefore, the inefficency could be measured by the width of the spectrum rather than the $\alpha$ peak of the series.
+
+In an ideal random walk (i.i.d. Gaussian increments), the multifractal spectrum collapses to a single point its width
+$\Delta \alpha$ is close to 0 because every local segment is statistically identical and fully unpredictable. By contrast, our
+return series shows $\Delta \alpha$ >0, revealing multiple coexisting dynamics (calm trends, sudden shocks, reversals).
+This width therefore quantifies market inefficiency: the larger $\Delta \alpha$ is, the more the series departs from pure randomness
+and the more distinct local regimes it contains.
 
 
 \subsection{Proposition of an Inefficiency Index}
@@ -976,6 +989,40 @@ see Section~\ref{sec:results}.
     \label{fig:cumulative_profile_segment_partitioning}
 \end{figure}
 \FloatBarrier
+
+
+\subsection{Proof of \(F_0(s)\) as \(q\to0\)}
+\label{sec:proof_F0}
+\begin{frame}{Proof of \(F_0(s)\) as \(q\to0\)}
+  \[
+    F_q(s)
+    =\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\bigl(F_v^2(s)\bigr)^{\!q/2}\Bigr]^{1/q}
+    \;\Longrightarrow\;
+    \ln F_q(s)
+    =\frac{1}{q}\ln S(q),
+  \]
+  where
+  \[
+    S(q)=\frac{1}{2N_s}\sum_{v=1}^{2N_s}e^{\tfrac{q}{2}\ln F_v^2(s)}.
+  \]
+  As \(q\to0\), \(\ln S(q)\to0\) and we apply L’Hôpital:
+  \[
+    \lim_{q\to0}\ln F_q(s)
+    =\lim_{q\to0}\frac{\ln S(q)}{q}
+    =\left.\frac{S'(q)}{S(q)}\right|_{q=0}
+    =\frac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s).
+  \]
+  Exponentiating:
+  \[
+    F_0(s)
+    =\exp\!\Bigl[\tfrac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s)\Bigr]
+    =\exp\!\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\ln F_v(s)\Bigr].
+  \]
+  \vspace{4pt}
+  \textit{Thus \(F_0(s)\) is the geometric mean of the segment fluctuations.}
+    To comeback where you left off, see Section~\ref{sec:mfdfa}.
+\end{frame}
+
 
 \begin{figure}[ht]
     \centering
