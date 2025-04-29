@@ -119,7 +119,7 @@ class ComputeMFDFA:
             for j, q in enumerate(q_list):
                 log_Fq = np.log(Fq[j, :])
                 # Ajustement linéaire pour trouver la pente = h(q)
-                coeffs = np.polyfit(log_scales, log_Fq, 1) - 1
+                coeffs = np.polyfit(log_scales, log_Fq, 1)
                 h_q.append(coeffs[0])
             h_q = np.array(h_q)
 

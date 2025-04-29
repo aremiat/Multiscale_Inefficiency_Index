@@ -600,7 +600,7 @@ Comparing it with the shuffle series, we observe that the $\alpha$ peak is lower
 shuffled series exhibits a more uniform behavior. This suggests that the multifractality in the original series is primarily
 driven by long-range correlations, while the shuffled series lacks this structure. It is still higher than 0.5, indicating
 that the series is still multifractal but only because of the non-gaussian nature of returns (Kurtosis is 12.71). Moreover, the width spectrum
-is approximately 0.2, in a random walk the width of the spectrum would be close to 0.15 (refer to Lukasz Czarnecki, Dariusz Grech 2009),
+is approximately 0.2, in a random walk the width of the spectrum would be close to 0.1 (refer to Lukasz Czarnecki, Dariusz Grech 2009),
 indicating that when shuffling the series, it behaves more like a random walk suggesting market efficiency.
 
 
@@ -661,8 +661,7 @@ The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a differ
 The spectrum is narrower (0.27 between the maximum and minimum) compared to the Russell 2000 (0.4),
 suggesting a possibly weaker multifractal nature, the difference between alpha min and alpha max is lower than the Russell 2000 ones
 therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000. Let's recall that for
-a random walk the alpha pic would be close to 0.5 and the spectrum width narrow (close to 0.15, refer to Lukasz Czarnecki, Dariusz Grech 2009,
-where they tested the MF-DFA on RMD random midpoint displacement algorithm).
+a random walk the alpha pic would be close to 0.5 and the spectrum width narrow.
 The peak near the center for the original series is around 0.486. This may imply that the S\&P 500 returns exhibit a more stable
 behavior compared to the Russell 2000, with less pronounced volatility clustering across multiple timescales.
 The fact that the curve is shortened on the right but stretches deeper on the left means that the market exhibits fewer
@@ -682,6 +681,75 @@ As a result, the modal Hölder exponent shifts upward even though the overall wi
 series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values simply because
 the returns are randomly redistributed. \\
 
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            width=0.8\textwidth,
+            height=6cm,
+            xlabel={$\alpha$},
+            ylabel={$f(\alpha)$},
+            grid=major,
+            legend style={
+                font=\footnotesize,
+                at={(0.5,-0.2)},
+                anchor=north,
+                legend columns=2,
+            },
+        legend cell align=center
+        ]
+            % Draw the multifractal spectrum of the shuffled signal (in red)
+            \addplot[
+                red,
+                thick,
+                mark=square*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha,
+                y=f_alpha,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_SP500.csv};
+
+            % Draw the multifractal spectrum of the original signal (in blue)
+            \addplot[
+                blue,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha,
+                y=f_alpha,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_Russell 2000.csv};
+
+        \addplot[
+                yellow,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha,
+                y=f_alpha,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_random_walk.csv};
+
+
+
+            \legend{SP500, Russell, Random Walk}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Comparision of multifractal spectrum for SP500, Russell 2000 and a random walk.}
+\end{figure}
+
+\FloatBarrier
+
 From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior close to the one of a random walk and
 that it's multifractality comes from the non-gaussian nature of the returns (Kurtosis is estimated 28.41) since the width
 of the spectrum doesn't change much with the shuffling series. Whereas for the Russell 2000 it clearly comes from the long-range
@@ -693,6 +761,7 @@ $\Delta \alpha$ is close to 0 because every local segment is statistically ident
 return series shows $\Delta \alpha$ >0, revealing multiple coexisting dynamics (calm trends, sudden shocks, reversals).
 This width therefore quantifies market inefficiency: the larger $\Delta \alpha$ is, the more the series departs from pure randomness
 and the more distinct local regimes it contains.
+
 
 
 \subsection{Proposition of an Inefficiency Index}

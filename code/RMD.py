@@ -2,6 +2,7 @@ import numpy as np
 import plotly.graph_objects as go
 from utils.MFDFA import ComputeMFDFA
 from utils.ADF import adf_test
+from scipy.stats import skew, kurtosis
 
 # 1) Algorithme de Random Midpoint Displacement
 def random_midpoint_displacement(num_points, roughness=0.5, seed=None):
@@ -36,12 +37,14 @@ scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(2000), 20)).astyp
 q_list = np.linspace(-5, 5, 21)
 increments = np.diff(y)
 adf_test(y)
+print(skew(increments))
+print(kurtosis(increments))
 # Calcul MF-DFA
-Fq = ComputeMFDFA.mfdfa(y, scales, q_list, order=1)
+Fq = ComputeMFDFA.mfdfa(increments, scales, q_list, order=1)
 
 # Estimation de h(q)
 log_s = np.log(scales)
-h_q = np.array([(np.polyfit(log_s, np.log(Fq[j]), 1)[0] - 1) for j in range(len(q_list))])
+h_q = np.array([(np.polyfit(log_s, np.log(Fq[j]), 1)[0]) for j in range(len(q_list))])
 
 # Calcul du spectre multifractal
 alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
