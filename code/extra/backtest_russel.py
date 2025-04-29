@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from utils.RS import ComputeRS
 
-DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
+DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
 
 def compute_performance_stats(daily_returns: pd.Series, freq=252):
     """

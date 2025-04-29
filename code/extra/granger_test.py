@@ -165,7 +165,7 @@ def compute_inefficiency_index(delta_alpha, rolling_hurst):
 # -----------------------------
 if __name__ == "__main__":
     # Set paths and tickers
-    DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
     df_prices = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
     ticker1 = "^GSPC"  # S&P 500
     ticker2 = "^RUT"    # Russell 2000
