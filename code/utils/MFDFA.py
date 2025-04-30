@@ -1,190 +1,164 @@
+import os
+import re
+from typing import List, Sequence, Tuple, Union
+
 import numpy as np
 import pandas as pd
 
-
 class ComputeMFDFA:
     @staticmethod
-    def mfdfa(signal, scales, q_list, order=1):
+    def mfdfa(
+        signal: Union[np.ndarray, Sequence[float]],
+        scales: Sequence[int],
+        q_list: Sequence[float],
+        order: int = 1
+    ) -> np.ndarray:
         """
-        Calcule le MF-DFA pour une série temporelle.
+        Compute MF-DFA for a time series.
 
-        Paramètres:
-            signal : tableau numpy, la série (par exemple, prix) à analyser.
-            scales : liste des échelles (tailles de segments) à utiliser.
-            q_list : liste des ordres q pour lesquels calculer la fonction de fluctuation.
-            order : ordre du polynôme pour le detrending (1 = linéaire par défaut).
+        Args:
+            signal: 1D array-like of data points (e.g., returns).
+            scales: Sequence of window sizes (ints) to use in DFA.
+            q_list: Sequence of moment orders q.
+            order: Polynomial order for detrending (default: 1, linear).
 
-        Retourne:
-            Fq : matrice de taille (len(q_list), len(scales)) contenant F_q(s) pour chaque q et chaque échelle s.
+        Returns:
+            Fq: 2D NumPy array of shape (len(q_list), len(scales)),
+                where Fq[i, j] is F_q(s) for q=q_list[i] and s=scales[j].
         """
-        N = len(signal)
-        # Centrer et intégrer le signal (profil)
-        signal = signal - np.mean(signal)
-        Y = np.cumsum(signal)
-        Fq = np.zeros((len(q_list), len(scales)))
+        data = np.asarray(signal, dtype=float)
+        N: int = data.size
+        Y: np.ndarray = np.cumsum(data - np.mean(data))
+        Fq: np.ndarray = np.zeros((len(q_list), len(scales)), dtype=float)
 
-        # Pour chaque échelle s
         for j, s in enumerate(scales):
-            s = int(s)
-            if s < 2:
+            s_int: int = int(s)
+            if s_int < 2 or s_int > N:
                 continue
-            n_segments = N // s
-            F_seg = []
-            # Découpage non chevauchant depuis le début
+            n_segments: int = N // s_int
+            F_seg: List[float] = []
+
+            # Forward segmentation
             for v in range(n_segments):
-                segment = Y[v * s:(v + 1) * s]
-                idx = np.arange(s)
+                segment = Y[v * s_int : (v + 1) * s_int]
+                idx = np.arange(s_int)
                 coeffs = np.polyfit(idx, segment, order)
                 fit = np.polyval(coeffs, idx)
-                F_seg.append(np.mean((segment - fit) ** 2))
+                F_seg.append(float(np.mean((segment - fit) ** 2)))
 
-            # Découpage depuis la fin pour couvrir la totalité de la série
+            # Reverse segmentation
             for v in range(n_segments):
-                segment = Y[N - (v + 1) * s:N - v * s]
-                idx = np.arange(s)
+                segment = Y[N - (v + 1) * s_int : N - v * s_int]
+                idx = np.arange(s_int)
                 coeffs = np.polyfit(idx, segment, order)
                 fit = np.polyval(coeffs, idx)
-                F_seg.append(np.mean((segment - fit) ** 2))
+                F_seg.append(float(np.mean((segment - fit) ** 2)))
 
-            F_seg = np.array(F_seg)
-            F_seg[F_seg < 1e-10] = 1e-10
+            F_seg_arr = np.maximum(np.array(F_seg, dtype=float), 1e-10)
 
-            # Calcul de F_q(s) pour chaque valeur de q
             for k, q in enumerate(q_list):
-                if np.abs(q) < 1e-6:
-                    # q = 0 : utilisation de la moyenne géométrique (limite q->0)
-                    Fq[k, j] = np.exp(0.5 * np.mean(np.log(F_seg)))
+                if abs(q) < 1e-8:
+                    # geometric mean for q -> 0
+                    Fq[k, j] = np.exp(0.5 * np.mean(np.log(F_seg_arr)))
                 else:
-                    Fq[k, j] = (np.mean(F_seg ** (q / 2))) ** (1 / q)
+                    Fq[k, j] = (np.mean(F_seg_arr ** (q / 2.0))) ** (1.0 / q)
         return Fq
 
     @staticmethod
-    def compute_alpha_falpha(q_list, h_q):
+    def compute_alpha_falpha(
+        q_list: Sequence[float],
+        h_q: Sequence[float]
+    ) -> Tuple[np.ndarray, np.ndarray]:
         """
-        Calcule alpha et f(alpha) via la transformation de Legendre
-        à partir de h(q).
+        Compute alpha(q) and f(alpha) via Legendre transform from h(q).
 
-        Paramètres:
-            q_list : liste des ordres q.
-            h_q    : tableau des exposants h(q) calculés.
+        Args:
+            q_list: Sequence of q values.
+            h_q: Sequence of corresponding h(q) values.
 
-        Retourne:
-            alpha   : tableau des valeurs alpha.
-            f_alpha : tableau des valeurs f(alpha).
+        Returns:
+            alpha: NumPy array of alpha(q).
+            f_alpha: NumPy array of f(alpha).
         """
-        dq = q_list[1] - q_list[0]
-        dh_dq = np.gradient(h_q, dq)  # dérivée numérique de h(q)
-        alpha = h_q + q_list * dh_dq  # alpha(q) = h(q) + q * h'(q)
-        f_alpha = q_list * (alpha - h_q) + 1  # f(alpha) = q * [alpha(q) - h(q)] + 1
+        q_arr = np.asarray(q_list, dtype=float)
+        h_arr = np.asarray(h_q, dtype=float)
+        dq = q_arr[1] - q_arr[0]
+        dh_dq = np.gradient(h_arr, dq)
+        alpha = h_arr + q_arr * dh_dq
+        f_alpha = q_arr * (alpha - h_arr) + 1.0
         return alpha, f_alpha
 
     @staticmethod
-    def mfdfa_rolling(series, window_size, q_list, scales, order=1):
+    def mfdfa_rolling(
+        series: Union[pd.Series, Sequence[float]],
+        window_size: int,
+        q_list: Sequence[float],
+        scales: Sequence[int],
+        order: int = 1
+    ) -> pd.Series:
         """
-        Applique MF-DFA sur des fenêtres glissantes de taille 'window_size'
-        et renvoie la largeur du spectre multifractal (Delta alpha) pour chaque fenêtre.
+        Apply rolling MF-DFA on a series and return the multifractal width (Delta alpha).
 
-        Paramètres:
-            series      : pd.Series ou array-like, la série de données.
-            window_size : int, nombre de points par fenêtre glissante.
-            q_list      : liste/array des ordres q pour MF-DFA.
-            scales      : liste/array d'échelles (tailles de segments).
-            order       : ordre du polynôme pour le detrending (1 = linéaire par défaut).
+        Args:
+            series: Pandas Series or array-like of data.
+            window_size: Number of points in each rolling window.
+            q_list: Sequence of q values.
+            scales: Sequence of scales for MF-DFA.
+            order: Polynomial order for detrending.
 
-        Retourne:
-            pd.Series contenant la largeur du spectre Delta alpha pour chaque fenêtre,
-            indexé par la date (ou l'index) correspondant à la fin de la fenêtre.
+        Returns:
+            Pandas Series of Delta alpha indexed by window end positions.
         """
         if isinstance(series, pd.Series):
-            data = series.values
-            index_data = series.index
+            data = series.values.astype(float)
+            idx = series.index
         else:
-            data = np.array(series)
-            index_data = np.arange(len(data))
+            data = np.asarray(series, dtype=float)
+            idx = pd.RangeIndex(start=0, stop=len(data))
 
-        alpha_widths = []
-        rolling_index = []
-        nb_points = len(data)
+        alpha_widths: List[float] = []
+        timestamps: List = []
+        N = len(data)
 
-        for start in range(nb_points - window_size + 1):
+        for start in range(N - window_size + 1):
             end = start + window_size
-            window_data = data[start:end]
+            window = data[start:end]
+            Fq = ComputeMFDFA.mfdfa(window, scales, q_list, order)
 
-            # 1) Calcul de Fq(s) pour la fenêtre
-            Fq = ComputeMFDFA.mfdfa(window_data, scales, q_list, order=order)
-
-            # 2) Calcul de h(q) par régression linéaire de log(Fq) vs log(s)
             h_q = []
-            log_scales = np.log(scales)
-            for j, q in enumerate(q_list):
-                log_Fq = np.log(Fq[j, :])
-                # Ajustement linéaire pour trouver la pente = h(q)
-                coeffs = np.polyfit(log_scales, log_Fq, 1)
-                h_q.append(coeffs[0])
-            h_q = np.array(h_q)
+            log_s = np.log(scales)
+            for j in range(len(q_list)):
+                log_F = np.log(Fq[j, :])
+                h_q.append(np.polyfit(log_s, log_F, 1)[0])
+            h_q_arr = np.asarray(h_q, dtype=float)
 
-            # 3) Transformation de Legendre -> alpha, f(alpha)
-            alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
+            alpha, _ = ComputeMFDFA.compute_alpha_falpha(q_list, h_q_arr)
+            alpha_widths.append(float(alpha.max() - alpha.min()))
+            timestamps.append(idx[end - 1])
 
-            # 4) Calcul de la largeur du spectre multifractal
-            alpha_width = alpha.max() - alpha.min()
-            alpha_widths.append(alpha_width)
-            rolling_index.append(index_data[end - 1])
-
-        return pd.Series(alpha_widths, index=rolling_index, name="alpha_width")
+        return pd.Series(alpha_widths, index=timestamps, name="alpha_width")
 
     @staticmethod
-    def fa(x, scales, qs):
+    def surrogate_gaussian_corr(
+        series: Sequence[float]
+    ) -> np.ndarray:
         """
-        Fluctuation Analysis (FA) pour des séries stationnaires normalisées.
+        Generate a Gaussian-correlated surrogate by phase randomization.
 
-        Paramètres :
-            x      : série temporelle (tableau 1D)
-            scales : liste (ou tableau) des tailles d'échelle s.
-                     On suppose que pour chaque s, N est un multiple entier de s.
-            qs     : tableau des valeurs q (q peut être négatif, positif ou zéro).
+        Args:
+            series: Input 1D sequence.
 
-        Retourne :
-            Fqs    : tableau 2D de forme (len(qs), len(scales)) contenant Fq(s) pour chaque q et chaque échelle s.
+        Returns:
+            Surrogate series as NumPy array.
         """
-        x = np.array(x)
-        N = len(x)
-
-        # Calcul du profil avec Y(0)=0
-        Y = np.zeros(N + 1)
-        Y[1:] = np.cumsum(x - np.mean(x))
-        Fqs = np.zeros((len(qs), len(scales)))
-
-        for j, s in enumerate(scales):
-            s = int(s)
-            # On suppose que N est un multiple entier de s
-            Ns = N // s
-            F_loc = np.empty(Ns)
-            for k in range(1, Ns + 1):
-                F_loc[k - 1] = np.abs(Y[k * s] - Y[(k - 1) * s])
-            for i, q in enumerate(qs):
-                if q == 0:
-                    Fqs[i, j] = np.exp(np.mean(np.log(F_loc)))
-                else:
-                    Fqs[i, j] = (np.mean(F_loc ** q)) ** (1 / q)
-        return Fqs
-
-    @staticmethod
-    def surrogate_gaussian_corr(series):
-        N = len(series)
-        # 1. FFT
-        Xf = np.fft.rfft(series)
+        arr = np.asarray(series, dtype=float)
+        N = arr.size
+        Xf = np.fft.rfft(arr)
         amplitudes = np.abs(Xf)
-
-        # 2. Phases aléatoires (sauf DC et Nyquist)
-        random_phases = np.exp(2j * np.pi * np.random.rand(len(Xf)))
-        random_phases[0] = 1.0  # conserve la composante moyenne
+        random_phases = np.exp(2j * np.pi * np.random.rand(Xf.size))
+        random_phases[0] = 1.0
         if N % 2 == 0:
-            random_phases[-1] = 1.0  # pour fréquence Nyquist si N pair
-
-        # 3. Reconstruction du spectre
+            random_phases[-1] = 1.0
         Xf_surr = amplitudes * random_phases
-
-        # 4. IFFT
         surrogate = np.fft.irfft(Xf_surr, n=N)
         return surrogate
