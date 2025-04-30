@@ -266,11 +266,31 @@ def plot_russell_and_critical_alpha(price_series, rolling_critical, alpha_width_
 
     fig.show()
 
+
+def surrogate_gaussian_corr(series):
+    N = len(series)
+    # 1. FFT
+    Xf = np.fft.rfft(series)
+    amplitudes = np.abs(Xf)
+
+    # 2. Phases aléatoires (sauf DC et Nyquist)
+    random_phases = np.exp(2j * np.pi * np.random.rand(len(Xf)))
+    random_phases[0] = 1.0  # conserve la composante moyenne
+    if N % 2 == 0:
+        random_phases[-1] = 1.0  # pour fréquence Nyquist si N pair
+
+    # 3. Reconstruction du spectre
+    Xf_surr = amplitudes * random_phases
+
+    # 4. IFFT
+    surrogate = np.fft.irfft(Xf_surr, n=N)
+    return surrogate
+
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
 q_list = np.linspace(-3, 3, 13)
-scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(200), 10)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(200), 10)).astype(int))
+scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
@@ -358,6 +378,7 @@ if __name__ == "__main__":
         # print(stats_df)
 
         # --- 1. Calcul pour la série originale ---
+
         Fq = mfdfa(returns.values, scales, q_list, order=1)
         h_q = []
         log_scales = np.log(scales)
@@ -387,8 +408,20 @@ if __name__ == "__main__":
         # )
         # fig_var.show()
 
+        surogate_series = surrogate_gaussian_corr(returns.values)
+        Fq_surrogate = mfdfa(surogate_series, scales, q_list, order=1)
+        h_q_surrogate = []
+        for i, q in enumerate(q_list):
+            log_Fq_surrogate = np.log(Fq_surrogate[i, :])
+            slope_surrogate, _ = np.polyfit(log_scales, log_Fq_surrogate, 1)
+            h_q_surrogate.append(slope_surrogate)
+        h_q_surrogate = np.array(h_q_surrogate)
+        alpha_surrogate, f_alpha_surrogate = compute_alpha_falpha(q_list, h_q_surrogate)
+
+
+
         # # --- 2. Calcul pour la série mélangée (shuffle) ---
-        returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
+        returns_shuf = pd.Series(surogate_series).sample(frac=1, random_state=42).reset_index(drop=True)
         new_returns_shuf = returns_shuf.sample(frac=1, random_state=56).reset_index(drop=True)
         new_new_returns_shuf = new_returns_shuf.sample(frac=1, random_state=25).reset_index(drop=True)
         Fq_shuf = mfdfa(new_new_returns_shuf.values, scales, q_list, order=1)
@@ -432,6 +465,8 @@ if __name__ == "__main__":
                                    name='h(q) original', line=dict(color='blue')))
         fig_h.add_trace(go.Scatter(x=q_list, y=h_q_shuf, mode='lines+markers',
                                    name='h(q) shuffled', line=dict(color='orange')))
+        fig_h.add_trace(go.Scatter(x=q_list, y=h_q_surrogate, mode='lines+markers',
+                                      name='h(q) - h(q) shuffled', line=dict(color='green')))
         fig_h.update_layout(title=f'Hurst Exponent h(q): Original vs Shuffled {name}',
                             xaxis_title='q', yaxis_title='h(q)', template='plotly_white')
         # fig_h.show()
@@ -442,9 +477,11 @@ if __name__ == "__main__":
                                    name='f(α) original', line=dict(color='blue')))
         fig_f.add_trace(go.Scatter(x=alpha_shuf, y=f_alpha_shuf, mode='lines+markers',
                                    name='f(α) shuffled', line=dict(color='orange')))
+        fig_f.add_trace(go.Scatter(x=alpha_surrogate, y=f_alpha_surrogate, mode='lines+markers',
+                                      name='f(α) surrogate', line=dict(color='green')))
         fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
-        # fig_f.show()
+        fig_f.show()
 
         # Graphique 3 : Différences dans α et f(α)
         fig_diff = go.Figure()

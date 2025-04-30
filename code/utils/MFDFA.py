@@ -168,3 +168,23 @@ class ComputeMFDFA:
                 else:
                     Fqs[i, j] = (np.mean(F_loc ** q)) ** (1 / q)
         return Fqs
+
+    @staticmethod
+    def surrogate_gaussian_corr(series):
+        N = len(series)
+        # 1. FFT
+        Xf = np.fft.rfft(series)
+        amplitudes = np.abs(Xf)
+
+        # 2. Phases aléatoires (sauf DC et Nyquist)
+        random_phases = np.exp(2j * np.pi * np.random.rand(len(Xf)))
+        random_phases[0] = 1.0  # conserve la composante moyenne
+        if N % 2 == 0:
+            random_phases[-1] = 1.0  # pour fréquence Nyquist si N pair
+
+        # 3. Reconstruction du spectre
+        Xf_surr = amplitudes * random_phases
+
+        # 4. IFFT
+        surrogate = np.fft.irfft(Xf_surr, n=N)
+        return surrogate
