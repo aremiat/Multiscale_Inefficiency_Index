@@ -87,11 +87,11 @@ def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ti
         ineff = ineff_index.loc[idx]
         if H_val > threshold_h:
             if ineff > threshold_ineff and m_val > 0:
-                pos1.append(0.8)
-                pos2.append(0.2)
+                pos1.append(1)
+                pos2.append(0)
             elif ineff < -threshold_ineff and m_val < 0:
-                pos1.append(0.2)
-                pos2.append(0.8)
+                pos1.append(0)
+                pos2.append(1)
             else:
                 pos1.append(0.5)
                 pos2.append(0.5)
@@ -183,10 +183,10 @@ def compute_positions(rolling_signal, momentum, ticker1, ticker2, default=0.5, t
     positions[ticker1] = default
     positions[ticker2] = default
     condition = rolling_signal > threshold
-    positions.loc[condition & (momentum > 0), ticker1] = 0.8
-    positions.loc[condition & (momentum > 0), ticker2] = 0.2
-    positions.loc[condition & (momentum < 0), ticker1] = 0.2
-    positions.loc[condition & (momentum < 0), ticker2] = 0.8
+    positions.loc[condition & (momentum > 0), ticker1] = 1
+    positions.loc[condition & (momentum > 0), ticker2] = 0
+    positions.loc[condition & (momentum < 0), ticker1] = 0
+    positions.loc[condition & (momentum < 0), ticker2] = 1
     return positions
 
 
@@ -390,59 +390,59 @@ if __name__ == "__main__":
         # )
         # fig_backtest.show()
 
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=sp500_cumulative.index,
-        #         y=np.log(sp500_cumulative),
-        #         mode='lines',
-        #         name="Long Only S&P500",
-        #         line=dict(color='red')
-        #     ),
-        #     row=1, col=1
-        # )
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=portfolio_50_50_cumulative.index,
-        #         y=np.log(portfolio_50_50_cumulative),
-        #         mode='lines',
-        #         name="50/50 Portfolio",
-        #         line=dict(color='black')
-        #     )
-        # )
+        fig_backtest.add_trace(
+            go.Scatter(
+                x=sp500_cumulative.index,
+                y=np.log(sp500_cumulative),
+                mode='lines',
+                name="Long Only S&P500",
+                line=dict(color='red')
+            ),
+            row=1, col=1
+        )
+        fig_backtest.add_trace(
+            go.Scatter(
+                x=portfolio_50_50_cumulative.index,
+                y=np.log(portfolio_50_50_cumulative),
+                mode='lines',
+                name="50/50 Portfolio",
+                line=dict(color='black')
+            )
+        )
 
-        # ticker_cols = positions.columns.tolist()
-        #
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=positions.index,
-        #         y=positions[ticker_cols[0]],
-        #         mode='lines',
-        #         name=f'Position {ticker_cols[0]}',
-        #         line=dict(color='green')
-        #     ),
-        #     row=2, col=1
-        # )
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=positions.index,
-        #         y=positions[ticker_cols[1]],
-        #         mode='lines',
-        #         name=f'Position {ticker_cols[1]}',
-        #         line=dict(color='orange')
-        #     ),
-        #     row=2, col=1
-        # )
+        ticker_cols = positions.columns.tolist()
+
+        fig_backtest.add_trace(
+            go.Scatter(
+                x=positions.index,
+                y=positions[ticker_cols[0]],
+                mode='lines',
+                name=f'Position {ticker_cols[0]}',
+                line=dict(color='green')
+            ),
+            row=2, col=1
+        )
+        fig_backtest.add_trace(
+            go.Scatter(
+                x=positions.index,
+                y=positions[ticker_cols[1]],
+                mode='lines',
+                name=f'Position {ticker_cols[1]}',
+                line=dict(color='orange')
+            ),
+            row=2, col=1
+        )
 
         # Mise en forme
-        # fig_backtest.update_layout(
-        #     title="Cumulative Return",
-        #     template="plotly_white",
-        # )
+        fig_backtest.update_layout(
+            title="Cumulative Return",
+            template="plotly_white",
+        )
 
         # Légendes axes
-        # fig_backtest.update_xaxes(title_text="Date")
-        # fig_backtest.update_yaxes(title_text="Log Cumulative Return")
-        # fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
+        fig_backtest.update_xaxes(title_text="Date")
+        fig_backtest.update_yaxes(title_text="Log Cumulative Return")
+        fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
         fig_backtest.show()
 
         # =====================================================================
@@ -477,7 +477,7 @@ if __name__ == "__main__":
         df_results = pd.DataFrame(performance_results)
         print("=== Performance Summary ===")
         print(df_results)
-        df_results.to_csv(f"{DATA_PATH}/backtest_results_start_{start_date}.csv", index=False)
+        # df_results.to_csv(f"{DATA_PATH}/backtest_results_start_{start_date}.csv", index=False)
         # df_results.to_csv(f"{DATA_PATH}/backtest_results_window_{w_s}.csv", index=False)
         # df_results.to_csv(f"{DATA_PATH}/backtest_long_neutral_results.csv", index=False)
         # fig_backtest.write_image(f"{IMG_PATH}/backtest_long_neutral.png", width=1200, height=800)
