@@ -841,11 +841,11 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
     outperforming the Russell 2000), and if the inefficiency is positive,
     then the spectrum width ($\alpha$max - $\alpha$min) of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
     persistence and a more complex fractal structure, suggesting inefficiency. In this case, we overweight the S\&P 500 by allocating
-    80\% to it and 20\% to the Russell 2000.
+    100\% to it and 0\% to the Russell 2000.
 
     \item If the rolling Hurst exponent is greater than 0.5 and the momentum is negative (indicating that the Russell 2000 is
     outperforming the S\&P 500), if the inefficiency index is negative (meaning that the alpha width of the
-    Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 80\% to it and 20\% to the S\&P 500.
+    Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 100\% to it and 20   \% to the S\&P 500.
 
     \item If the rolling Hurst exponent is below 0.5, implying no clear persistence, we maintain a neutral allocation (50\% in each index).
 \end{itemize}
@@ -865,8 +865,8 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/backtest_long_neutral.png}
-    \caption{Comparison of the performance of the ModifOverlap120 strategy (blue) with the 50/50 portfolio (black).
+    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns_strat_sp500.png}
+    \caption{Comparison of the performance of the ModifOverlap120 strategy (blue) with the long only SP500 (red).
         The backtest period is from 1991-11-15 to 2025-02-28.}
     \label{fig:cumulative_performance}
 \end{figure}

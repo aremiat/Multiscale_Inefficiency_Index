@@ -372,22 +372,22 @@ if __name__ == "__main__":
         # =====================================================================
         # Visualisation des courbes cumulées des stratégies
         # =====================================================================
-        # first_strategy, cum_returns = list(cumulative_returns_dict.items())[0]
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=cum_returns.index,
-        #         y=np.log(cum_returns),
-        #         mode='lines',
-        #         name=first_strategy,
-        #         line=dict(color="blue")
-        #     )
-        # )
-        # fig_backtest.update_layout(
-        #     title=f"Cumulative Returns - Strategy: {first_strategy}",
-        #     xaxis_title="Date",
-        #     yaxis_title="Cumulative Return",
-        #     template="plotly_white"
-        # )
+        first_strategy, cum_returns = list(cumulative_returns_dict.items())[0]
+        fig_backtest.add_trace(
+            go.Scatter(
+                x=cum_returns.index,
+                y=np.log(cum_returns),
+                mode='lines',
+                name=first_strategy,
+                line=dict(color="blue")
+            )
+        )
+        fig_backtest.update_layout(
+            title=f"Cumulative Returns - Strategy: {first_strategy}",
+            xaxis_title="Date",
+            yaxis_title="Cumulative Return",
+            template="plotly_white"
+        )
         # fig_backtest.show()
 
         fig_backtest.add_trace(
@@ -397,8 +397,7 @@ if __name__ == "__main__":
                 mode='lines',
                 name="Long Only S&P500",
                 line=dict(color='red')
-            ),
-            row=1, col=1
+            )
         )
         fig_backtest.add_trace(
             go.Scatter(
@@ -410,28 +409,38 @@ if __name__ == "__main__":
             )
         )
 
-        ticker_cols = positions.columns.tolist()
-
         fig_backtest.add_trace(
             go.Scatter(
-                x=positions.index,
-                y=positions[ticker_cols[0]],
+                x=russell_cumulative.index,
+                y=np.log(russell_cumulative),
                 mode='lines',
-                name=f'Position {ticker_cols[0]}',
+                name="Long Only Russell",
                 line=dict(color='green')
-            ),
-            row=2, col=1
+            )
         )
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=positions.index,
-                y=positions[ticker_cols[1]],
-                mode='lines',
-                name=f'Position {ticker_cols[1]}',
-                line=dict(color='orange')
-            ),
-            row=2, col=1
-        )
+
+
+        # ticker_cols = positions.columns.tolist()
+        #
+        # fig_backtest.add_trace(
+        #     go.Scatter(
+        #         x=positions.index,
+        #         y=positions[ticker_cols[0]],
+        #         mode='lines',
+        #         name=f'Position {ticker_cols[0]}',
+        #         line=dict(color='green')
+        #     )
+        # )
+        # fig_backtest.add_trace(
+        #     go.Scatter(
+        #         x=positions.index,
+        #         y=positions[ticker_cols[1]],
+        #         mode='lines',
+        #         name=f'Position {ticker_cols[1]}',
+        #         line=dict(color='orange')
+        #     ),
+        #     row=2, col=1
+        # )
 
         # Mise en forme
         fig_backtest.update_layout(
@@ -442,7 +451,7 @@ if __name__ == "__main__":
         # Légendes axes
         fig_backtest.update_xaxes(title_text="Date")
         fig_backtest.update_yaxes(title_text="Log Cumulative Return")
-        fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
+        # fig_backtest.update_yaxes(title_text="Positions", row=2, col=1)
         fig_backtest.show()
 
         # =====================================================================
