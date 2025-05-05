@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  1 MAY 2025 17:47
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.16)  3 MAY 2025 10:02
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1000,7 +1000,7 @@ texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 <img/fdm_autocorr.png, id=125, 6022.5pt x 5018.75pt>
 File: img/fdm_autocorr.png Graphic file (type png)
 <use img/fdm_autocorr.png>
-Package pdftex.def Info: img/fdm_autocorr.png  used on input line 174.
+Package pdftex.def Info: img/fdm_autocorr.png  used on input line 173.
 (pdftex.def)             Requested size: 375.80544pt x 313.13506pt.
 
 
@@ -1009,13 +1009,13 @@ Package pdftex.def Info: img/fdm_autocorr.png  used on input line 174.
 [5 <./img/fdm_autocorr.png>]
 
 [6]
-Underfull \hbox (badness 10000) in paragraph at lines 274--275
+Underfull \hbox (badness 10000) in paragraph at lines 273--274
 
  []
 
 PGFPlots: reading {data/Hurst_results.csv}
 
-Overfull \hbox (22.26482pt too wide) in paragraph at lines 290--293
+Overfull \hbox (22.26482pt too wide) in paragraph at lines 289--292
  [][] 
  []
 
@@ -1032,7 +1032,7 @@ PGFPlots: reading {data/multifractal_spectrum_daily_SP500.csv}
 
 
 [10]
-Underfull \hbox (badness 10000) in paragraph at lines 509--514
+Underfull \hbox (badness 10000) in paragraph at lines 508--513
 
  []
 
@@ -1046,7 +1046,7 @@ PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
 
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 660--683
+Underfull \hbox (badness 10000) in paragraph at lines 659--681
 
  []
 
@@ -1063,17 +1063,18 @@ PGFPlots: reading {data/f_alpha_alpha_random_walk.csv}
 <img/inefficiency_index.png, id=238, 1868.9825pt x 886.31125pt>
 File: img/inefficiency_index.png Graphic file (type png)
 <use img/inefficiency_index.png>
-Package pdftex.def Info: img/inefficiency_index.png  used on input line 856.
+Package pdftex.def Info: img/inefficiency_index.png  used on input line 854.
 (pdftex.def)             Requested size: 375.80544pt x 178.20578pt.
-<img/backtest_long_neutral.png, id=239, 1753.55125pt x 882.29625pt>
-File: img/backtest_long_neutral.png Graphic file (type png)
-<use img/backtest_long_neutral.png>
-Package pdftex.def Info: img/backtest_long_neutral.png  used on input line 868.
-
-(pdftex.def)             Requested size: 375.80544pt x 189.08417pt.
+<img/log_cumulative_returns_strat_sp500.png, id=239, 1275.26437pt x 594.72188pt
+>
+File: img/log_cumulative_returns_strat_sp500.png Graphic file (type png)
+<use img/log_cumulative_returns_strat_sp500.png>
+Package pdftex.def Info: img/log_cumulative_returns_strat_sp500.png  used on in
+put line 866.
+(pdftex.def)             Requested size: 375.80544pt x 175.25085pt.
 PGFPlots: reading {data/backtest_long_neutral_results.csv}
 
-Overfull \hbox (11.98218pt too wide) in paragraph at lines 885--887
+Overfull \hbox (11.98218pt too wide) in paragraph at lines 883--885
  [][] 
  []
 
@@ -1082,59 +1083,60 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 
-[16 <./img/inefficiency_index.png> <./img/backtest_long_neutral.png>]
+[16 <./img/inefficiency_index.png> <./img/log_cumulative_returns_strat_sp500.pn
+g>]
 
 [17]
-Underfull \hbox (badness 10000) in paragraph at lines 990--992
+Underfull \hbox (badness 10000) in paragraph at lines 988--990
 
  []
 
 
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 991.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 991.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 991.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\to' on input line 991.
+
+
 
 [18]
+<img/log_cumulative_returns.png, id=265, 1199.23032pt x 590.205pt>
+File: img/log_cumulative_returns.png Graphic file (type png)
+<use img/log_cumulative_returns.png>
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 102
+5.
+(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
+
+
+[19 <./img/log_cumulative_returns.png>]
 PGFPlots: reading {data/adf_results.csv}
-<img/cumulative_profile_segment_partitioning.png, id=269, 1290.32062pt x 615.04
+<img/cumulative_profile_segment_partitioning.png, id=283, 1290.32062pt x 615.04
 78pt>
 File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
 <use img/cumulative_profile_segment_partitioning.png>
 Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
-on input line 1053.
+on input line 1094.
 (pdftex.def)             Requested size: 375.80544pt x 179.12885pt.
 
 
-[19]
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 1063.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `subscript' on input line 1063.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 1063.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\to' on input line 1063.
-
-<img/log_variance_log_scale.png, id=280, 1727.45375pt x 856.19875pt>
+[20]
+<img/log_variance_log_scale.png, id=293, 1727.45375pt x 856.19875pt>
 File: img/log_variance_log_scale.png Graphic file (type png)
 <use img/log_variance_log_scale.png>
-Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 109
+Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 110
 8.
 (pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
-
-
-[20 <./img/cumulative_profile_segment_partitioning.png>]
-<img/log_cumulative_returns.png, id=290, 1199.23032pt x 590.205pt>
-File: img/log_cumulative_returns.png Graphic file (type png)
-<use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 110
-7.
-(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-<img/delta_alpha_resample_m.png, id=293, 1839.87375pt x 908.39375pt>
+<img/delta_alpha_resample_m.png, id=294, 1839.87375pt x 908.39375pt>
 File: img/delta_alpha_resample_m.png Graphic file (type png)
 <use img/delta_alpha_resample_m.png>
 Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 111
@@ -1142,8 +1144,9 @@ Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 111
 (pdftex.def)             Requested size: 375.80544pt x 185.54274pt.
 
 
-[21 <./img/log_variance_log_scale.png> <./img/log_cumulative_returns.png>]
-<img/position_switching.png, id=302, 1281.28688pt x 651.18282pt>
+[21 <./img/cumulative_profile_segment_partitioning.png> <./img/log_variance_log
+_scale.png>]
+<img/position_switching.png, id=303, 1281.28688pt x 651.18282pt>
 File: img/position_switching.png Graphic file (type png)
 <use img/position_switching.png>
 Package pdftex.def Info: img/position_switching.png  used on input line 1129.
@@ -1165,12 +1168,12 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 [23
 
 ]
-Underfull \hbox (badness 10000) in paragraph at lines 1218--1219
+Underfull \hbox (badness 10000) in paragraph at lines 1219--1220
 
  []
 
 
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1233--1234
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1234--1235
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
@@ -1192,28 +1195,24 @@ Package rerunfilecheck Warning: File `beyond_random_walks.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `beyond_random_walks.out':
-(rerunfilecheck)             Before: 61002F82C8378C064773314BEDF878DE;4005
-(rerunfilecheck)             After:  DD7E9361E9B2BAC7976B83CB1B239E74;3983.
+(rerunfilecheck)             Before: A6E41D8C82CF9B012B3989C541FD0280;3983
+(rerunfilecheck)             After:  795633EDF9E946FB59E058AD0850D979;4323.
  ) 
 Here is how much of TeX's memory you used:
- 36445 strings out of 473362
- 853929 string characters out of 5725050
- 1362005 words of memory out of 5000000
+ 36446 strings out of 473362
+ 854032 string characters out of 5725050
+ 1362912 words of memory out of 5000000
  58843 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,736b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-pdfTeX warning (dest): name{table.caption.18} has been referenced but does not 
-exist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{table.caption.10} has been referenced but does not 
-exist, replaced by a fixed one
-
-
-pdfTeX warning (dest): name{figure.caption.13} has been referenced but does not
+pdfTeX warning (dest): name{figure.caption.14} has been referenced but does not
  exist, replaced by a fixed one
+
+
+pdfTeX warning (dest): name{table.caption.12} has been referenced but does not 
+exist, replaced by a fixed one
 
 <c:/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><c:/texli
 ve/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb><c:/texlive/2024/t
@@ -1234,10 +1233,10 @@ texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb><c:/texlive/20
 24/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb><c:/texlive/2024/texmf-d
 ist/fonts/type1/public/cm-super/sfrm1200.pfb><c:/texlive/2024/texmf-dist/fonts/
 type1/public/cm-super/sfti1095.pfb>
-Output written on out/beyond_random_walks.pdf (24 pages, 2122144 bytes).
+Output written on out/beyond_random_walks.pdf (24 pages, 2103572 bytes).
 PDF statistics:
- 447 PDF objects out of 1000 (max. 8388607)
- 352 compressed objects within 4 object streams
- 110 named destinations out of 1000 (max. 500000)
+ 448 PDF objects out of 1000 (max. 8388607)
+ 353 compressed objects within 4 object streams
+ 111 named destinations out of 1000 (max. 500000)
  229 words of extra memory for PDF output out of 10000 (max. 10000000)
 

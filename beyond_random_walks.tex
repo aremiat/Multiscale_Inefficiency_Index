@@ -76,12 +76,11 @@ To address these issues, we employed the Multifractal Detrended Fluctuation Anal
 local behavior of the series and characterize its multifractal spectrum. The multifractal spectrum reveals that the series
 might exhibit multifractal properties. To take advantage of this, we propose a trading strategy based on the Hurst
 exponent, the multifractal spectrum and a proposed inefficiency index that combines the multifractality and the Hurst exponent.
-We look into pairs with different patterns or behaviors that changes
-when you view data at different sizes or over different time periods behavior (S\&P 500 and Russell 2000).
+We examine trading pairs whose patterns or behaviors vary depending on the scale at which the data is viewed.
 The inefficiency index is used as a filter to determine the significance of our trading signal.
 The strategy (ModifOverlap120) outperforms the long-only S\&P 500 portfolio, the long-only Russell 2000 portfolio and
-50/50 portfolio (our benchmark). Moreover, the strategies that used the inefficiency index as a filter
-outperform the strategies that did not use it on Sharpe and max drawdown.
+50/50 portfolio. Moreover, the strategies that used the inefficiency index as a filter
+outperform the strategies that did not use it confirming the hypothesis that our inefficiency index behaves as a risk management tool.
 
 
 
@@ -659,7 +658,7 @@ indicating that when shuffling the series, it behaves more like a random walk su
 
 The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a different curve shortened on the right side.
 The spectrum is narrower (0.27 between the maximum and minimum) compared to the Russell 2000 (0.4),
-suggesting a possibly weaker multifractal nature, the difference between alpha min and alpha max is lower than the Russell 2000 ones
+suggesting a possibly weaker multifractal nature, the difference between $\alpha$ min and $\alpha$ max is lower than the Russell 2000 ones
 therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000. Let's recall that for
 a random walk the alpha pic would be close to 0.5 and the spectrum width narrow.
 The peak near the center for the original series is around 0.486. This may imply that the S\&P 500 returns exhibit a more stable
@@ -676,7 +675,6 @@ shrinks to 0.2 when shuffling the series, indicating that the multifractality is
 In this spectrum, there is no long term correlation, the multifractality is only due to the non-gaussian nature of returns.
 In the original returns, large jumps cluster together, creating many consecutive “rough” segments with low Hölder exponents.
 Shuffling breaks up these clusters, so extreme returns become isolated among calmer data.
-This reduces the frequency of very low h(t) and increases the share of intermediate h(t).
 As a result, the modal Hölder exponent shifts upward even though the overall width remains unchanged. Shuffling the
 series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values simply because
 the returns are randomly redistributed. \\
@@ -990,6 +988,48 @@ Factoring out the term \( \sigma^2 \), we arrive at the final covariance formula
 This covariance function entirely characterizes the dependence structure of fractional Brownian motion, revealing long-term correlation when \(H>0.5\) (persistence) and anti-correlation when \(H<0.5\) (anti-persistence).
 To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
 
+\subsection{Proof of \(F_0(s)\) as \(q\to0\)}
+\label{sec:proof_F0}
+\begin{frame}{Proof of \(F_0(s)\) as \(q\to0\)}
+  \[
+    F_q(s)
+    =\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\bigl(F_v^2(s)\bigr)^{\!q/2}\Bigr]^{1/q}
+    \;\Longrightarrow\;
+    \ln F_q(s)
+    =\frac{1}{q}\ln S(q),
+  \]
+  where
+  \[
+    S(q)=\frac{1}{2N_s}\sum_{v=1}^{2N_s}e^{\tfrac{q}{2}\ln F_v^2(s)}.
+  \]
+  As \(q\to0\), \(\ln S(q)\to0\) and we apply L’Hôpital:
+  \[
+    \lim_{q\to0}\ln F_q(s)
+    =\lim_{q\to0}\frac{\ln S(q)}{q}
+    =\left.\frac{S'(q)}{S(q)}\right|_{q=0}
+    =\frac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s).
+  \]
+  Exponentiating:
+  \[
+    F_0(s)
+    =\exp\!\Bigl[\tfrac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s)\Bigr]
+    =\exp\!\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\ln F_v(s)\Bigr].
+  \]
+  \vspace{4pt}
+  \textit{Thus \(F_0(s)\) is the geometric mean of the segment fluctuations.}
+    To comeback where you left off, see Section~\ref{sec:mfdfa}.
+\end{frame}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
+    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
+    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
+    \label{fig:cumulative_returns}
+\end{figure}
+
+\FloatBarrier
+
 \subsection{Critical Values for the Modified R/S Test}
 
 The critical values for the modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the modified R/S statistic.
@@ -1027,7 +1067,7 @@ such that its autocorrelation function \(\rho(k)\) satisfies
 where \(\rho(k)\) is the autocovariance function, \(c\) is a constant (V.Mignon 2003). To comeback where you left off,
 see Section~\ref{sec:results}.
 
-
+\subsection{Augmented Dickey-Fuller Test}
 
 \begin{table}[h!]
     \centering
@@ -1047,6 +1087,7 @@ see Section~\ref{sec:results}.
     \label{table:adf_results}
 \end{table}
 
+\subsection{MF-DFA Analysis}
 
 \begin{figure}[ht]
     \centering
@@ -1060,37 +1101,6 @@ see Section~\ref{sec:results}.
 \FloatBarrier
 
 
-\subsection{Proof of \(F_0(s)\) as \(q\to0\)}
-\label{sec:proof_F0}
-\begin{frame}{Proof of \(F_0(s)\) as \(q\to0\)}
-  \[
-    F_q(s)
-    =\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\bigl(F_v^2(s)\bigr)^{\!q/2}\Bigr]^{1/q}
-    \;\Longrightarrow\;
-    \ln F_q(s)
-    =\frac{1}{q}\ln S(q),
-  \]
-  where
-  \[
-    S(q)=\frac{1}{2N_s}\sum_{v=1}^{2N_s}e^{\tfrac{q}{2}\ln F_v^2(s)}.
-  \]
-  As \(q\to0\), \(\ln S(q)\to0\) and we apply L’Hôpital:
-  \[
-    \lim_{q\to0}\ln F_q(s)
-    =\lim_{q\to0}\frac{\ln S(q)}{q}
-    =\left.\frac{S'(q)}{S(q)}\right|_{q=0}
-    =\frac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s).
-  \]
-  Exponentiating:
-  \[
-    F_0(s)
-    =\exp\!\Bigl[\tfrac{1}{4N_s}\sum_{v=1}^{2N_s}\ln F_v^2(s)\Bigr]
-    =\exp\!\Bigl[\tfrac{1}{2N_s}\sum_{v=1}^{2N_s}\ln F_v(s)\Bigr].
-  \]
-  \vspace{4pt}
-  \textit{Thus \(F_0(s)\) is the geometric mean of the segment fluctuations.}
-    To comeback where you left off, see Section~\ref{sec:mfdfa}.
-\end{frame}
 
 
 \begin{figure}[ht]
@@ -1102,16 +1112,6 @@ see Section~\ref{sec:results}.
 \end{figure}
 \FloatBarrier
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
-    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
-    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
-    \label{fig:cumulative_returns}
-\end{figure}
-
-
-\FloatBarrier
 
 
 \begin{figure}[ht]
@@ -1148,7 +1148,8 @@ see Section~\ref{sec:results}.
         columns/Sharpe/.style={column name=Sharpe},
         columns/Max Drawdown /.style={column name=Max Drawdown}
     ]{data/backtest_results_window_120.csv}
-    \caption{1991-11-15 to 2025-02-28 | Window size 120 days. To comeback where you left off, see Section~\ref{sec:backtest_results}.}
+    \caption{1991-11-15 to 2025-02-28 | Window size 120 days. Traditional R/S method is used here
+    To comeback where you left off, see Section~\ref{sec:backtest_results}.}
     \label{tab:performance_table_window_120}
 \end{table}
 \FloatBarrier

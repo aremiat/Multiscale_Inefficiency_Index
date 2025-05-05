@@ -217,6 +217,9 @@ if __name__ == "__main__":
     scales = np.unique(np.logspace(np.log10(10), np.log10(200), 10, dtype=int))
     rolling_delta_ticker1 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker1]).diff().dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
+
+
+
     rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker2]).diff().dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
     rolling_delta_ticker1.index.name = "Date"
@@ -269,6 +272,36 @@ if __name__ == "__main__":
         mom = momentum.loc[common_dates]
         delta_alpha_diff_aligned = delta_alpha_diff.loc[common_dates]
         first_valid_index = signal.first_valid_index()
+
+        inef_sp500 = pd.Series(
+            compute_inefficiency_index(rolling_delta_ticker1, signal),
+            index=common_dates
+        ).dropna()
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=inef_sp500.index, y=inef_sp500,
+                                 mode='lines', name='Inefficiency Index sp500',
+                                 line=dict(color='purple')))
+        fig.update_layout(title="Inefficiency Index",
+                          xaxis_title="Date",
+                          yaxis_title="Inefficiency Index sp500",
+                          template="plotly_white")
+        fig.show()
+
+        inef_russel = pd.Series(
+            compute_inefficiency_index(rolling_delta_ticker2, signal),
+            index=common_dates
+        ).dropna()
+
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=inef_russel.index, y=inef_russel,
+                                 mode='lines', name='Inefficiency Index Russell 2000',
+                                 line=dict(color='purple')))
+        fig.update_layout(title="Inefficiency Index",
+                          xaxis_title="Date",
+                          yaxis_title="Inefficiency Index Russell 2000",
+                          template="plotly_white")
+        fig.show()
 
         ineff_index = pd.Series(
             compute_inefficiency_index(delta_alpha_diff_aligned, signal),
