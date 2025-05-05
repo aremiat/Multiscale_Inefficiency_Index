@@ -102,8 +102,8 @@ def compute_nav_with_inefficiency(
                 w1, w2 = 1.0, 0.0
             elif ineff < -threshold_ineff and m < 0:
                 w1, w2 = 0.0, 1.0
-            else:
-                w1, w2 = 0.5, 0.5
+            # else:
+            #     w1, w2 = 0.5, 0.5
             # sinon on reste sur w_prev (sera re-drifté ci-dessous)
 
         # 2) PAS DE SIGNAL (ou signal faible) → drift multiplicatif
@@ -390,10 +390,10 @@ if __name__ == "__main__":
         common_dates_bp = positions_filtered.index.intersection(p_config_filtered.index)
         positions_final = positions_filtered.loc[common_dates_bp]
         all_p_config_final = p_config_filtered.loc[common_dates_bp]
-        cum_returns, port_returns = run_backtest(all_p_config_final, positions_final, ticker1, ticker2,
-                                                 fee_rate=0.005)
-        # cum_returns = positions_final['nav']
-        # port_returns = positions_final['nav'].pct_change().dropna()
+        # cum_returns, port_returns = run_backtest(all_p_config_final, positions_final, ticker1, ticker2,
+        #                                          fee_rate=0.005)
+        cum_returns = positions_final['nav']
+        port_returns = positions_final['nav'].pct_change().dropna()
         cumulative_returns_dict[config_name] = cum_returns
         ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
         performance_results.append({
@@ -472,7 +472,7 @@ if __name__ == "__main__":
         new_p = all_prices.loc[first_valid_index:]
         sp500_cumulative = new_p.loc[:,ticker1] / new_p.loc[:, ticker1].iloc[0]
         russell_cumulative = new_p.loc[:,ticker2] / new_p.loc[:, ticker2].iloc[0]
-        positions_50_50 = compute_nav_with_inefficiency(            rolling_hurst = signal,
+        positions_50_50 = compute_nav_with_inefficiency(rolling_hurst = signal,
             momentum      = mom,
             ineff_index   = ineff_index,
             ret1          = ret1,
