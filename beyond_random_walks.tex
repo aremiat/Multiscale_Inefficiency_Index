@@ -80,7 +80,7 @@ We examine trading pairs whose patterns or behaviors vary depending on the scale
 The inefficiency index is used as a filter to determine the significance of our trading signal.
 The strategy (ModifOverlap120) outperforms the long-only S\&P 500 portfolio, the long-only Russell 2000 portfolio and
 50/50 portfolio. Moreover, the strategies that used the inefficiency index as a filter
-outperform the strategies that did not use it confirming the hypothesis that our inefficiency index behaves as a risk management tool.
+outperform the strategies that did not use it on max drawdown and volatility therefore confirming the hypothesis that our inefficiency index behaves as a risk management tool.
 
 
 
@@ -256,10 +256,10 @@ The data used in this analysis is monthly and consists of the historical closing
 Russell 2000, FTSE 100, Nikkei 225, and the DAX.
 The data spans the period from September 10th, 1987, to February 28th, 2025.
 
-For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log returns.
-Additionally, a stationarity test was conducted on the log return series using the Augmented Dickey-Fuller (ADF) test.
+For each index, the closing price time series was transformed using the natural logarithm to obtain a series of log prices.
+Additionally, a stationarity test was conducted on the log prices series using the Augmented Dickey-Fuller (ADF) test.
 The results indicated that all series were non-stationary, suggesting the presence of unit roots.
-To address this, the log returns were differenced once, after which they exhibited stationarity (test are available
+To address this, the log prices were differentiated once, after which they exhibited stationarity (test are available
 in Table~\ref{table:adf_results}).
 
 These differentiated log returns were then used to calculate the R/S and modified R/S statistics and estimate the Hurst exponent.
@@ -288,7 +288,7 @@ The following table summarizes the results of the R/S statistic, modified R/S st
         columns/long memory/.style={column name=long memory}
     ] {data/Hurst_results.csv}
     \caption{Results for R/S, Hurst exponent, modified Hurst exponent, critical value at 10\%, and rejection of the null
-    hypothesis of long memory from 1987-09-10 to 2025-02-28. The Hurst exponent can be equal for the R/S and modified R/S methods in the case where
+    hypothesis of no long memory from 1987-09-10 to 2025-02-28. The Hurst exponent can be equal for the R/S and modified R/S methods in the case where
     the autocorrelation coefficients are less than zero (refer to Section~\ref{sec:long_range_dependence}), in this case we set $q$ equal to 0 and therefore the R/S and modified R/S share the same formula.}
     \label{tab:Hurst_results}
 \end{table}
@@ -370,8 +370,8 @@ The S\&P 500 and Russell 2000 are ideal candidates for multifractal analysis.
 The modified R/S statistic (M-R/S) for the S\&P 500 is approximately 0.501 very close to 0.5 which suggests that its
 dynamics are consistent with efficient market behavior. In contrast, the Russell 2000 has a modified Hurst exponent of
 approximately 0.588, indicating significant long-range dependencies and a less efficient market. Moreover, it is interesting
-to observe that, in the graphical analysis (refer to Figure~\ref{fig:cumulative_returns}), there are periods when the Russell 2000
-displays bullish trends while the S\&P 500 remains relatively flat for no apparent reason.
+to observe that, in the graphical analysis (refer to Figure~\ref{fig:cumulative_returns}), there are periods when the S\&P 500
+displays bullish trends while the Russell 2000 remains relatively flat for no apparent reason.
 
 These discrepancies between the two series highlight their distinct scaling properties and market efficiencies. Our aim with
 the multifractal analysis is to capture and quantify these differences in local scaling behavior. By analyzing the multifractal spectrum
@@ -574,7 +574,7 @@ long-range correlations to the multifractality.
             ]
             {data/f_alpha_alpha_russell 2000.csv};
 
-            \legend{Shuffle, Original}
+            \legend{Shuffled, Original}
         \end{axis}
     \end{tikzpicture}
     \caption{Multifractal spectrum $f(\alpha)$ for the Russell 2000 returns.}
@@ -595,9 +595,9 @@ in the Russell 2000 returns is around 0.55. In general, $\alpha > 0.5$ suggests 
 short to medium term correlation, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk),
 and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.55 may implies a
 moderately rough signal neither purely random nor overly smooth highlighting the presence of multifractal characteristics.
-Comparing it with the shuffle series, we observe that the $\alpha$ peak is lower than the original series, indicating that the
+Comparing it with the shuffled series, we observe that the $\alpha$ peak is lower than the original series, indicating that the
 shuffled series exhibits a more uniform behavior. This suggests that the multifractality in the original series is primarily
-driven by long-range correlations, while the shuffled series lacks this structure. It is still higher than 0.5, indicating
+driven by long-range correlations, while the shuffled series lacks this structure. It's width is still larger than a random walk, indicating
 that the series is still multifractal but only because of the non-gaussian nature of returns (Kurtosis is 12.71). Moreover, the width spectrum
 is approximately 0.2, in a random walk the width of the spectrum would be close to 0.1 (refer to Lukasz Czarnecki, Dariusz Grech 2009),
 indicating that when shuffling the series, it behaves more like a random walk suggesting market efficiency.
@@ -667,8 +667,8 @@ The fact that the curve is shortened on the right but stretches deeper on the le
 ultra-calm intervals in favor of a greater propensity for abrupt or extreme fluctuations otherwise saying that this series
 exhibit fatter tails.
 Interestingly, the peak of the shuffled series is higher than the original one (0.53). Let's recall that from our analysis
-with M-R/S, the S\&P 500 had a Hurst exponent of 0.501
-,indicating that the series is likely to be a random walk. Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
+with M-R/S, the S\&P 500 had a Hurst exponent of 0.501, indicating that the series is likely to be a random walk.
+Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
 reinforcing our first result via Hurst.
 For both series, the width of the spectrum is approximately 0.27, if you look back at the Russell 2000, the width of the spectrum
 shrinks to 0.2 when shuffling the series, indicating that the multifractality is primarily driven by long-range correlations.
@@ -843,7 +843,7 @@ Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in 
 
     \item If the rolling Hurst exponent is greater than 0.5 and the momentum is negative (indicating that the Russell 2000 is
     outperforming the S\&P 500), if the inefficiency index is negative (meaning that the alpha width of the
-    Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 100\% to it and 20   \% to the S\&P 500.
+    Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 100\% to it and 0\% to the S\&P 500.
 
     \item If the rolling Hurst exponent is below 0.5, implying no clear persistence, we maintain a neutral allocation (50\% in each index).
 \end{itemize}
@@ -894,12 +894,12 @@ Hurst based modified R/S statistic using a rolling window of 120 days and the Mo
 Hurst based modified R/S statistic using a rolling window of 120 days without using the inefficiency index as a signal filter.
 The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance} (for a more detail analysis
 on window size see Table~\ref{tab:performance_table_window_120}).
-All the strategies outperform the 50/50 portfolio and the long only Russell 2000 portfolio. The portfolio composition and position switching
-for the ModifOverlap120 can be seen in Figure~\ref{fig:position_switching}.
-The ModifOverlap120 strategy outperforms the 50/50 portfolio in all metrics, except
+All the strategies outperform the long only S\&P 500, the 50/50 portfolio and the long only Russell 2000 portfolio on annualized return and Sharpe.
+The portfolio composition and position switching for the ModifOverlap120 can be seen in Figure~\ref{fig:position_switching}.
+The ModifOverlap120 strategy outperforms the 50/50 portfolio and long only S\&P 500 in all metrics, except
 that it achieves a slightly higher volatility over the period. The ModifOverlap120 and ModifOverlap120NoFilter strategies
 shows similar results except that the use of the inefficency index as a filter improve the performance of the strategy by
-achieving a lower max drawdown.
+achieving a lower max drawdown and lower volatilty for the same annualized return.
 
 
 \section{Conclusion}
@@ -929,6 +929,77 @@ should aim to extend this analysis to a broader set of assets (pair clustering) 
 to confirm the statistical significance of the observed multifractal effects.
 
 \section{Appendix}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
+    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
+    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
+    \label{fig:cumulative_returns}
+\end{figure}
+
+\FloatBarrier
+
+\subsection{Definition (Time Domain)}
+\label{sec:long_range_dependence}
+A stationary process \(X_t\) is said to exhibit long‐range dependence (long memory) if there exist constants
+
+\[
+a\in(0,1),\quad c>0,
+\]
+such that its autocorrelation function \(\rho(k)\) satisfies
+
+\begin{equation}
+\lim_{k \to \infty}
+\frac{\rho(k)}{c\,k^{-\alpha}}
+=1
+\end{equation}
+where \(\rho(k)\) is the autocovariance function, \(c\) is a constant (V.Mignon 2003). To comeback where you left off,
+see Section~\ref{sec:results}.
+
+\subsection{Critical Values for the Modified R/S Test}
+
+The critical values for the modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the modified R/S statistic.
+
+\begin{table}[ht!]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Significance Level} & \textbf{critical value (modified R/S Statistic)} \\
+\hline
+0.005 & 2.098\\
+0.05 & 1.747\\
+0.10 & 1.620\\
+
+\hline
+\end{tabular}
+\caption{Critical values for the modified R/S Statistic (Lo, 1991). To come back where you left off, see Section~\ref{sec:modified_rs}}
+    \label{table:critical_values}
+\end{table}
+
+\FloatBarrier
+
+\subsection{Augmented Dickey-Fuller Test}
+
+\begin{table}[h!]
+    \centering
+    \pgfplotstabletypeset[
+        col sep=comma,
+        header=true,
+        string type,
+        every head row/.style={before row=\hline, after row=\hline},
+        every last row/.style={after row=\hline},
+        columns/Ticker/.style={column name=Ticker, string type},
+        columns/P-Value of log prices/.style={column name=P-Value of log Prices, fixed, precision=3},
+        columns/P-Value of log differentiated return/.style={column name=P-Value of Log Differentiated Return, fixed, precision=3}
+    ] {data/adf_results.csv}
+    \caption{P-values from the Augmented Dickey-Fuller (ADF) test for stationarity. The P-value of log prices refers to the Augmented Dickey Fuller test (ADF) on log prices,
+     while the P-value of log-differentiated prices indicates the ADF test on log-differentiated returns. The null hypothesis is non-stationarity.
+    To come back where you left off, see Section~\ref{sec:data}}
+    \label{table:adf_results}
+\end{table}
+
+\FloatBarrier
 
 \subsection{Demonstration of the covariance of fractional Brownian motion (fBm)}
 \label{sec:covariance_fbm}
@@ -988,7 +1059,9 @@ Factoring out the term \( \sigma^2 \), we arrive at the final covariance formula
 This covariance function entirely characterizes the dependence structure of fractional Brownian motion, revealing long-term correlation when \(H>0.5\) (persistence) and anti-correlation when \(H<0.5\) (anti-persistence).
 To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
 
-\subsection{Proof of \(F_0(s)\) as \(q\to0\)}
+
+\subsection{MF-DFA Analysis}
+
 \label{sec:proof_F0}
 \begin{frame}{Proof of \(F_0(s)\) as \(q\to0\)}
   \[
@@ -1022,78 +1095,9 @@ To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
-    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
-    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
-    \label{fig:cumulative_returns}
-\end{figure}
-
-\FloatBarrier
-
-\subsection{Critical Values for the Modified R/S Test}
-
-The critical values for the modified R/S test are provided in the table below. These values are used to assess whether the series exhibits long memory behavior based on the modified R/S statistic.
-
-\begin{table}[ht!]
-\centering
-\begin{tabular}{|c|c|c|}
-\hline
-\textbf{Significance Level} & \textbf{critical value (modified R/S Statistic)} \\
-\hline
-0.005 & 2.098\\
-0.05 & 1.747\\
-0.10 & 1.620\\
-
-\hline
-\end{tabular}
-\caption{Critical values for the modified R/S Statistic (Lo, 1991). To come back where you left off, see Section~\ref{sec:modified_rs}}
-    \label{table:critical_values}
-\end{table}
-
-\subsection{Definition (Time Domain)}
-\label{sec:long_range_dependence}
-A stationary process \(X_t\) is said to exhibit long‐range dependence (long memory) if there exist constants
-
-\[
-a\in(0,1),\quad c>0,
-\]
-such that its autocorrelation function \(\rho(k)\) satisfies
-
-\begin{equation}
-\lim_{k \to \infty}
-\frac{\rho(k)}{c\,k^{-\alpha}}
-=1
-\end{equation}
-where \(\rho(k)\) is the autocovariance function, \(c\) is a constant (V.Mignon 2003). To comeback where you left off,
-see Section~\ref{sec:results}.
-
-\subsection{Augmented Dickey-Fuller Test}
-
-\begin{table}[h!]
-    \centering
-    \pgfplotstabletypeset[
-        col sep=comma,
-        header=true,
-        string type,
-        every head row/.style={before row=\hline, after row=\hline},
-        every last row/.style={after row=\hline},
-        columns/Ticker/.style={column name=Ticker, string type},
-        columns/P-Value of log prices/.style={column name=P-Value of log Prices, fixed, precision=3},
-        columns/P-Value of log differentiated return/.style={column name=P-Value of Log Differentiated Return, fixed, precision=3}
-    ] {data/adf_results.csv}
-    \caption{P-values from the Augmented Dickey-Fuller (ADF) test for stationarity. The P-value of log prices refers to the Augmented Dickey Fuller test (ADF) on log prices,
-     while the P-value of log-differentiated prices indicates the ADF test on log-differentiated returns. The null hypothesis is non-stationarity.
-    To come back where you left off, see Section~\ref{sec:data}}
-    \label{table:adf_results}
-\end{table}
-
-\subsection{MF-DFA Analysis}
-
-\begin{figure}[ht]
-    \centering
     \includegraphics[width=0.8\textwidth]{img/cumulative_profile_segment_partitioning}
     \caption{Simulation of the MF-DFA steps, the series is the Russell 2000 returns
-    split into segments of length 880 to represents the steps of MF-DFA.
+    split into segments of length 880.
         The blue line represents the cumulative sum of the centered returns, while the coloured lines represent the polynomial fit for
     each segment. To come back where you left off, see Section~\ref{sec:mfdfa}.}
     \label{fig:cumulative_profile_segment_partitioning}
@@ -1113,6 +1117,7 @@ see Section~\ref{sec:results}.
 \FloatBarrier
 
 
+\subsection{Ex-post analysis of the portfolio performance}
 
 \begin{figure}[ht]
     \centering

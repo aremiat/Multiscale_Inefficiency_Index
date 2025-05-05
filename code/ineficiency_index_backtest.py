@@ -77,6 +77,55 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
     return delta_alpha_diff * abs(rolling_hurst - 0.5)
 
 
+def compute_nav_with_inefficiency(
+        rolling_hurst, momentum, ineff_index,
+        ret1, ret2,  # rendements de la veille (shiftés)
+        ticker1, ticker2,
+        threshold_h=0.5, threshold_ineff=1e-6, portfolio_50_50: bool = False):
+
+    dates = rolling_hurst.index
+    # état initial : neutre 50/50
+    w1, w2 = 0.5, 0.5
+    nav_prev = 1.0
+
+    pos1, pos2, navs = [], [], []
+
+    for t in dates:
+        H = rolling_hurst.loc[t]
+        m = momentum.loc[t]
+        ineff = ineff_index.loc[t]
+
+
+        # 1) SIGNAL FORT → override et reset du drift
+        if H > threshold_h:
+            if ineff > threshold_ineff and m > 0:
+                w1, w2 = 1.0, 0.0
+            elif ineff < -threshold_ineff and m < 0:
+                w1, w2 = 0.0, 1.0
+            else:
+                w1, w2 = 0.5, 0.5
+            # sinon on reste sur w_prev (sera re-drifté ci-dessous)
+
+        # 2) PAS DE SIGNAL (ou signal faible) → drift multiplicatif
+        else:
+            w1, w2 = 0.5, 0.5
+
+        if portfolio_50_50:
+            w1, w2 = 0.5, 0.5
+        r1, r2 = ret1.loc[t], ret2.loc[t]
+        # valeur de portefeuille après PnL de la veille
+        v1 = w1 * nav_prev * (1 + r1)
+        v2 = w2 * nav_prev * (1 + r2)
+        nav = v1 + v2
+        nav_prev = nav
+
+        # 3) on stocke
+        pos1.append(w1)
+        pos2.append(w2)
+        navs.append(nav)
+
+    return pd.DataFrame({ticker1: pos1, ticker2: pos2, 'nav': navs}, index=dates)
+
 def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ticker1, ticker2,
                                         threshold_h=0.5, threshold_ineff=1e-6):
     positions = pd.DataFrame(index=rolling_hurst.index, columns=[ticker1, ticker2])
@@ -108,9 +157,11 @@ def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ti
 # =====================================================================
 def run_backtest(all_p, positions, ticker1, ticker2, fee_rate=0.0005):
     portfolio_returns = positions[ticker1] * all_p[ticker1] + positions[ticker2] * all_p[ticker2]
-    transaction_costs = (positions.diff().abs() * all_p).sum(axis=1) * fee_rate
-    transaction_costs = transaction_costs.fillna(0)
-    portfolio_returns = portfolio_returns - transaction_costs
+    # transaction_costs = len(positions) * fee_rate * (
+    #     positions[ticker1].diff().abs() + positions[ticker2].diff().abs()
+    # )
+    # transaction_costs = transaction_costs.fillna(0)
+    portfolio_returns = portfolio_returns
     cumulative_returns = (1 + portfolio_returns).cumprod()
     return cumulative_returns, portfolio_returns
 
@@ -318,9 +369,21 @@ if __name__ == "__main__":
         # fig.show()
         ineff_index.index.name = "Date"
         # ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
+        ret1 = all_p[ticker1].shift(1).loc[common_dates]
+        ret2 = all_p[ticker2].shift(1).loc[common_dates]
 
-        positions = compute_positions_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2,
-                                                        threshold_h=0.5, threshold_ineff=1e-6)
+        # positions = compute_positions_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2,
+        #                                                 threshold_h=0.5, threshold_ineff=1e-6)
+
+        positions = compute_nav_with_inefficiency(
+            rolling_hurst = signal,
+            momentum      = mom,
+            ineff_index   = ineff_index,
+            ret1          = ret1,
+            ret2          = ret2,
+            ticker1       = ticker1,
+            ticker2       = ticker2      # à ajuster
+        )
 
         positions_filtered = positions.loc[first_valid_index:]
         p_config_filtered = p_config.loc[first_valid_index:]
@@ -329,6 +392,8 @@ if __name__ == "__main__":
         all_p_config_final = p_config_filtered.loc[common_dates_bp]
         cum_returns, port_returns = run_backtest(all_p_config_final, positions_final, ticker1, ticker2,
                                                  fee_rate=0.005)
+        # cum_returns = positions_final['nav']
+        # port_returns = positions_final['nav'].pct_change().dropna()
         cumulative_returns_dict[config_name] = cum_returns
         ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
         performance_results.append({
@@ -352,7 +417,7 @@ if __name__ == "__main__":
         fig_backtest.add_trace(
             go.Scatter(
                 x=cum_returns.index,
-                y=np.log(cum_returns),
+                y=cum_returns,
                 mode='lines',
                 name=config_name,
                 line=dict(color="blue")  # you can choose any color
@@ -395,13 +460,30 @@ if __name__ == "__main__":
         # })
 
         # Ports de comparaison : SP500, Russell et portefeuille 50/50
-        new_p = all_p.loc[first_valid_index:]
-        sp500_returns = new_p[ticker1]
-        sp500_cumulative = (1 + sp500_returns).cumprod()
-        russell_returns = new_p[ticker2]
-        russell_cumulative = (1 + russell_returns).cumprod()
-        portfolio_50_50_returns = 0.5 * new_p[ticker1] + 0.5 * new_p[ticker2]
-        portfolio_50_50_cumulative = (1 + portfolio_50_50_returns).cumprod()
+        # new_p = all_p.loc[first_valid_index:]
+        # sp500_returns = new_p[ticker1]
+        # sp500_cumulative = (1 + sp500_returns).cumprod()
+        # russell_returns = new_p[ticker2]
+        # russell_cumulative = (1 + russell_returns).cumprod()
+        # portfolio_50_50_returns = 0.5 * new_p[ticker1] + 0.5 * new_p[ticker2]
+        # portfolio_50_50_cumulative = (1 + portfolio_50_50_returns).cumprod()
+
+        # Ports de comparaison : SP500, Russell et portefeuille 50/50
+        new_p = all_prices.loc[first_valid_index:]
+        sp500_cumulative = new_p.loc[:,ticker1] / new_p.loc[:, ticker1].iloc[0]
+        russell_cumulative = new_p.loc[:,ticker2] / new_p.loc[:, ticker2].iloc[0]
+        positions_50_50 = compute_nav_with_inefficiency(            rolling_hurst = signal,
+            momentum      = mom,
+            ineff_index   = ineff_index,
+            ret1          = ret1,
+            ret2          = ret2,
+            ticker1       = ticker1,
+            ticker2       = ticker2,
+            portfolio_50_50=True
+                                        )
+        # portfolio_50_50_returns = 0.5 * new_p[ticker1] + 0.5 * new_p[ticker2]
+        portfolio_50_50_returns = positions_50_50['nav'].pct_change().dropna()
+        portfolio_50_50_cumulative = positions_50_50['nav']
         # =====================================================================
         # Visualisation des courbes cumulées des stratégies
         # =====================================================================
@@ -409,7 +491,7 @@ if __name__ == "__main__":
         fig_backtest.add_trace(
             go.Scatter(
                 x=cum_returns.index,
-                y=np.log(cum_returns),
+                y=cum_returns,
                 mode='lines',
                 name=first_strategy,
                 line=dict(color="blue")
@@ -426,7 +508,7 @@ if __name__ == "__main__":
         fig_backtest.add_trace(
             go.Scatter(
                 x=sp500_cumulative.index,
-                y=np.log(sp500_cumulative),
+                y=sp500_cumulative,
                 mode='lines',
                 name="Long Only S&P500",
                 line=dict(color='red')
@@ -435,7 +517,7 @@ if __name__ == "__main__":
         fig_backtest.add_trace(
             go.Scatter(
                 x=portfolio_50_50_cumulative.index,
-                y=np.log(portfolio_50_50_cumulative),
+                y=portfolio_50_50_cumulative,
                 mode='lines',
                 name="50/50 Portfolio",
                 line=dict(color='black')
@@ -445,7 +527,7 @@ if __name__ == "__main__":
         fig_backtest.add_trace(
             go.Scatter(
                 x=russell_cumulative.index,
-                y=np.log(russell_cumulative),
+                y=russell_cumulative,
                 mode='lines',
                 name="Long Only Russell",
                 line=dict(color='green')
@@ -490,8 +572,8 @@ if __name__ == "__main__":
         # =====================================================================
         # Calcul des performances des portefeuilles de comparaison
         # =====================================================================
-        ann_ret_sp500, ann_vol_sp500, sharpe_sp500, max_dd_sp500 = compute_performance_stats(sp500_returns)
-        ann_ret_russell, ann_vol_russell, sharpe_russell, max_dd_russell = compute_performance_stats(russell_returns)
+        ann_ret_sp500, ann_vol_sp500, sharpe_sp500, max_dd_sp500 = compute_performance_stats(sp500_cumulative.pct_change().dropna())
+        ann_ret_russell, ann_vol_russell, sharpe_russell, max_dd_russell = compute_performance_stats(russell_cumulative.pct_change().dropna())
         ann_ret_50_50, ann_vol_50_50, sharpe_50_50, max_dd_50_50 = compute_performance_stats(portfolio_50_50_returns)
 
         performance_results.append({
