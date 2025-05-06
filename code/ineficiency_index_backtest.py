@@ -3,9 +3,11 @@ import pandas as pd
 import os
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
+from aeqlib.portfolio_construction import Portfolio
 
 from utils.RS import ComputeRS
 from utils.MFDFA import ComputeMFDFA
+import time
 
 
 def non_overlapping_rolling(series, window, func):
@@ -79,52 +81,43 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
 
 def compute_nav_with_inefficiency(
         rolling_hurst, momentum, ineff_index,
-        ret1, ret2,  # rendements de la veille (shiftés)
         ticker1, ticker2,
         threshold_h=0.5, threshold_ineff=1e-6, portfolio_50_50: bool = False):
 
     dates = rolling_hurst.index
-    # état initial : neutre 50/50
     w1, w2 = 0.5, 0.5
-    nav_prev = 1.0
 
-    pos1, pos2, navs = [], [], []
+    pos1, pos2 = [], []
 
     for t in dates:
         H = rolling_hurst.loc[t]
         m = momentum.loc[t]
         ineff = ineff_index.loc[t]
 
-
         # 1) SIGNAL FORT → override et reset du drift
         if H > threshold_h:
-            if ineff > threshold_ineff and m > 0:
+            if m > 0:
                 w1, w2 = 1.0, 0.0
-            elif ineff < -threshold_ineff and m < 0:
+            elif m < 0:
                 w1, w2 = 0.0, 1.0
-            # else:
-            #     w1, w2 = 0.5, 0.5
-            # sinon on reste sur w_prev (sera re-drifté ci-dessous)
-
+            # elif ineff < -threshold_ineff and m > 0:
+            #     w1, w2 = w1, w2
+            # elif ineff > threshold_ineff and m < 0:
+            #     w1, w2 = w1, w2
         # 2) PAS DE SIGNAL (ou signal faible) → drift multiplicatif
         else:
             w1, w2 = 0.5, 0.5
 
+
         if portfolio_50_50:
             w1, w2 = 0.5, 0.5
-        r1, r2 = ret1.loc[t], ret2.loc[t]
         # valeur de portefeuille après PnL de la veille
-        v1 = w1 * nav_prev * (1 + r1)
-        v2 = w2 * nav_prev * (1 + r2)
-        nav = v1 + v2
-        nav_prev = nav
 
         # 3) on stocke
         pos1.append(w1)
         pos2.append(w2)
-        navs.append(nav)
 
-    return pd.DataFrame({ticker1: pos1, ticker2: pos2, 'nav': navs}, index=dates)
+    return pd.DataFrame({ticker1: pos1, ticker2: pos2}, index=dates)
 
 def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ticker1, ticker2,
                                         threshold_h=0.5, threshold_ineff=1e-6):
@@ -151,19 +144,6 @@ def compute_positions_with_inefficiency(rolling_hurst, momentum, ineff_index, ti
     positions[ticker2] = pos2
     return positions
 
-
-# =====================================================================
-# Backtest et calcul des performances
-# =====================================================================
-def run_backtest(all_p, positions, ticker1, ticker2, fee_rate=0.0005):
-    portfolio_returns = positions[ticker1] * all_p[ticker1] + positions[ticker2] * all_p[ticker2]
-    # transaction_costs = len(positions) * fee_rate * (
-    #     positions[ticker1].diff().abs() + positions[ticker2].diff().abs()
-    # )
-    # transaction_costs = transaction_costs.fillna(0)
-    portfolio_returns = portfolio_returns
-    cumulative_returns = (1 + portfolio_returns).cumprod()
-    return cumulative_returns, portfolio_returns
 
 
 def compute_performance_stats(daily_returns: pd.Series, freq=252):
@@ -221,12 +201,6 @@ def plot_positions_and_hurst(rolling_hurst, positions, ticker1, ticker2):
 
     fig.show()
 
-# Count the number of position switches
-def count_position_switches(positions, ticker1, ticker2):
-    switches_ticker1 = (positions[ticker1].diff().abs() > 0).sum()
-    switches_ticker2 = (positions[ticker2].diff().abs() > 0).sum()
-    total_switches = switches_ticker1 + switches_ticker2
-    print(f"Number of position switches: {total_switches}")
 
 def compute_positions(rolling_signal, momentum, ticker1, ticker2, default=0.5, threshold=0.5):
     # On suppose que les deux indices ont la même fréquence
@@ -261,18 +235,42 @@ if __name__ == "__main__":
     all_p = all_prices.pct_change().dropna()
     all_p['Diff'] = all_p[ticker1] - all_p[ticker2]
     r = all_p['Diff']
+    start_time = time.time()
 
     momentum = compute_momentum(r, shift_days=20, window_size=220).dropna()
     mfdfa_window = 1008
     q_list = np.linspace(-3, 3, 13)
     scales = np.unique(np.logspace(np.log10(10), np.log10(200), 10, dtype=int))
-    rolling_delta_ticker1 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker1]).diff().dropna().shift(1),
+    rolling_delta_ticker1 = ComputeMFDFA.mfdfa_rolling_opti(np.log(all_prices[ticker1]).diff().dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
 
 
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=rolling_delta_ticker1.index, y=rolling_delta_ticker1,
+    #                             mode='lines', name='Rolling Delta Alpha S&P500',
+    #                             line=dict(color='blue')))
+    #
+    # fig.update_layout(title="Rolling Delta Alpha S&P500",
+    #                     xaxis_title="Date",
+    #                     yaxis_title="Rolling Delta Alpha S&P500",
+    #                     template="plotly_white")
+    # fig.show()
 
-    rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling(np.log(all_prices[ticker2]).diff().dropna().shift(1),
+
+
+    rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling_opti(np.log(all_prices[ticker2]).diff().dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
+
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=rolling_delta_ticker2.index, y=rolling_delta_ticker2,
+    #                             mode='lines', name='Rolling Delta Alpha Russell 2000',
+    #                             line=dict(color='blue')))
+    # fig.update_layout(title="Rolling Delta Alpha Russell 2000",
+    #                     xaxis_title="Date",
+    #                     yaxis_title="Rolling Delta Alpha Russell 2000",
+    #                     template="plotly_white")
+    # fig.show()
+
     rolling_delta_ticker1.index.name = "Date"
     rolling_delta_ticker2.index.name = "Date"
 
@@ -281,16 +279,24 @@ if __name__ == "__main__":
                 rolling_delta_ticker1.loc[common_dates_mfdfa] - rolling_delta_ticker2.loc[common_dates_mfdfa])
 
     # do a plot of the difference between the two rolling delta alpha
-    delta_alpha_diff_m = delta_alpha_diff.resample('M').last()
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=delta_alpha_diff_m.index, y=delta_alpha_diff_m,
-                                mode='lines', name='Delta Alpha Difference',
-                                line=dict(color='blue')))
-    fig.update_layout(title="Delta Alpha Difference",
-                        xaxis_title="Date",
-                        yaxis_title="Delta Alpha Difference",
-                        template="plotly_white")
-    fig.show()
+    # delta_alpha_diff_m = delta_alpha_diff.resample('M').last()
+    # delta_alpha_diff = pd.DataFrame(10, index=all_prices.index, columns=[ticker1])
+    # fig = go.Figure()
+    # fig.add_trace(go.Scatter(x=delta_alpha_diff_m.index, y=delta_alpha_diff_m,
+    #                             mode='lines', name='Delta Alpha Difference',
+    #                             line=dict(color='blue')))
+    # fig.update_layout(title="Delta Alpha Difference",
+    #                     xaxis_title="Date",
+    #                     yaxis_title="Delta Alpha Difference",
+    #                     template="plotly_white")
+    # fig.show()
+
+    end_time = time.time()
+    # Calcul de la durée en secondes
+    duration = end_time - start_time
+
+    # Affichage formaté
+    print(f"Durée d’exécution : {duration:.3f} secondes")
 
     # Configurations pour le rolling sur RS
     rolling_configs = {
@@ -301,7 +307,7 @@ if __name__ == "__main__":
         # "ModifOverlap1260": {"method": "modified", "rolling_type": "overlapping", "window_size": 1260},
         # "ModifOverlap2520": {"method": "modified", "rolling_type": "overlapping", "window_size": 2520},
     }
-    start_dates = ["1995-01-02", "2000-01-02", "2005-01-02", "2010-01-02", "2015-01-02"]
+    # start_dates = ["1995-01-02", "2000-01-02", "2005-01-02", "2010-01-02", "2015-01-02"]
 
     # for start_date in start_dates:
     #     cumulative_returns_dict = {}
@@ -310,19 +316,71 @@ if __name__ == "__main__":
         cumulative_returns_dict = {}
         performance_results = []
         w_s = config["window_size"]
-        p_config = all_p.copy()
+        p_config = all_p.copy().shift(1)
 
         rolling_signal = compute_rolling_metric(r.shift(1),
                                                 config["window_size"],
                                                 method=config["method"],
                                                 rolling_type=config["rolling_type"],
                                                 chin=False).dropna()
+        # rolling_signal = rolling_signal.loc['2015-01-02':]
 
         common_dates = rolling_signal.index.intersection(momentum.index).intersection(delta_alpha_diff.index)
         signal = rolling_signal.loc[common_dates]
         mom = momentum.loc[common_dates]
         delta_alpha_diff_aligned = delta_alpha_diff.loc[common_dates]
         first_valid_index = signal.first_valid_index()
+        ineff_index = pd.Series(
+            compute_inefficiency_index(delta_alpha_diff_aligned, signal),
+            index=common_dates
+        ).dropna()
+
+
+        all_signal = pd.concat([signal.rename('rolling_hurst'), mom.rename('momentum'), ineff_index.rename('ineff_index')],
+                               axis=1)
+
+        cond_long_t1 = (
+                (all_signal['momentum'] > 0) &
+                (all_signal['ineff_index'] > 0) &
+                (all_signal['rolling_hurst'] > 0.5)
+        )
+        cond_long_t2 = (
+                (all_signal['momentum'] < 0) &
+                (all_signal['ineff_index'] < 0) &
+                (all_signal['rolling_hurst'] > 0.5)
+        )
+        all_signal[ticker1] = 0.5
+        all_signal[ticker2] = 0.5
+
+        all_signal.loc[cond_long_t1, ticker1] = 1.0
+        all_signal.loc[cond_long_t1, ticker2] = 0.0
+        all_signal.loc[cond_long_t2, ticker1] = 0.0
+        all_signal.loc[cond_long_t2, ticker2] = 1.0
+
+
+
+        positions = all_signal[[ticker1, ticker2]].copy()
+        # positions = compute_nav_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2)
+
+        pos_diff = positions.diff()
+        rebalance_mask = (pos_diff != 0).any(axis=1)
+        rebalancing_dates = positions.index[rebalance_mask]
+        rebalancing_pos = positions.loc[rebalancing_dates]
+        portfolio = Portfolio(rebalancing_pos, all_prices.loc['1991-11-15':], keep_currency_effect=True, include_dividends=False,
+                              transaction_fees=0.005, management_fees=0)
+        nav = portfolio.nav
+        cum_returns = nav / nav.iloc[0]
+        print(cum_returns)
+
+        ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(nav.pct_change().dropna())
+        performance_results.append({
+            "Strategy": config_name,
+            "Annualized Return": round(ann_ret * 100, 3),
+            "Annualized Volatility": round(ann_vol * 100, 3),
+            "Sharpe": round(sharpe, 3),
+            "Max Drawdown": round(max_dd * 100, 3)
+        })
+
 
         inef_sp500 = pd.Series(
             compute_inefficiency_index(rolling_delta_ticker1, signal),
@@ -354,10 +412,6 @@ if __name__ == "__main__":
                           template="plotly_white")
         fig.show()
 
-        ineff_index = pd.Series(
-            compute_inefficiency_index(delta_alpha_diff_aligned, signal),
-            index=common_dates
-        ).dropna()
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=ineff_index.index, y=ineff_index,
                                  mode='lines', name='Inefficiency Index',
@@ -369,49 +423,10 @@ if __name__ == "__main__":
         # fig.show()
         ineff_index.index.name = "Date"
         # ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
-        ret1 = all_p[ticker1].shift(1).loc[common_dates]
-        ret2 = all_p[ticker2].shift(1).loc[common_dates]
 
-        # positions = compute_positions_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2,
-        #                                                 threshold_h=0.5, threshold_ineff=1e-6)
-
-        positions = compute_nav_with_inefficiency(
-            rolling_hurst = signal,
-            momentum      = mom,
-            ineff_index   = ineff_index,
-            ret1          = ret1,
-            ret2          = ret2,
-            ticker1       = ticker1,
-            ticker2       = ticker2      # à ajuster
-        )
-
-        positions_filtered = positions.loc[first_valid_index:]
-        p_config_filtered = p_config.loc[first_valid_index:]
-        common_dates_bp = positions_filtered.index.intersection(p_config_filtered.index)
-        positions_final = positions_filtered.loc[common_dates_bp]
-        all_p_config_final = p_config_filtered.loc[common_dates_bp]
-        # cum_returns, port_returns = run_backtest(all_p_config_final, positions_final, ticker1, ticker2,
-        #                                          fee_rate=0.005)
-        cum_returns = positions_final['nav']
-        port_returns = positions_final['nav'].pct_change().dropna()
-        cumulative_returns_dict[config_name] = cum_returns
-        ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
-        performance_results.append({
-            "Strategy": config_name,
-            "Annualized Return": round(ann_ret * 100, 3),
-            "Annualized Volatility": round(ann_vol * 100, 3),
-            "Sharpe": round(sharpe, 3),
-            "Max Drawdown": round(max_dd * 100, 3)
-        })
         plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
         # count_position_switches(positions, ticker1, ticker2)
 
-        # fig_backtest = make_subplots(
-        #     rows=2, cols=1, shared_xaxes=True,
-        #     row_heights=[0.5, 0.5],
-        #     vertical_spacing=0.05,
-        #     subplot_titles=("Log Cumulative Return", "Positions")
-        # )
         fig_backtest = go.Figure()
 
         fig_backtest.add_trace(
@@ -423,7 +438,7 @@ if __name__ == "__main__":
                 line=dict(color="blue")  # you can choose any color
             )
 
-        )
+        ),
         fig_backtest.update_layout(
             title=f"Cumulative Returns - Strategy: {config_name}",
             xaxis_title="Date",
@@ -432,58 +447,69 @@ if __name__ == "__main__":
         )
 
         # Modif Overlap 120 No Filter
-        # p = all_p.copy()
-        # rolling_signal = compute_rolling_metric(r.shift(1), 120,
-        #                                         method="modified",
-        #                                         rolling_type="overlapping",
-        #                                         chin=False).dropna()
-        # common_dates = rolling_signal.index.intersection(momentum.index)
-        # signal = rolling_signal.loc[common_dates]
-        # mom = momentum.loc[common_dates]
-        # positions = compute_positions(signal, mom, ticker1, ticker2, default=0.5, threshold=0.5)
-        # common_dates_bp = positions.index.intersection(p.index)
-        # positions = positions.loc[common_dates_bp]
-        # p_config_filtered = p_config.loc[first_valid_index:]
-        # common_dates_bp = positions_filtered.index.intersection(p_config_filtered.index)
-        # positions_final = positions_filtered.loc[common_dates_bp]
-        # all_p_config_final = p_config_filtered.loc[common_dates_bp]
-        # # all_p_config = p.loc[common_dates_bp]
-        # cum_returns, port_returns = run_backtest(all_p_config_final, positions, ticker1, ticker2, fee_rate=0.005)
-        # cumulative_returns_dict["ModifOverlap120NoFilter"] = cum_returns
-        # ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(port_returns)
-        # performance_results.append({
-        #     "Strategy": "ModifOverlap120NoFilter",
-        #     "Annualized Return": round(ann_ret * 100, 3),
-        #     "Annualized Volatility": round(ann_vol * 100, 3),
-        #     "Sharpe": round(sharpe, 3),
-        #     "Max Drawdown": round(max_dd * 100, 3)
-        # })
+        cond_long_t1 = (
+                (all_signal['momentum'] > 0) &
+                (all_signal['rolling_hurst'] > 0.5)
+        )
+        cond_long_t2 = (
+                (all_signal['momentum'] < 0) &
+                (all_signal['rolling_hurst'] > 0.5)
+        )
+        all_signal[ticker1] = 0.5
+        all_signal[ticker2] = 0.5
 
-        # Ports de comparaison : SP500, Russell et portefeuille 50/50
-        # new_p = all_p.loc[first_valid_index:]
-        # sp500_returns = new_p[ticker1]
-        # sp500_cumulative = (1 + sp500_returns).cumprod()
-        # russell_returns = new_p[ticker2]
-        # russell_cumulative = (1 + russell_returns).cumprod()
-        # portfolio_50_50_returns = 0.5 * new_p[ticker1] + 0.5 * new_p[ticker2]
-        # portfolio_50_50_cumulative = (1 + portfolio_50_50_returns).cumprod()
+        all_signal.loc[cond_long_t1, ticker1] = 1.0
+        all_signal.loc[cond_long_t1, ticker2] = 0.0
+        all_signal.loc[cond_long_t2, ticker1] = 0.0
+        all_signal.loc[cond_long_t2, ticker2] = 1.0
 
-        # Ports de comparaison : SP500, Russell et portefeuille 50/50
+        positions = compute_nav_with_inefficiency(signal, mom, ineff_index, ticker1, ticker2)
+        pos_diff = positions.diff()
+        rebalance_mask = (pos_diff != 0).any(axis=1)
+        rebalancing_dates = positions.index[rebalance_mask]
+        rebalancing_pos = positions.loc[rebalancing_dates]
+        portfolio = Portfolio(rebalancing_pos, all_prices.loc['1991-11-15':], keep_currency_effect=True, include_dividends=False,
+                              transaction_fees=0.0005, management_fees=0)
+        nav = portfolio.nav
+        cum_returns_no_filter = nav / nav.iloc[0]
+        print(cum_returns_no_filter)
+        ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(nav.pct_change().dropna())
+        performance_results.append({
+            "Strategy": "ModifOverlap120NoFilter",
+            "Annualized Return": round(ann_ret * 100, 3),
+            "Annualized Volatility": round(ann_vol * 100, 3),
+            "Sharpe": round(sharpe, 3),
+            "Max Drawdown": round(max_dd * 100, 3)
+        })
+
+        all_signal[ticker1] = 0.5
+        all_signal[ticker2] = 0.5
+        positions_50 = all_signal[[ticker1, ticker2]].copy()
+        pos_diff_50 = positions_50.diff()
+        rebalance_mask_50 = (pos_diff_50 != 0).any(axis=1)
+        rebalancing_dates_50 = positions_50.index[rebalance_mask_50]
+        rebalancing_pos_50 = positions_50.loc[rebalancing_dates_50]
+        portfolio_50_50 = Portfolio(rebalancing_pos_50, all_prices.loc['1991-11-15':], keep_currency_effect=True, include_dividends=False,
+                              transaction_fees=0.0, management_fees=0)
+        nav_50 = portfolio_50_50.nav
+        cum_returns_50 = nav_50 / nav_50.iloc[0]
+        print(cum_returns_50)
+
+        ann_ret_50, ann_vol_50, sharpe_50, max_dd_50 = compute_performance_stats(nav_50.pct_change().dropna())
+        performance_results.append({
+            "Strategy": '50/50 Portfolio',
+            "Annualized Return": round(ann_ret_50 * 100, 3),
+            "Annualized Volatility": round(ann_vol_50 * 100, 3),
+            "Sharpe": round(sharpe_50, 3),
+            "Max Drawdown": round(max_dd_50 * 100, 3)
+        })
+
+
         new_p = all_prices.loc[first_valid_index:]
-        sp500_cumulative = new_p.loc[:,ticker1] / new_p.loc[:, ticker1].iloc[0]
-        russell_cumulative = new_p.loc[:,ticker2] / new_p.loc[:, ticker2].iloc[0]
-        positions_50_50 = compute_nav_with_inefficiency(rolling_hurst = signal,
-            momentum      = mom,
-            ineff_index   = ineff_index,
-            ret1          = ret1,
-            ret2          = ret2,
-            ticker1       = ticker1,
-            ticker2       = ticker2,
-            portfolio_50_50=True
-                                        )
-        # portfolio_50_50_returns = 0.5 * new_p[ticker1] + 0.5 * new_p[ticker2]
-        portfolio_50_50_returns = positions_50_50['nav'].pct_change().dropna()
-        portfolio_50_50_cumulative = positions_50_50['nav']
+        new_p = new_p.loc[new_p.index.intersection(cum_returns.index)]
+        sp500_cumulative = (new_p.loc[:,ticker1] / new_p.loc[:, ticker1].iloc[0]).dropna()
+        russell_cumulative = (new_p.loc[:,ticker2] / new_p.loc[:, ticker2].iloc[0]).dropna()
+
         # =====================================================================
         # Visualisation des courbes cumulées des stratégies
         # =====================================================================
@@ -514,15 +540,6 @@ if __name__ == "__main__":
                 line=dict(color='red')
             )
         )
-        fig_backtest.add_trace(
-            go.Scatter(
-                x=portfolio_50_50_cumulative.index,
-                y=portfolio_50_50_cumulative,
-                mode='lines',
-                name="50/50 Portfolio",
-                line=dict(color='black')
-            )
-        )
 
         fig_backtest.add_trace(
             go.Scatter(
@@ -533,29 +550,6 @@ if __name__ == "__main__":
                 line=dict(color='green')
             )
         )
-
-
-        # ticker_cols = positions.columns.tolist()
-        #
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=positions.index,
-        #         y=positions[ticker_cols[0]],
-        #         mode='lines',
-        #         name=f'Position {ticker_cols[0]}',
-        #         line=dict(color='green')
-        #     )
-        # )
-        # fig_backtest.add_trace(
-        #     go.Scatter(
-        #         x=positions.index,
-        #         y=positions[ticker_cols[1]],
-        #         mode='lines',
-        #         name=f'Position {ticker_cols[1]}',
-        #         line=dict(color='orange')
-        #     ),
-        #     row=2, col=1
-        # )
 
         # Mise en forme
         fig_backtest.update_layout(
@@ -574,7 +568,6 @@ if __name__ == "__main__":
         # =====================================================================
         ann_ret_sp500, ann_vol_sp500, sharpe_sp500, max_dd_sp500 = compute_performance_stats(sp500_cumulative.pct_change().dropna())
         ann_ret_russell, ann_vol_russell, sharpe_russell, max_dd_russell = compute_performance_stats(russell_cumulative.pct_change().dropna())
-        ann_ret_50_50, ann_vol_50_50, sharpe_50_50, max_dd_50_50 = compute_performance_stats(portfolio_50_50_returns)
 
         performance_results.append({
             "Strategy": "Long Only SP500",
@@ -589,13 +582,6 @@ if __name__ == "__main__":
             "Annualized Volatility": round(ann_vol_russell * 100, 3),
             "Sharpe": round(sharpe_russell, 3),
             "Max Drawdown": round(max_dd_russell * 100, 3)
-        })
-        performance_results.append({
-            "Strategy": "50/50 Portfolio",
-            "Annualized Return": round(ann_ret_50_50 * 100, 3),
-            "Annualized Volatility": round(ann_vol_50_50 * 100, 3),
-            "Sharpe": round(sharpe_50_50, 3),
-            "Max Drawdown": round(max_dd_50_50 * 100, 3)
         })
 
         df_results = pd.DataFrame(performance_results)

@@ -8,6 +8,9 @@ from plotly.subplots import make_subplots
 import os
 import plotly.express as px
 from scipy.stats import norm, skew, kurtosis
+from utils.MFDFA import ComputeMFDFA
+import time
+from typing import Sequence, Union
 
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
@@ -82,63 +85,77 @@ def compute_alpha_falpha(q_list, h_q):
     return alpha, f_alpha
 
 
-def mfdfa_rolling(series, window_size, q_list, scales, order=1):
+def mfdfa_rolling_opti(
+        series: Union[pd.Series, Sequence[float]],
+        window_size: int,
+        q_list: Sequence[float],
+        scales: Sequence[int],
+        order: int = 1
+) -> pd.Series:
     """
-    Applique MF-DFA sur des fenêtres glissantes de taille 'window_size'
-    et renvoie la largeur du spectre multifractal (Delta alpha) pour chaque fenêtre.
-
-    Paramètres:
-        series      : pd.Series ou array-like, la série de données.
-        window_size : int, nombre de points par fenêtre glissante.
-        q_list      : liste/array des ordres q pour MF-DFA.
-        scales      : liste/array d'échelles (tailles de segments).
-        order       : ordre du polynôme pour le detrending local (1 = linéaire par défaut).
-
-    Retourne:
-        pd.Series contenant la largeur du spectre Delta alpha
-        pour chaque fenêtre, indexé par la date (ou l'index) correspondant
-        à la fin de la fenêtre.
+    Apply rolling MF-DFA on a series and return the multifractal width (Delta alpha),
+    with progress and ETA printed to stdout.
     """
+    # Extraction des données et de l’index
     if isinstance(series, pd.Series):
-        data = series.values
-        index_data = series.index
+        data = series.values.astype(float)
+        idx = series.index
     else:
-        data = np.array(series)
-        index_data = np.arange(len(data))
+        data = np.asarray(series, dtype=float)
+        idx = pd.RangeIndex(len(data))
 
-    alpha_widths = []
-    rolling_index = []
-    nb_points = len(data)
+    N = data.shape[0]
+    num_win = N - window_size + 1
+    if num_win <= 0:
+        return pd.Series([], name="alpha_width")
 
-    for start in range(nb_points - window_size + 1):
-        end = start + window_size
-        window_data = data[start:end]
+    # Pré-calculs constants
+    q = np.asarray(q_list, dtype=float)
+    scales_arr = np.asarray(scales, dtype=float)
+    log_s = np.log(scales_arr)
+    x = log_s
+    x_mean = x.mean()
+    denom = ((x - x_mean) ** 2).sum()
 
-        # 1) Calcul Fq(s) pour la fenêtre
-        Fq = mfdfa(window_data, scales, q_list, order=order)
+    # Préallocation du résultat
+    alpha_widths = np.empty(num_win, dtype=float)
 
-        # 2) Calcul de h(q) par régression linéaire log(Fq) vs log(s)
-        h_q = []
-        log_scales = np.log(scales)
-        for j, q in enumerate(q_list):
-            log_Fq = np.log(Fq[j, :])
-            # Ajustement linéaire pour trouver la pente = h(q)
-            coeffs = np.polyfit(log_scales, log_Fq, 1)
-            h_q.append(coeffs[0])
-        h_q = np.array(h_q)
+    # Horloge de départ
+    t0 = time.time()
 
-        # 3) Transformation de Legendre -> alpha, f(alpha)
-        alpha, f_alpha = compute_alpha_falpha(q_list, h_q)
+    # Boucle principale
+    for i in range(num_win):
+        window = data[i: i + window_size]
+        Fq = ComputeMFDFA.mfdfa(window, scales_arr, q, order)
+        logF = np.log(Fq)
 
-        # 4) Largeur du spectre multifractal
-        alpha_width = alpha.max() - alpha.min()
+        # régression vectorisée pour h(q)
+        y_mean = logF.mean(axis=1)
+        cov = ((x[None, :] - x_mean) * (logF - y_mean[:, None])).sum(axis=1)
+        h_q = cov / denom
 
-        alpha_widths.append(alpha_width)
+        # multifractal width
+        alpha, _ = ComputeMFDFA.compute_alpha_falpha(q, h_q)
+        alpha_widths[i] = alpha.max() - alpha.min()
 
-        # On associe la valeur au dernier point de la fenêtre
-        rolling_index.append(index_data[end - 1])
+        # affichage progression + ETA
+        elapsed = time.time() - t0
+        avg_time = elapsed / (i + 1)
+        remaining = avg_time * (num_win - i - 1)
+        print(
+            f"Window {i + 1}/{num_win} — "
+            f"Elapsed: {elapsed:.1f}s — "
+            f"ETA: {remaining:.1f}s",
+            end="\r",
+            flush=True
+        )
 
-    return pd.Series(alpha_widths, index=rolling_index, name="alpha_width")
+    # passe à la ligne après la barre
+    print()
+
+    # Construction de la série pandas
+    out_idx = idx[window_size - 1: window_size - 1 + num_win]
+    return pd.Series(alpha_widths, index=out_idx, name="alpha_width")
 
 
 def fa(x, scales, qs):
@@ -289,22 +306,29 @@ def surrogate_gaussian_corr(series):
 # --- Téléchargement des données et calcul des rendements ---
 # Paramètres
 q_list = np.linspace(-3, 3, 13)
-scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-tickers = ['^RUT', '^GSPC']
+scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(1000), 10)).astype(int))
+scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(1000), 10)).astype(int))
+tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
 
 if __name__ == "__main__":
     # Lecture des données pour '^RUT'
     for ticker in tickers:
-        data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)[ticker]
+        data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)[ticker]
         df_ticker = data.loc["1987-09-10":"2025-02-28"]
         df_ticker = df_ticker.dropna()
         returns = np.log(df_ticker).diff().dropna()
-        scales = scales_rut if ticker == '^RUT' else scales_gspc
-        if ticker == '^GSPC':
-            name = "SP500"
-        else:
-            name = "Russell 2000"
+        scales = scales_rut
+        print(len(df_ticker))
+
+
+        # alpha_width = mfdfa_rolling_opti(returns, 1008, q_list, scales, order=1)
+        #
+        # fig = go.Figure()
+        # fig.add_trace(go.Scatter(x=alpha_width.index, y=alpha_width.values, mode='lines+markers',
+        #                          name='Δα (MF-DFA)', line=dict(color='purple')))
+        # fig.update_layout(title=f'Δα (MF-DFA) for {name}',
+        #                     xaxis_title='Date', yaxis_title='Δα', template='plotly_white')
+        # fig.show()
 
         # # Calcul de F(q,s)
         # Fa = fa(returns.values, scales, q_list)  # Fq est un tableau de forme (len(q_list), len(scales))
@@ -379,6 +403,8 @@ if __name__ == "__main__":
 
         # --- 1. Calcul pour la série originale ---
 
+
+
         Fq = mfdfa(returns.values, scales, q_list, order=1)
         h_q = []
         log_scales = np.log(scales)
@@ -421,7 +447,7 @@ if __name__ == "__main__":
 
 
         # # --- 2. Calcul pour la série mélangée (shuffle) ---
-        returns_shuf = pd.Series(surogate_series).sample(frac=1, random_state=42).reset_index(drop=True)
+        returns_shuf = returns.sample(frac=1, random_state=42).reset_index(drop=True)
         new_returns_shuf = returns_shuf.sample(frac=1, random_state=56).reset_index(drop=True)
         new_new_returns_shuf = new_returns_shuf.sample(frac=1, random_state=25).reset_index(drop=True)
         Fq_shuf = mfdfa(new_new_returns_shuf.values, scales, q_list, order=1)
@@ -452,7 +478,7 @@ if __name__ == "__main__":
             line=dict(color='purple')
         ))
         fig_h.update_layout(
-            title=f'Difference between hurst exponents : Original vs Shuffled, {name}',
+            title=f'Difference between hurst exponents : Original vs Shuffled, {ticker}',
             xaxis_title='Ordre q',
             yaxis_title=r'h(q) - h_{shuf}(q)',
             template='plotly_white'
@@ -467,7 +493,7 @@ if __name__ == "__main__":
                                    name='h(q) shuffled', line=dict(color='orange')))
         fig_h.add_trace(go.Scatter(x=q_list, y=h_q_surrogate, mode='lines+markers',
                                       name='h(q) - h(q) shuffled', line=dict(color='green')))
-        fig_h.update_layout(title=f'Hurst Exponent h(q): Original vs Shuffled {name}',
+        fig_h.update_layout(title=f'Hurst Exponent h(q): Original vs Shuffled {ticker}',
                             xaxis_title='q', yaxis_title='h(q)', template='plotly_white')
         # fig_h.show()
 
@@ -479,7 +505,7 @@ if __name__ == "__main__":
                                    name='f(α) shuffled', line=dict(color='orange')))
         fig_f.add_trace(go.Scatter(x=alpha_surrogate, y=f_alpha_surrogate, mode='lines+markers',
                                       name='f(α) surrogate', line=dict(color='green')))
-        fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
+        fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {ticker}',
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
         fig_f.show()
 
@@ -489,7 +515,7 @@ if __name__ == "__main__":
                                       name='α - α_shuf', line=dict(color='green')))
         fig_diff.add_trace(go.Scatter(x=q_list, y=f_alpha_diff, mode='lines+markers',
                                       name='f(α) - f(α)_shuf', line=dict(color='red')))
-        fig_diff.update_layout(title=f'Differences in α and f(α) between Original and Shuffled {name}',
+        fig_diff.update_layout(title=f'Differences in α and f(α) between Original and Shuffled {ticker}',
                                xaxis_title='q', yaxis_title='Différence', template='plotly_white')
         # fig_diff.show()
 

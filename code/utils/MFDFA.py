@@ -4,6 +4,7 @@ from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
+import time
 
 class ComputeMFDFA:
     @staticmethod
@@ -137,6 +138,64 @@ class ComputeMFDFA:
             timestamps.append(idx[end - 1])
 
         return pd.Series(alpha_widths, index=timestamps, name="alpha_width")
+
+    @staticmethod
+    def mfdfa_rolling_opti(
+        series: Union[pd.Series, Sequence[float]],
+        window_size: int,
+        q_list: Sequence[float],
+        scales: Sequence[int],
+        order: int = 1
+    ) -> pd.Series:
+        """
+        Apply rolling MF-DFA on a series and return the multifractal width (Delta alpha),
+        with progress and ETA printed to stdout.
+        """
+        # Extraction des données et de l’index
+        if isinstance(series, pd.Series):
+            data = series.values.astype(float)
+            idx = series.index
+        else:
+            data = np.asarray(series, dtype=float)
+            idx = pd.RangeIndex(len(data))
+
+        N = data.shape[0]
+        num_win = N - window_size + 1
+        if num_win <= 0:
+            return pd.Series([], name="alpha_width")
+
+        # Pré-calculs constants
+        q = np.asarray(q_list, dtype=float)
+        scales_arr = np.asarray(scales, dtype=float)
+        log_s = np.log(scales_arr)
+        x = log_s
+        x_mean = x.mean()
+        denom = ((x - x_mean) ** 2).sum()
+
+        # Préallocation du résultat
+        alpha_widths = np.empty(num_win, dtype=float)
+
+        # Horloge de départ
+        t0 = time.time()
+
+        # Boucle principale
+        for i in range(num_win):
+            window = data[i : i + window_size]
+            Fq = ComputeMFDFA.mfdfa(window, scales_arr, q, order)
+            logF = np.log(Fq)
+
+            # régression vectorisée pour h(q)
+            y_mean = logF.mean(axis=1)
+            cov = ((x[None, :] - x_mean) * (logF - y_mean[:, None])).sum(axis=1)
+            h_q = cov / denom
+
+            # multifractal width
+            alpha, _ = ComputeMFDFA.compute_alpha_falpha(q, h_q)
+            alpha_widths[i] = alpha.max() - alpha.min()
+
+        # Construction de la série pandas
+        out_idx = idx[window_size - 1 : window_size - 1 + num_win]
+        return pd.Series(alpha_widths, index=out_idx, name="alpha_width")
 
     @staticmethod
     def surrogate_gaussian_corr(
