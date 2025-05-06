@@ -96,14 +96,14 @@ def compute_nav_with_inefficiency(
 
         # 1) SIGNAL FORT → override et reset du drift
         if H > threshold_h:
-            if m > 0:
+            if ineff > threshold_ineff and m > 0:
                 w1, w2 = 1.0, 0.0
-            elif m < 0:
+            elif ineff < -threshold_ineff and m < 0:
                 w1, w2 = 0.0, 1.0
-            # elif ineff < -threshold_ineff and m > 0:
-            #     w1, w2 = w1, w2
-            # elif ineff > threshold_ineff and m < 0:
-            #     w1, w2 = w1, w2
+            elif ineff < -threshold_ineff and m > 0:
+                w1, w2 = w1, w2
+            elif ineff > threshold_ineff and m < 0:
+                w1, w2 = w1, w2
         # 2) PAS DE SIGNAL (ou signal faible) → drift multiplicatif
         else:
             w1, w2 = 0.5, 0.5
@@ -114,6 +114,77 @@ def compute_nav_with_inefficiency(
         # valeur de portefeuille après PnL de la veille
 
         # 3) on stocke
+        pos1.append(w1)
+        pos2.append(w2)
+
+    return pd.DataFrame({ticker1: pos1, ticker2: pos2}, index=dates)
+
+def compute_nav_with_inefficiency(
+    rolling_hurst: pd.Series,
+    momentum: pd.Series,
+    ineff_index: pd.Series,
+    ticker1: str,
+    ticker2: str,
+    threshold_h: float = 0.5,
+    threshold_ineff: float = 1e-6,
+    min_hurst_days: int = 5,
+    portfolio_50_50: bool = False
+) -> pd.DataFrame:
+    """
+    Compute portfolio weights based on rolling Hurst, momentum, and inefficiency index.
+
+    Parameters:
+        rolling_hurst: Series of Hurst exponent values indexed by date.
+        momentum: Series of momentum signals indexed by date.
+        ineff_index: Series of inefficiency index values indexed by date.
+        ticker1: Name of first asset.
+        ticker2: Name of second asset.
+        threshold_h: Hurst threshold to consider a "strong" long-memory signal.
+        threshold_ineff: Inefficiency threshold for signal filtering.
+        min_hurst_days: Minimum number of consecutive days Hurst must exceed threshold_h before taking a position.
+        portfolio_50_50: If True, always take a 50/50 position.
+
+    Returns:
+        DataFrame of weights for ticker1 and ticker2 over time.
+    """
+    dates = rolling_hurst.index
+    w1, w2 = 0.5, 0.5
+
+    pos1, pos2 = [], []
+    # Counter for consecutive days H > threshold_h
+    hurst_counter = 0
+
+    for t in dates:
+        H = rolling_hurst.loc[t]
+        m = momentum.loc[t]
+        ineff = ineff_index.loc[t]
+
+        # Update hurst counter
+        if H > threshold_h:
+            hurst_counter += 1
+        else:
+            hurst_counter = 0
+
+        # Only apply signals if Hurst has been > threshold_h for enough days
+        if hurst_counter >= min_hurst_days:
+            # Strong Hurst signal: override and reset drift
+            if ineff > threshold_ineff and m > 0:
+                w1, w2 = 1.0, 0.0
+            elif ineff < -threshold_ineff and m < 0:
+                w1, w2 = 0.0, 1.0
+            elif ineff < -threshold_ineff and m > 0:
+                w1, w2 = w1, w2
+            elif ineff > threshold_ineff and m < 0:
+                w1, w2 = w1, w2
+        else:
+            # No strong Hurst signal: drift back to 50/50
+            w1, w2 = 0.5, 0.5
+
+        # Force 50/50 if requested
+        if portfolio_50_50:
+            w1, w2 = 0.5, 0.5
+
+        # Store positions
         pos1.append(w1)
         pos2.append(w2)
 
@@ -257,7 +328,6 @@ if __name__ == "__main__":
     # fig.show()
 
 
-
     rolling_delta_ticker2 = ComputeMFDFA.mfdfa_rolling_opti(np.log(all_prices[ticker2]).diff().dropna().shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
 
@@ -290,13 +360,6 @@ if __name__ == "__main__":
     #                     yaxis_title="Delta Alpha Difference",
     #                     template="plotly_white")
     # fig.show()
-
-    end_time = time.time()
-    # Calcul de la durée en secondes
-    duration = end_time - start_time
-
-    # Affichage formaté
-    print(f"Durée d’exécution : {duration:.3f} secondes")
 
     # Configurations pour le rolling sur RS
     rolling_configs = {
