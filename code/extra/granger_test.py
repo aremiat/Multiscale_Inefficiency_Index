@@ -171,7 +171,7 @@ if __name__ == "__main__":
     ticker2 = "^RUT"    # Russell 2000
 
     # Select price data and restrict date range
-    df_prices = df_prices[[ticker1, ticker2]].loc["1987-10-09":"2025-02-28"]
+    df_prices = df_prices[[ticker1, ticker2]].loc["1987-09-10":"2025-02-28"]
 
     # Compute daily returns and log prices
     df_returns = df_prices.pct_change().dropna()
