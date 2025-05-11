@@ -52,6 +52,10 @@ if __name__ == "__main__":
         title="Fractional Brownian Motion & Autocorrelation",
         height=800, width=1200, showlegend=False
     )
+
+    for ann in fig.layout.annotations:
+        if ann.text.startswith("H ="):
+            ann.font.size = 30
     for i in range(1, 6):
         fig.update_yaxes(range=[-2.2, 3], row=1, col=i),
 

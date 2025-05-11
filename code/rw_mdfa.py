@@ -141,7 +141,5 @@ if __name__ == "__main__":
     # fig_f.show()
 
 
-
-
     # pio.write_image(fig, f"{IMG_PATH}/fdm_autocorr.png", scale=5, width=1200, height=1000)
     # fig.write_image(f"{IMG_PATH}cumulative_profile_segment_partitioning.png")

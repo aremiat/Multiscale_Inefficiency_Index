@@ -140,6 +140,26 @@ class ComputeMFDFA:
         return pd.Series(alpha_widths, index=timestamps, name="alpha_width")
 
     @staticmethod
+    def compute_h_q(q_list: Sequence[float], Fq: np.ndarray, scales: Sequence[int]) -> np.ndarray:
+        """
+        Compute h(q) from F(q) using the relation h(q) = d(log(F(q))) / d(log(s)).
+
+        Args:
+            q_list: Sequence of q values.
+            Fq: 2D NumPy array of F(q) values.
+            scales: Sequence of scales.
+
+        Returns:
+            h_q: NumPy array of h(q) values.
+        """
+        log_scales = np.log(scales)
+        h_q = np.zeros((len(q_list),), dtype=float)
+        for i, q in enumerate(q_list):
+            log_Fq = np.log(Fq[i, :])
+            h_q[i] = np.polyfit(log_scales, log_Fq, 1)[0]
+        return h_q
+
+    @staticmethod
     def mfdfa_rolling_opti(
         series: Union[pd.Series, Sequence[float]],
         window_size: int,
@@ -281,6 +301,21 @@ class ComputeMFDFA:
         y_mean = logF.mean(axis=1)
         cov = ((log_s[None, :] - x_mean) * (logF - y_mean[:, None])).sum(axis=1)
         return cov / denom
+
+    @staticmethod
+    def shuffle(series: Sequence[float]) -> np.ndarray:
+        """
+        Generate a shuffled surrogate by randomizing the order of the input series.
+
+        Args:
+            series: Input 1D sequence.
+
+        Returns:
+            Shuffled surrogate series as NumPy array.
+        """
+        arr = pd.Series(series)
+        arr = arr.sample(frac=1, random_state=56).reset_index(drop=True)
+        return arr
 
     @staticmethod
     def surrogate_gaussian_corr(
