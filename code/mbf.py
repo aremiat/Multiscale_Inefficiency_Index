@@ -21,16 +21,13 @@ def fbm(T, H, N=1000):
     return times, X
 
 if __name__ == "__main__":
-    # Create a figure with multiple subplots
     fig = sp.make_subplots(rows=2, cols=5, subplot_titles=[f"H = {H}" for H in H_VALUES] + ["Autocorrelation"] * 5,
                            vertical_spacing=0.1)
 
-    # Generate and display fBms and their autocorrelations
     for i, H in enumerate(H_VALUES):
         times, X = fbm(T=1, H=H, N=1000)
         autocorr = acf(X, nlags=40, fft=True)
 
-        # Plot fBm trajectory with a black line
         fig.add_trace(
             go.Scatter(
                 x=times, y=X, mode='lines', name=f"H={H}",
@@ -39,7 +36,6 @@ if __name__ == "__main__":
             row=1, col=i + 1
         )
 
-        # Plot autocorrelation as black bars
         fig.add_trace(
             go.Bar(
                 x=np.arange(len(autocorr)), y=autocorr, name=f"ACF H={H}",

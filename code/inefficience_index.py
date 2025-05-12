@@ -46,10 +46,12 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
 
 if __name__ == "__main__":
     # Chargement des données pour '^RUT'
-    window_mfdfa = 1008
+    window_mfdfa = 252
     q_list = np.linspace(-3, 3, 13)
-    scales = np.unique(np.logspace(np.log10(10), np.log10(200), 10, dtype=int))
+    scales = np.unique(np.logspace(np.log10(10), np.log10(50), 10, dtype=int))
     tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
+    # data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
+    data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
 
     for tick in tickers:
         if tick == '^RUT':
@@ -62,11 +64,12 @@ if __name__ == "__main__":
             name = "Nikkei 225"
         elif tick == '^GDAXI':
             name = "DAX"
-
+    # for name in data.columns:
         # Chargement des données
-        data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)[tick]
-        data = data.loc["1987-09-10":"2025-02-28"]
-        log_prices = np.log(data).dropna()
+
+        df = data[tick]
+        df = df.loc["1987-09-10":"2025-02-28"]
+        log_prices = np.log(df).dropna()
         returns = log_prices.diff().dropna()
 
         stat, p_value = jarque_bera(returns)

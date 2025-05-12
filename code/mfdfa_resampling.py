@@ -77,13 +77,11 @@ def summary_stats(arr: np.ndarray):
     lo, hi = np.percentile(arr, [2.5, 97.5])
     return mean, std, lo, hi
 
-# --------------------------- MAIN ----------------------------------------
 
 if __name__ == "__main__":
     np.random.seed(SEED)
     rng = np.random.default_rng(SEED)
 
-    # --- read data ---
     data_equity = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
     df = data_equity.loc["1987-09-10":"2025-02-28"]
 
@@ -94,6 +92,8 @@ if __name__ == "__main__":
         "^N225": "Nikkei 225",
         "^GDAXI": "DAX"
     }
+
+    results = []
 
     for ticker in TICKERS[:2]:
         prices = df[ticker].dropna()
@@ -113,3 +113,22 @@ if __name__ == "__main__":
         print(f"Δα surrogate (single)   : {dalpha_sur_once:.4f}")
         print(f"Bootstrap Δα original   : mean={mo:.4f}, std={so:.4f}, 95% CI=({lo:.4f}, {hi:.4f})")
         print(f"Bootstrap Δα surrogate  : mean={ms:.4f}, std={ss:.4f}, 95% CI=({ls:.4f}, {hs:.4f})")
+
+        results.append({
+            'Index': name,
+            'Δα_orig': dalpha_orig,
+            'Δα_surrogate': dalpha_sur_once,
+            'orig_mean': mo,
+            'orig_std': so,
+            'orig_CI_low': lo,
+            'orig_CI_high': hi,
+            'sur_mean': ms,
+            'sur_std': ss,
+            'sur_CI_low': ls,
+            'sur_CI_high': hs
+        })
+
+        results_df = pd.DataFrame(results.round(3))
+        out_path = os.path.join(DATA_PATH, "inefficiency_results.csv")
+        results_df.to_csv(out_path, index=False)
+        print(f"\nResults saved to {out_path}")

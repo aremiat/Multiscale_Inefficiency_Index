@@ -1,27 +1,20 @@
 import numpy as np
 import pandas as pd
 
-from plotly.subplots import make_subplots
 import os
 from utils.MFDFA import ComputeMFDFA
-import time
-from typing import Sequence, Union
 import plotly.graph_objects as go
-from scipy.stats import skew, kurtosis
 from scipy.stats import jarque_bera
 
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
-# --- Téléchargement des données et calcul des rendements ---
-# Paramètres
 q_list = np.linspace(-3, 3, 13)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
 
 if __name__ == "__main__":
-    # Lecture des données pour '^RUT'
     np.random.seed(45)
 
     data_equity = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
@@ -30,7 +23,7 @@ if __name__ == "__main__":
     # data_multi_assets = data_multi_assets.loc["2014-09-17":]
     scales = scales_rut
 
-    for tick in tickers[:2]:
+    for tick in tickers:
         data_tick = df_ticker[tick]
         returns = np.log(data_tick).diff().dropna()
         if tick == '^RUT':
@@ -45,7 +38,6 @@ if __name__ == "__main__":
             name = "DAX"
 
     # --- 1. Calcul pour la série originale ---
-
         Fq = ComputeMFDFA.mfdfa(returns.values, scales, q_list, order=1)
         h_q = []
         log_scales = np.log(scales)
@@ -101,14 +93,7 @@ if __name__ == "__main__":
         alpha_shuf, f_alpha_shuf = ComputeMFDFA.compute_alpha_falpha(q_list, h_q_shuf)
 
         alpha_width = alpha_shuf.max() - alpha_shuf.min()
-        
 
-        # --- 3. Calcul du correcteur de Hurst dû aux corrélations ---
-        h_cor = h_q - h_q_shuf
-
-        # Calcul des différences pour alpha et f(alpha)
-        alpha_diff = alpha - alpha_shuf
-        f_alpha_diff = f_alpha - f_alpha_shuf
 
 
         # Graphique 1 : Exposant de Hurst
@@ -142,4 +127,4 @@ if __name__ == "__main__":
         'f_alpha_surrogate': f_alpha_surrogate,
         'alpha_surrogate': alpha_surrogate,
         })
-        df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
+        # df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  12 MAY 2025 16:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  12 MAY 2025 16:40
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -911,7 +911,7 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count359
 \l__pdf_internal_box=\box71
 )
-(out/beyond_random_walks.aux)
+(./beyond_random_walks.aux)
 \openout1 = `beyond_random_walks.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -1005,7 +1005,7 @@ s been generated with the most recent feature set (\pgfplotsset{compat=1.18}).
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
 Package hyperref Info: Link coloring ON on input line 58.
-(out/beyond_random_walks.out) (out/beyond_random_walks.out)
+(./beyond_random_walks.out) (./beyond_random_walks.out)
 \@outlinefile=\write4
 \openout4 = `beyond_random_walks.out'.
 
@@ -1107,112 +1107,152 @@ n input line 860.
 
 
 [15 <./img/price_and_inefficiency_surrogate_russell.png>]
+PGFPlots: reading {data/granger_pvalues_signed.csv}
 
-! Package pgfplots Error: Could not read table file '.' in 'search path=.'. In 
-case you intended to provide inline data: maybe TeX screwed up your end-of-line
-s? Try `row sep=crcr' and terminate your lines with `\\' (refer to the pgfplots
-table manual for details).
-
-See the pgfplots package documentation for explanation.
-Type  H <return>  for immediate help.
- ...                                              
-                                                  
-l.873   \pgfplotstabletypeset[
-                              
-? q
-OK, entering \batchmode...
-PGFPlots: reading {.}
-
-Package pgfplots Warning: You requested to open table '\relax ', but there is a
-lso a '\relax .tex'. TeX will automatically append the suffix '.tex', so I will
- now open '\relax .tex'. Please make sure you don't accidentally load TeX files
- - this may produce unrecoverable errors. on input line 873.
-
-PGFPlots: reading {\relax }
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              ^^M
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
-
-! Extra \endcsname.
-<argument> \endcsname 
-                      
-l.873   \pgfplotstabletypeset[
-                              ^^M
-I'm ignoring this, since I wasn't doing a \csname.
+Overfull \hbox (210.0699pt too wide) in paragraph at lines 886--887
+ [][] 
+ []
 
 
-Package pgfplots Warning: Table '\relax ' has non-unique column name '\message 
-{File ignored}'. Only the first occurence can be accessed via column names. on 
-input line 873.
 
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              ^^M
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
-
-! Extra \endcsname.
-\pgfplotstableread@impl@collectcolnames@NEXT@ ... 
-                                                  {foo}\expandafter \pgfplot...
-l.873   \pgfplotstabletypeset[
-                              ^^M
-I'm ignoring this, since I wasn't doing a \csname.
-
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
-
-! Extra \endcsname.
-\pgfplotstable@loc@TMPb ...le@loc@TMPa \endcsname 
-                                                  
-l.873   \pgfplotstabletypeset[
-                              
-I'm ignoring this, since I wasn't doing a \csname.
-
-! Undefined control sequence.
-\pgfp@numtable@glob@col@0 ->\pgfpl@@ 
-                                     {\endinput }
-l.873   \pgfplotstabletypeset[
-                              
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
-
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
-
-! Missing \endcsname inserted.
-<to be read again> 
-                   \message 
-l.873   \pgfplotstabletypeset[
-                              
-The control sequence marked <to be read again> should
-not appear between \csname and \endcsname.
+[16 <./img/price_and_inefficiency_surrogate_sp500.png>]
+<img/log_cumulative_returns.png, id=253, 1199.23032pt x 590.205pt>
+File: img/log_cumulative_returns.png Graphic file (type png)
+<use img/log_cumulative_returns.png>
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 921
+.
+(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
 
 
-! Package pgfplots Error: Sorry, co
+[17 <./img/log_cumulative_returns.png>]
+PGFPlots: reading {data/adf_results.csv}
+
+
+[18]
+Underfull \hbox (badness 10000) in paragraph at lines 1045--1047
+
+ []
+
+<img/cumulative_profile_segment_partitioning.png, id=273, 1290.32062pt x 615.04
+78pt>
+File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
+<use img/cumulative_profile_segment_partitioning.png>
+Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
+on input line 1084.
+(pdftex.def)             Requested size: 375.80544pt x 179.12885pt.
+
+
+[19]
+<img/log_variance_log_scale.png, id=282, 1727.45375pt x 856.19875pt>
+File: img/log_variance_log_scale.png Graphic file (type png)
+<use img/log_variance_log_scale.png>
+Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 109
+8.
+(pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
+<img/delta_alpha_resample_m.png, id=283, 1839.87375pt x 908.39375pt>
+File: img/delta_alpha_resample_m.png Graphic file (type png)
+<use img/delta_alpha_resample_m.png>
+Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 111
+0.
+(pdftex.def)             Requested size: 375.80544pt x 185.54274pt.
+
+
+[20 <./img/cumulative_profile_segment_partitioning.png> <./img/log_variance_log
+_scale.png>]
+<img/position_switching.png, id=291, 1762.585pt x 855.195pt>
+File: img/position_switching.png Graphic file (type png)
+<use img/position_switching.png>
+Package pdftex.def Info: img/position_switching.png  used on input line 1120.
+(pdftex.def)             Requested size: 375.80544pt x 182.33658pt.
+
+
+LaTeX Warning: Reference `sec:backtest_results' on page 21 undefined on input l
+ine 1125.
+
+
+LaTeX Warning: Reference `sec:backtest_results' on page 21 undefined on input l
+ine 1125.
+
+
+
+[21 <./img/delta_alpha_resample_m.png> <./img/position_switching.png>]
+PGFPlots: reading {data/backtest_results_window_120.csv}
+
+
+LaTeX Warning: Reference `sec:backtest_results' on page 22 undefined on input l
+ine 1143.
+
+
+LaTeX Warning: Reference `sec:backtest_results' on page 22 undefined on input l
+ine 1143.
+
+PGFPlots: reading {data/backtest_results_window_252.csv}
+PGFPlots: reading {data/backtest_results_window_504.csv}
+PGFPlots: reading {data/backtest_results_window_1260.csv}
+PGFPlots: reading {data/backtest_results_window_2520.csv}
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+
+[22
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 1210--1211
+
+ []
+
+
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1226--1227
+[]\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
+Prop-er-ties of Geo-phys-i-cal Records",
+ []
+
+
+
+[23] (./beyond_random_walks.aux)
+ ***********
+LaTeX2e <2024-11-01>
+L3 programming layer <2024-11-02>
+ ***********
+
+
+LaTeX Warning: There were undefined references.
+
+Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
+(rerunfilecheck)             Checksum: C902D6F89BE2071D4AF38AEA58F7D1D9;4318.
+ ) 
+Here is how much of TeX's memory you used:
+ 36479 strings out of 473362
+ 859146 string characters out of 5720989
+ 1367804 words of memory out of 5000000
+ 58883 multiletter control sequences out of 15000+600000
+ 574116 words of font info for 74 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 99i,19n,107p,736b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
+></usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
+</usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></
+usr/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></us
+r/local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/
+local/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/loc
+al/texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/
+texlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/t
+exlive/2024/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/local
+/texlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/local/t
+exlive/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/local/tex
+live/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/local/texli
+ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
+/2024/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/local/texlive/2
+024/texmf-dist/fonts/type1/public/cm-super/sfrm0900.pfb></usr/local/texlive/202
+4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
+texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
+xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
+Output written on beyond_random_walks.pdf (23 pages, 1920828 bytes).
+PDF statistics:
+ 424 PDF objects out of 1000 (max. 8388607)
+ 336 compressed objects within 4 object streams
+ 107 named destinations out of 1000 (max. 500000)
+ 237 words of extra memory for PDF output out of 10000 (max. 10000000)
+

@@ -27,39 +27,38 @@ def random_midpoint_displacement(num_points, roughness=0.5, seed=None):
     return x, y
 
 
-# === Exécution ===
-# Génération fractale
-num_points = 2**16 + 1
-x, y = random_midpoint_displacement(num_points, roughness=0.7, seed=42)
+if __name__ == '__main__':
+    num_points = 2**16 + 1
+    x, y = random_midpoint_displacement(num_points, roughness=0.7, seed=42)
 
-# Paramètres MF-DFA
-scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(2000), 20)).astype(int))
-q_list = np.linspace(-5, 5, 21)
-increments = np.diff(y)
-adf_test(y)
-print(skew(increments))
-print(kurtosis(increments))
-# Calcul MF-DFA
-Fq = ComputeMFDFA.mfdfa(increments, scales, q_list, order=1)
+    # Paramètres MF-DFA
+    scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(2000), 20)).astype(int))
+    q_list = np.linspace(-5, 5, 21)
+    increments = np.diff(y)
+    adf_test(y)
+    print(skew(increments))
+    print(kurtosis(increments))
+    # Calcul MF-DFA
+    Fq = ComputeMFDFA.mfdfa(increments, scales, q_list, order=1)
 
-# Estimation de h(q)
-log_s = np.log(scales)
-h_q = np.array([(np.polyfit(log_s, np.log(Fq[j]), 1)[0]) for j in range(len(q_list))])
+    # Estimation de h(q)
+    log_s = np.log(scales)
+    h_q = np.array([(np.polyfit(log_s, np.log(Fq[j]), 1)[0]) for j in range(len(q_list))])
 
-# Calcul du spectre multifractal
-alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
+    # Calcul du spectre multifractal
+    alpha, f_alpha = ComputeMFDFA.compute_alpha_falpha(q_list, h_q)
 
-# 3) Tracé de la courbe fractale
-fig1 = go.Figure(data=go.Scatter(x=x, y=y, mode='lines', line=dict(color='purple')))
-fig1.update_layout(title="Random Midpoint Displacement (H=0.7)", xaxis_title="Normalized Position", yaxis_title="Height")
-# fig1.show()
+    # 3) Tracé de la courbe fractale
+    fig1 = go.Figure(data=go.Scatter(x=x, y=y, mode='lines', line=dict(color='purple')))
+    fig1.update_layout(title="Random Midpoint Displacement (H=0.7)", xaxis_title="Normalized Position", yaxis_title="Height")
+    # fig1.show()
 
-# 4) Tracé h(q) vs q
-fig2 = go.Figure(data=go.Scatter(x=q_list, y=h_q, mode='markers+lines', marker=dict(color='blue')))
-fig2.update_layout(title="Exposant généralisé h(q) vs q", xaxis_title="q", yaxis_title="h(q)")
-# fig2.show()
+    # 4) Tracé h(q) vs q
+    fig2 = go.Figure(data=go.Scatter(x=q_list, y=h_q, mode='markers+lines', marker=dict(color='blue')))
+    fig2.update_layout(title="Exposant généralisé h(q) vs q", xaxis_title="q", yaxis_title="h(q)")
+    # fig2.show()
 
-# 5) Tracé du spectre f(α) vs α
-fig3 = go.Figure(data=go.Scatter(x=alpha, y=f_alpha, mode='markers+lines', marker=dict(color='orange')))
-fig3.update_layout(title="Spectre multifractal f(α) vs α", xaxis_title="α", yaxis_title="f(α)")
-fig3.show()
+    # 5) Tracé du spectre f(α) vs α
+    fig3 = go.Figure(data=go.Scatter(x=alpha, y=f_alpha, mode='markers+lines', marker=dict(color='orange')))
+    fig3.update_layout(title="Spectre multifractal f(α) vs α", xaxis_title="α", yaxis_title="f(α)")
+    fig3.show()

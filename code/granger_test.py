@@ -68,10 +68,12 @@ def granger_pairwise(df, maxlags=10):
     lag = sel.aic
     res = model.fit(lag)
 
+    print(lag)
+
     for cause, effect in permutations(tickers, 2):
         test = res.test_causality(effect, [cause], kind='f')
         pvals.loc[cause, effect] = test.pvalue
-    return pvals
+    return pvals.round(3)
 
 if __name__ == "__main__":
     # 1. Paramètres
@@ -85,10 +87,10 @@ if __name__ == "__main__":
     log_returns = np.log(df_prices).diff().dropna()
 
     # 3. Paramètres MF-DFA rolling
-    mfdfa_window = 1008
+    mfdfa_window = 252
     q_list = np.linspace(-3, 3, 13)
     scales = np.unique(np.logspace(np.log10(10),
-                                   np.log10(200), 10, dtype=int))
+                                   np.log10(50), 10, dtype=int))
     np.random.seed(42)
     # 4. Calcul rolling Δα et Hurst
     rolling_delta = {}
@@ -140,7 +142,7 @@ if __name__ == "__main__":
                               for tic in tickers}, index=idx).dropna()
 
     # 7. Sauvegarde métriques individuelles
-    out_dir = os.path.join(DATA_PATH, "inefficiency granger")
+    out_dir = os.path.join(DATA_PATH)
     os.makedirs(out_dir, exist_ok=True)
     for tic in tickers:
         pd.DataFrame({

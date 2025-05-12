@@ -393,7 +393,7 @@ For this analysis, we will use the daily returns of the Russell 2000 index, S\&P
             font=\footnotesize,
             at={(0.5,-0.25)},
             anchor=north,
-            legend columns=3
+            legend columns=1
             }
         ]
             \addplot[
@@ -408,10 +408,10 @@ For this analysis, we will use the daily returns of the Russell 2000 index, S\&P
                 col sep=comma
             ]
             {data/multifractal_spectrum_daily_Russell 2000.csv};
-            \legend{Multifractal Spectrum}
+            \legend{Russell 2000}
         \end{axis}
     \end{tikzpicture}
-    \caption{Multifractal Spectrum $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -3 and 3.
+    \caption{Generalized Hurst exponent $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -3 and 3.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
@@ -446,9 +446,10 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
             font=\footnotesize,
             at={(0.5,-0.25)},
             anchor=north,
-            legend columns=3
+            legend columns=2
             }
         ]
+
             \addplot[
                 blue,
                 thick,
@@ -460,11 +461,23 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
                 y=h(q),
                 col sep=comma
             ]
+            {data/multifractal_spectrum_daily_Russell 2000.csv};
+            \addplot[
+                red,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=q,
+                y=h(q),
+                col sep=comma
+            ]
             {data/multifractal_spectrum_daily_SP500.csv};
-            \legend{Multifractal Spectrum}
+            \legend{Russell 2000, S\&P 500}
         \end{axis}
     \end{tikzpicture}
-    \caption{Multifractal Spectrum $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -3 and 3.
+    \caption{Generalized Hurst exponent $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -3 and 3.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
@@ -515,7 +528,7 @@ We can distinguish two main contributions to the multifractal spectrum:
 \[
 \mathcal{M}(q) \propto
 \underbrace{f_{\text{tail}}(q)}_{\substack{\text{Strongly non-Gaussian} \\ \text{distribution}}}
-+
+and
 \underbrace{f_{\text{corr}}(q)}_{\substack{\text{Temporal correlations} \\ \text{in the series}}}
 \]
 
@@ -543,7 +556,7 @@ long-range correlations to the multifractality.
                 font=\footnotesize,
                 at={(0.5,-0.2)},
                 anchor=north,
-                legend columns=2
+                legend columns=3
             }
         ]
             % Draw the multifractal spectrum of the shuffled signal (in red)
@@ -558,7 +571,7 @@ long-range correlations to the multifractality.
                 y=f_alpha_shuf,
                 col sep=comma
             ]
-            {data/f_alpha_alpha_russell 2000.csv};
+            {data/f_alpha_alpha_Russel 2000.csv};
 
             % Draw the multifractal spectrum of the original signal (in blue)
             \addplot[
@@ -572,9 +585,22 @@ long-range correlations to the multifractality.
                 y=f_alpha,
                 col sep=comma
             ]
-            {data/f_alpha_alpha_russell 2000.csv};
+            {data/f_alpha_alpha_Russel 2000.csv};
 
-            \legend{Shuffled, Original}
+            \addplot[
+                green,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha_surrogate,
+                y=f_alpha_surrogate,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_Russel 2000.csv};
+
+            \legend{Shuffled, Original, Surrogate}
         \end{axis}
     \end{tikzpicture}
     \caption{Multifractal spectrum $f(\alpha)$ for the Russell 2000 returns.}
@@ -591,16 +617,15 @@ the approximate symmetry of the curve around its maximum implies that both large
 albeit with varying intensity. Overall, this bell-shaped spectrum underscores the complex, multi-scale nature of the
 Russell 2000 returns.
 A peak of the multifractal spectrum at $\alpha \approx 0.55$ indicates that the most common local Hölder exponent
-in the Russell 2000 returns is around 0.55. In general, $\alpha > 0.5$ suggests a certain degree of persistence or
-short to medium term correlation, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk),
-and $\alpha < 0.5$ signifies anti-persistence or more erratic behavior. Thus, an exponent of 0.55 may implies a
+in the Russell 2000 returns is around 0.55. In general, $\alpha > 0.5$ suggests a certain degree of smoothness or
+, $\alpha = 0.5$ aligns with a standard Brownian motion (random walk) where nor smoothness nor irregularity overweigh,
+and $\alpha < 0.5$ signifies more erratic behavior. Thus, an exponent of 0.55 may implies a
 moderately rough signal neither purely random nor overly smooth highlighting the presence of multifractal characteristics.
 Comparing it with the shuffled series, we observe that the $\alpha$ peak is lower than the original series, indicating that the
-shuffled series exhibits a more uniform behavior. This suggests that the multifractality in the original series is primarily
-driven by long-range correlations, while the shuffled series lacks this structure. It's width is still larger than a random walk, indicating
-that the series is still multifractal but only because of the non-gaussian nature of returns (Kurtosis is 12.71). Moreover, the width spectrum
-is approximately 0.2, in a random walk the width of the spectrum would be close to 0.1 (refer to Lukasz Czarnecki, Dariusz Grech 2009),
-indicating that when shuffling the series, it behaves more like a random walk suggesting market efficiency.
+shuffled series exhibits a more uniform behavior with less multifractality. The surrogate version of the series is really narrow
+meaning that most of the multifractality that we observe are due to the non-gaussian distribution of returns. The multifractality linked to
+the non-gaussian distribution cannot be quantified as true multifractality since it's due to the finite sample size (Jarosław Kwapień (2023)).
+The relationship of multifractality are non-linear, therefore the only way to quantifie for each of those sources is via the shuffled and the surrogate one.
 
 
 
@@ -617,7 +642,7 @@ indicating that when shuffling the series, it behaves more like a random walk su
                 font=\footnotesize,
                 at={(0.5,-0.2)},
                 anchor=north,
-                legend columns=2
+                legend columns=3
             }
         ]
             % Draw the multifractal spectrum of the shuffled signal (in red)
@@ -648,7 +673,20 @@ indicating that when shuffling the series, it behaves more like a random walk su
             ]
             {data/f_alpha_alpha_SP500.csv};
 
-            \legend{Shuffle, Original}
+                    \addplot[
+                green,
+                thick,
+                mark=*,
+                mark size=1.5pt
+            ]
+            table[
+                x=alpha_surrogate,
+                y=f_alpha_surrogate,
+                col sep=comma
+            ]
+            {data/f_alpha_alpha_SP500.csv};
+
+            \legend{Shuffle, Original, Surrogate}
         \end{axis}
     \end{tikzpicture}
     \caption{Multifractal spectrum $f(\alpha)$ for S\&P 500 returns.}
@@ -666,18 +704,17 @@ behavior compared to the Russell 2000, with less pronounced volatility clusterin
 The fact that the curve is shortened on the right but stretches deeper on the left means that the market exhibits fewer
 ultra-calm intervals in favor of a greater propensity for abrupt or extreme fluctuations otherwise saying that this series
 exhibit fatter tails.
-Interestingly, the peak of the shuffled series is higher than the original one (0.53). Let's recall that from our analysis
-with M-R/S, the S\&P 500 had a Hurst exponent of 0.501, indicating that the series is likely to be a random walk.
+Let's recall that from our analysis with M-R/S, the S\&P 500 had a Hurst exponent of 0.501, indicating that the series is likely to be a random walk.
 Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
 reinforcing our first result via Hurst.
 For both series, the width of the spectrum is approximately 0.27, if you look back at the Russell 2000, the width of the spectrum
-shrinks to 0.2 when shuffling the series, indicating that the multifractality is primarily driven by long-range correlations.
+shrinks to 0.2 when shuffling the series, indicating that the multifractality is driven by long-range correlations.
 In this spectrum, there is no long term correlation, the multifractality is only due to the non-gaussian nature of returns.
 In the original returns, large jumps cluster together, creating many consecutive “rough” segments with low Hölder exponents.
 Shuffling breaks up these clusters, so extreme returns become isolated among calmer data.
 As a result, the modal Hölder exponent shifts upward even though the overall width remains unchanged. Shuffling the
-series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values simply because
-the returns are randomly redistributed. \\
+series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values. The width of the surrogate
+is narrower than that of the Russell meaning that for the S\&P, the multifractality due to long term correlation is lower.
 
 
 \begin{figure}[htbp]
@@ -723,7 +760,7 @@ the returns are randomly redistributed. \\
                 y=f_alpha,
                 col sep=comma
             ]
-            {data/f_alpha_alpha_Russell 2000.csv};
+            {data/f_alpha_alpha_Russel 2000.csv};
 
         \addplot[
                 yellow,
@@ -752,12 +789,13 @@ From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior
 that it's multifractality comes from the non-gaussian nature of the returns (Kurtosis is estimated 28.41) since the width
 of the spectrum doesn't change much with the shuffling series. Whereas for the Russell 2000 it clearly comes from the long-range
 correlations (Kurtosis is estimated 12.71) since the width of the spectrum shrinks when shuffling the series.
-Therefore, the inefficency could be measured by the width of the spectrum rather than the $\alpha$ peak of the series.
+Relationships in multifractality are non-linear and canno't be obtain by calculating a width between two transformed series.
+The only way to isolate long term correlation is to look at the surrogate series, which is the true sources of multifractality and hence
+inefficiency.
 
-In an ideal random walk (i.i.d. Gaussian increments), the multifractal spectrum collapses to a single point its width
-$\Delta \alpha$ is close to 0 because every local segment is statistically identical and fully unpredictable. By contrast, our
-return series shows $\Delta \alpha$ >0, revealing multiple coexisting dynamics (calm trends, sudden shocks, reversals).
-This width therefore quantifies market inefficiency: the larger $\Delta \alpha$ is, the more the series departs from pure randomness
+In an ideal random walk (i.i.d. Gaussian increments), the process is monofractal and the multifractal spectrum collapses to a single point its.
+It's width $\Delta \alpha$ is close to 0 because every local segment is statistically identical and fully unpredictable.
+This width therefore quantifies market inefficiency, the larger $\Delta \alpha surrogate $ is, the more the series departs from pure randomness
 and the more distinct local regimes it contains.
 
 
@@ -770,7 +808,7 @@ To capture market inefficiency, we propose combining two key structural componen
     \item \textbf{Fractal Difference:}\\[1ex]
     The width of the multifractal spectrum is defined as
     \begin{equation}
-    \Delta \alpha = \alpha_{\text{max}} - \alpha_{\text{min}},
+    \Delta \alpha = \alpha_{\text{max surrogate}} - \alpha_{\text{min surrogate}},
     \end{equation}
     where $\alpha$ is the singularity exponent obtained via an MF-DFA analysis.
 
@@ -787,10 +825,10 @@ To capture market inefficiency, we propose combining two key structural componen
 
 We define the inefficiency index $I$ as
 \begin{equation}
-I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
+I = \Delta\alpha_{\text{surrogate}} \times \left|H_{\text{rolling}} - 0.5\right|,
 \end{equation}
-where $\Delta\alpha_{\text{diff}}$ is the absolute difference between the multifractal spectrum widths of two indices (for example, S\&P 500 versus Russell 2000).
-It gives us insights on which market seems to be more inefficient.
+where $\Delta\alpha_{\text{surrogate}}$ is the width between the multifractal spectrum of the surrogate series.
+It gives us insights on which market seems to be more inefficient due to true long term correlation multifractality.
 
 
 An efficient market should exhibit
@@ -803,104 +841,52 @@ so any deviation quantified by $\left|H_{\text{rolling}} - 0.5\right|$ indicates
     \item $H<0.5$ signals anti-persistence (a tendency for mean reversion).
 \end{itemize}
 
-A larger $\Delta \alpha$ indicates significant variability in local scaling behaviors,
-meaning that the market exhibits a more complex structure and may be less efficient. By
-combining both the fractal difference and the deviation of $H$ from 0.5, the inefficiency index $I$
-captures two complementary aspects of market inefficiency structural complexity and long-range memory deviation.
-This combined signal serves as both a filtering criterion and an independent confirmation of inefficiency.
-
-
-
-\section{Trading Strategy}
-
-The strategy is based on the proposed Inefficiency Index, rolling modified Hurst and a momentum signal. It aims to exploit differences in the
-long-term memory and multifractal characteristics between the Russell 2000 and S\&P 500 indices. The expectation is that
-these structural differences, captured by deviations in the rolling Hurst exponent and the multifractal spectrum width,
-reveal market inefficiencies that can be harnessed for trading.
-
-First, we compute the difference in the log returns of the Russell 2000 index and the S\&P 500 index. A positive value
-indicates that the S\&P 500 is outperforming the Russell 2000, while a negative value indicates the converse.
-
-Next, we calculate a rolling Hurst exponent on this spread using the modified R/S statistic, which helps correct for
-short-term autocorrelation bias over a six‐month window. In parallel, a rolling momentum indicator is derived from the
-same spread by taking the mean of the past 220 days returns with a 20‐day shift to not take into account the last month.
-We then construct the inefficiency index defined as
-\[
-I = \Delta\alpha_{\text{diff}} \times \left|H_{\text{rolling}} - 0.5\right|,
-\]
-where \(\Delta \alpha_{\text{diff}}\) represents the absolute difference between the multifractal spectrum widths of the two
-indices. It is computed as a rolling window of 4 years since in provides the best compromise between significance of the results
-and number of data points required.
-
-Starting with an equal-weighted portfolio (50\% in the Russell 2000 and 50\% in the S\&P 500), the positions are adjusted as follows:
-
-\begin{itemize}
-    \item If the rolling Hurst exponent is greater than 0.5, the momentum is positive (indicating that the S\&P 500 is
-    outperforming the Russell 2000), and if the inefficiency is positive,
-    then the spectrum width ($\alpha$max - $\alpha$min) of the S\&P 500 is larger than that of the Russell 2000. This implies that the S\&P 500 exhibits stronger
-    persistence and a more complex fractal structure, suggesting inefficiency. In this case, we overweight the S\&P 500 by allocating
-    100\% to it and 0\% to the Russell 2000.
-
-    \item If the rolling Hurst exponent is greater than 0.5 and the momentum is negative (indicating that the Russell 2000 is
-    outperforming the S\&P 500), if the inefficiency index is negative (meaning that the alpha width of the
-    Russell 2000 is wider than that of the S\&P 500). Hence, we overweight the Russell 2000, assigning 100\% to it and 0\% to the S\&P 500.
-
-    \item If the rolling Hurst exponent is below 0.5, implying no clear persistence, we maintain a neutral allocation (50\% in each index).
-\end{itemize}
+In this framework the moment of order 2 is handled separately via the classical Hurst exponent H, while all higher-order moments are captured through the MF-DFA multifractal spectrum.
+Using both pieces together gives a more complete and internally consistent picture of market inefficiency:
+H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-linear structure that is captured through the surogate series.
 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/inefficiency_index.png}
-    \caption{Inefficiency index computed based on the difference between the spectrum width ($\alpha$max - $\alpha$min) between the
-    S\&P 500 and Russell 2000, from 1991-11-15 to 2025-02-28. The window used here is 4 years as it provides the best compromise between significance of the results
-    and number of data points required.}
-    \label{fig:inefficiency_index}
+    \includegraphics[width=\textwidth]{img/price_and_inefficiency_surrogate_russell}
+    \caption{Log–price trajectory of the Russell 2000.Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \label{fig:russell-inefficiency}
 \end{figure}
 \FloatBarrier
-
 
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns_strat_sp500.png}
-    \caption{Comparison of the performance of the ModifOverlap120 strategy (blue) with the long only SP500 (red).
-        The backtest period is from 1991-11-15 to 2025-02-28.}
-    \label{fig:cumulative_performance}
+    \includegraphics[width=\textwidth]{img/price_and_inefficiency_surrogate_sp500}
+    \caption{Log–price trajectory of the S\&P 500. Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \label{fig:sp500-inefficiency}
 \end{figure}
-
 \FloatBarrier
 
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_long_neutral_results.csv}
-    \caption{Performance metrics of the strategies ModifOverlap120 (5 bps transaction fees) compared to 50/50 Russell/S\&P 500 portfolio
-    from 1991-11-15 to 2025-02-28.}
-    \label{tab:performance_table}
+
+\begin{table}[h!]
+  \centering
+\pgfplotstabletypeset[
+  col sep=comma,
+  header=true,
+  empty cells with={–},
+  every head row/.style={before row=\hline, after row=\hline},
+  every last row/.style={after row=\hline},
+  % colonne 0 = vos labels
+  columns/0/.style={
+    column name={},
+    string type
+  },
+  % colonnes numériques
+  columns/GSPC/.style={column name=GSPC, fixed, precision=3},
+  columns/RUT/.style={column name=RUT,  fixed, precision=3},
+  columns//.style={column name=FTSE, fixed, precision=3},
+  columns/4/.style={column name=N225, fixed, precision=3},
+  columns/5/.style={column name=GDAXI, fixed, precision=3}
+]{data/granger_pvalues_signed.csv}
+  \caption{Matrice de corrélation — valeurs arrondies à trois décimales}
+  \label{table:corr3dec}
 \end{table}
-
-\FloatBarrier
-
-\label{sec:backtest_results}
-We tested severals strategies to see how robust the results are, the ModifOverlap120 correspond to the estimation of a
-Hurst based modified R/S statistic using a rolling window of 120 days and the ModifOverlap120NoFilter corresponds to the estimation of a
-Hurst based modified R/S statistic using a rolling window of 120 days without using the inefficiency index as a signal filter.
-The results are shown in Table~\ref{tab:performance_table} and Figure~\ref{fig:cumulative_performance} (for a more detail analysis
-on window size see Table~\ref{tab:performance_table_window_120}).
-All the strategies outperform the long only S\&P 500, the 50/50 portfolio and the long only Russell 2000 portfolio on annualized return and Sharpe.
-The portfolio composition and position switching for the ModifOverlap120 can be seen in Figure~\ref{fig:position_switching}.
-The ModifOverlap120 strategy outperforms the 50/50 portfolio and long only S\&P 500 in all metrics, except
-that it achieves a slightly higher volatility over the period. The ModifOverlap120 and ModifOverlap120NoFilter strategies
-shows similar results except that the use of the inefficency index as a filter improve the performance of the strategy by
-achieving a lower max drawdown and lower volatilty for the same annualized return.
-
 
 \section{Conclusion}
 
@@ -1229,6 +1215,7 @@ Kantelhardt, J.W., Zschiegner, S.A., Koscielny-Bunde, E., Bunde, A., Havlin, S.,
 
 Lukasz Czarnecki, Dariusz Grech, Multifractal dynamics of stock markets, 2009, Acta Physica Polonica Series.
 
+Genuine multifractality in time series is due to temporal correlations, 2023 (Jarosław Kwapień)
 
 Andrews, D.W.K. (1991). \textit{\href{https://www.jstor.org/stable/2938229}{Heteroskedasticity and Autocorrelation Consistent Covariance Matrix Estimation}}. \textit{Econometrica}, 59(3), 817-858.
 
