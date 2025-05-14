@@ -9,7 +9,7 @@ from scipy.stats import jarque_bera
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
-q_list = np.linspace(-3, 3, 13)
+q_list = np.linspace(-4, 4, 17)
 scales_rut = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 scales_gspc = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
@@ -114,11 +114,11 @@ if __name__ == "__main__":
                                       name='f(α) surrogate', line=dict(color='green')))
         fig_f.update_layout(title=f'Spectre multifractal f(α): Original vs Shuffled, {name}',
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
-        fig_f.show()
+        # fig_f.show()
 
     #
-        # hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
-        # hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
+        hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
+        hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
         df = pd.DataFrame({
         'f_alpha': f_alpha,
         'alpha': alpha,
@@ -127,4 +127,4 @@ if __name__ == "__main__":
         'f_alpha_surrogate': f_alpha_surrogate,
         'alpha_surrogate': alpha_surrogate,
         })
-        # df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
+        df.to_csv(f'{DATA_PATH}/f_alpha_alpha_{name}.csv', index=False)
