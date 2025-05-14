@@ -48,9 +48,9 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
 
 if __name__ == "__main__":
     # Chargement des données pour '^RUT'
-    window_mfdfa = 252
+    window_mfdfa = 1008
     q_list = np.linspace(-4, 4, 17)
-    scales = np.unique(np.logspace(np.log10(10), np.log10(50), 10, dtype=int))
+    scales = np.unique(np.logspace(np.log10(10), np.log10(200), 10, dtype=int))
     # tickers = ["^FCHI", "^GSPC", "^RUT", "^FTSE", "^GDAXI"]
     multi_asset_tickers = ['BTC-USD', 'EURUSD=X', 'GBPUSD=X']
     # data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
