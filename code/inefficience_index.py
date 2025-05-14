@@ -48,19 +48,19 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
 
 if __name__ == "__main__":
     # Chargement des données pour '^RUT'
-    window_mfdfa = 1008
+    window_mfdfa = 252
     q_list = np.linspace(-4, 4, 17)
-    scales = np.unique(np.logspace(np.log10(10), np.log10(200), 10, dtype=int))
-    # tickers = ["^FCHI", "^GSPC", "^RUT", "^FTSE", "^GDAXI"]
+    scales = np.unique(np.logspace(np.log10(10), np.log10(50), 10, dtype=int))
+    # tickers = ["^FCHI", "^GSPC", "^RUT", "^FTSE", "^N225"]
     multi_asset_tickers = ['BTC-USD', 'EURUSD=X', 'GBPUSD=X']
-    # data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
+    data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
     # data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
 
-    tickers = ["^BVSP","^MXX", "000001.SS"]
-    data = yf.download(tickers, start="2000-01-01")  # prix journaliers
-    data = data.xs("Close", level=data.columns.names.index('Price'), axis=1)
+    # tickers = ["^BVSP","^MXX", "000001.SS"]
+    # data = yf.download(tickers, start="2000-01-01")  # prix journaliers
+    # data = data.xs("Close", level=data.columns.names.index('Price'), axis=1)
 
-    for tick in data.columns:
+    for tick in multi_asset_tickers[0:1]:
         # print(tick)
         # if tick == '^RUT':
         #     name = "Russel 2000"
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
             # Calcul du rolling Hurst classique (overlapping) via R/S modified statistic sur 120 jours
             rolling_hurst = returns.rolling(window=120).apply(
-                lambda window: np.log(ComputeRS.rs_statistic(window, len(window))) / np.log(len(window)),
+                lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window))) / np.log(len(window)),
                 raw=False
             ).dropna()
 
