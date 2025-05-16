@@ -407,11 +407,11 @@ For this analysis, we will use the daily returns of the Russell 2000 index, S\&P
                 y=h(q),
                 col sep=comma
             ]
-            {data/multifractal_spectrum_daily_Russell 2000.csv};
+            {data/multifractal_spectrum_daily_Russel 2000.csv};
             \legend{Russell 2000}
         \end{axis}
     \end{tikzpicture}
-    \caption{Generalized Hurst exponent $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -3 and 3.
+    \caption{Generalized Hurst exponent $h(q)$ for the Russell 2000 returns. Values of q are equally spaced between -4 and 4.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
@@ -461,7 +461,7 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
                 y=h(q),
                 col sep=comma
             ]
-            {data/multifractal_spectrum_daily_Russell 2000.csv};
+            {data/multifractal_spectrum_daily_Russel 2000.csv};
             \addplot[
                 red,
                 thick,
@@ -477,14 +477,14 @@ series exhibits smooth and regular behavior (calm fluctuations) for high Hurst e
             \legend{Russell 2000, S\&P 500}
         \end{axis}
     \end{tikzpicture}
-    \caption{Generalized Hurst exponent $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -3 and 3.
+    \caption{Generalized Hurst exponent $h(q)$ for the S\&P 500 returns. Values of q are equally spaced between -4 and 4.
     The scale used are logly spaced between 10 and 500.}
 \end{figure}
 
 \FloatBarrier
 
 The multifractal spectrum for the S\&P 500 returns exhibits a similar behavior to that of the Russell 2000 returns,
-except that it is less pronounced. At q = -3, the series exhibits a Hurst exponent of 0.56 compared to 0.65 for the
+except that it is less pronounced. At q = -4, the series exhibits a Hurst exponent of 0.56 compared to 0.7 for the
 Russell 2000, those series seems to slightly differs in their behavior.
 This difference, albeit modest, may hint at distinct market microstructure characteristics between the two indices.
 For instance, the S\&P 500, with its larger and more liquid companies, might experience a smoothing effect on return
@@ -717,74 +717,6 @@ series repeatedly won’t narrow the spectrum’s width; instead, it produces di
 is narrower than that of the Russell meaning that for the S\&P, the multifractality due to long term correlation is lower.
 
 
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            width=0.8\textwidth,
-            height=6cm,
-            xlabel={$\alpha$},
-            ylabel={$f(\alpha)$},
-            grid=major,
-            legend style={
-                font=\footnotesize,
-                at={(0.5,-0.2)},
-                anchor=north,
-                legend columns=3,
-            },
-        legend cell align=center
-        ]
-            % Draw the multifractal spectrum of the shuffled signal (in red)
-            \addplot[
-                red,
-                thick,
-                mark=square*,
-                mark size=1.5pt
-            ]
-            table[
-                x=alpha,
-                y=f_alpha,
-                col sep=comma
-            ]
-            {data/f_alpha_alpha_SP500.csv};
-
-            % Draw the multifractal spectrum of the original signal (in blue)
-            \addplot[
-                blue,
-                thick,
-                mark=*,
-                mark size=1.5pt
-            ]
-            table[
-                x=alpha,
-                y=f_alpha,
-                col sep=comma
-            ]
-            {data/f_alpha_alpha_Russel 2000.csv};
-
-        \addplot[
-                yellow,
-                thick,
-                mark=*,
-                mark size=1.5pt
-            ]
-            table[
-                x=alpha,
-                y=f_alpha,
-                col sep=comma
-            ]
-            {data/f_alpha_alpha_random_walk.csv};
-
-
-
-            \legend{SP500, Russell, Random Walk}
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Comparision of multifractal spectrum for SP500, Russell 2000 and a random walk.}
-\end{figure}
-
-\FloatBarrier
-
 From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior close to the one of a random walk and
 that it's multifractality comes from the non-gaussian nature of the returns (Kurtosis is estimated 28.41) since the width
 of the spectrum doesn't change much with the shuffling series. Whereas for the Russell 2000 it clearly comes from the long-range
@@ -793,7 +725,7 @@ Relationships in multifractality are non-linear and canno't be obtain by calcula
 The only way to isolate long term correlation is to look at the surrogate series, which is the true sources of multifractality and hence
 inefficiency.
 
-In an ideal random walk (i.i.d. Gaussian increments), the process is monofractal and the multifractal spectrum collapses to a single point its.
+In an ideal random walk (i.i.d. Gaussian increments), the process is monofractal and the multifractal spectrum collapses to a single point.
 It's width $\Delta \alpha$ is close to 0 because every local segment is statistically identical and fully unpredictable.
 This width therefore quantifies market inefficiency, the larger $\Delta \alpha surrogate $ is, the more the series departs from pure randomness
 and the more distinct local regimes it contains.
@@ -810,7 +742,7 @@ To capture market inefficiency, we propose combining two key structural componen
     \begin{equation}
     \Delta \alpha = \alpha_{\text{max surrogate}} - \alpha_{\text{min surrogate}},
     \end{equation}
-    where $\alpha$ is the singularity exponent obtained via an MF-DFA analysis.
+    where $\alpha$ is the singularity exponent obtained via an MF-DFA analysis. Any deviation from $\Delta \alpha$ = 0 would mean inefficiency.
 
     \item \textbf{Deviation of the Rolling Hurst:}\\[1ex]
     In an efficient market (i.e., following a Brownian motion) the Hurst exponent is expected to be
@@ -848,8 +780,8 @@ H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/price_and_inefficiency_surrogate_russell}
-    \caption{Log–price trajectory of the Russell 2000.Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \includegraphics[width=\textwidth]{img/price_and_inefficiency_russell_mrs}
+    \caption{Log–price trajectory of the Russell 2000. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
     \label{fig:russell-inefficiency}
 \end{figure}
 \FloatBarrier
@@ -857,36 +789,30 @@ H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/price_and_inefficiency_surrogate_sp500}
-    \caption{Log–price trajectory of the S\&P 500. Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \includegraphics[width=\textwidth]{img/price_and_inefficiency_sp500_mrs}
+    \caption{Log–price trajectory of the S\&P 500. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \label{fig:sp500-inefficiency}
+\end{figure}
+\FloatBarrier
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/price_and_ineffiency_ftse_mrs}
+    \caption{Log–price trajectory of the FTSE. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \label{fig:russell-inefficiency}
+\end{figure}
+\FloatBarrier
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{img/price_and_inefficiency_ssec_mrs}
+    \caption{Log–price trajectory of the SSEC. Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
     \label{fig:sp500-inefficiency}
 \end{figure}
 \FloatBarrier
 
 
-\begin{table}[h!]
-  \centering
-\pgfplotstabletypeset[
-  col sep=comma,
-  header=true,
-  empty cells with={–},
-  every head row/.style={before row=\hline, after row=\hline},
-  every last row/.style={after row=\hline},
-  % colonne 0 = vos labels
-  columns/0/.style={
-    column name={},
-    string type
-  },
-  % colonnes numériques
-  columns/GSPC/.style={column name=GSPC, fixed, precision=3},
-  columns/RUT/.style={column name=RUT,  fixed, precision=3},
-  columns//.style={column name=FTSE, fixed, precision=3},
-  columns/4/.style={column name=N225, fixed, precision=3},
-  columns/5/.style={column name=GDAXI, fixed, precision=3}
-]{data/granger_pvalues_signed.csv}
-  \caption{Matrice de corrélation — valeurs arrondies à trois décimales}
-  \label{table:corr3dec}
-\end{table}
 
 \section{Conclusion}
 
@@ -896,11 +822,7 @@ suggest that, while most series display Hurst exponents greater than 0.5 implyin
 modified R/S approach indicates that only the Russell 2000 exhibits statistically significant long memory.
 In contrast, the S\&P 500 shows a more subdued multifractal behavior, with a narrower spectrum and lower extremal Hölder
 exponents. This difference may reflect underlying market microstructure characteristics, such as liquidity and the size
-of constituent companies, but these interpretations should be treated with caution. The Hurst exponent seems to be able
-to capture differences in the multifractal spectrum between the two indices, with the Russell 2000 that appears to
-display a broader spectrum and more distinct multifractal characteristics compared to the S\&P 500. Overall, the outperformance
-of the strategies seems to hold depending on the window size used, and the proposed inefficiency brings value as a risk
-limiting filter.
+of constituent companies, but these interpretations should be treated with caution.
 
 \section{Discussion}
 
@@ -1103,107 +1025,6 @@ To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
 \FloatBarrier
 
 
-\subsection{Ex-post analysis of the portfolio performance}
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/delta_alpha_resample_m.png}
-    \caption{Rolling alpha width difference computed with a rolling window of 1008 days (4 years)
-        for the S\&P 500 and Russell 2000. The data in this example is resampled to monthly for better clarity.}
-    \label{fig:rolling_alpha_width}
-\end{figure}
-\FloatBarrier
-
-
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/position_switching.png}
-    \caption{Composition of our portfolio
-        (Russell 2000 in yellow, S\&P 500 in green) based on the inefficiency index, the blue line corresponds to the
-        modified rolling hurst with a rolling window of 120 days. The position start to change in 1991-10-18 because we need
-        4 years of data to compute the $\Delta\alpha_{\text{diff}}$. The portfolio is long only and the weights are adjusted daily.
-        To comeback where you left off, see Section~\ref{sec:backtest_results}.}
-    \label{fig:position_switching}
-\end{figure}
-\FloatBarrier
-
-\subsection{Backtest different rolling window size results}
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_window_120.csv}
-    \caption{1991-11-15 to 2025-02-28 | Window size 120 days. Traditional R/S method is used here
-    To comeback where you left off, see Section~\ref{sec:backtest_results}.}
-    \label{tab:performance_table_window_120}
-\end{table}
-\FloatBarrier
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_window_252.csv}
-    \caption{1991-11-15 to 2025-02-28 | Window size 252 days}
-    \label{tab:performance_table_window_252}
-\end{table}
-\FloatBarrier
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_window_504.csv}
-    \caption{1991-11-15 to 2025-02-28 | Window size 504 days}
-    \label{tab:performance_table_window_504}
-\end{table}
-\FloatBarrier
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_window_1260.csv}
-    \caption{1992-08-22-2025-02-28 | Window size 1260 days}
-    \label{tab:performance_table_window_1260}
-\end{table}
-\FloatBarrier
-
-\begin{table}[!h]
-    \centering
-    \pgfplotstabletypeset[
-        columns={Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown},
-        columns/Strategy/.style={string type,column name=Strategy},
-        columns/Annualized Return/.style={column name=Annualized Return},
-        columns/Annualized Volatility/.style={column name=Annualized Volatility},
-        columns/Sharpe/.style={column name=Sharpe},
-        columns/Max Drawdown /.style={column name=Max Drawdown}
-    ]{data/backtest_results_window_2520.csv}
-    \caption{1997-06-18-2025-02-28 | Window size 2520 days}
-    \label{tab:performance_table_window_2520}
-\end{table}
-\FloatBarrier
 
 \section{References}
 

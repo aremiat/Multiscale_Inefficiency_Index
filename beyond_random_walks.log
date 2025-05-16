@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  12 MAY 2025 16:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  16 MAY 2025 17:27
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -912,6 +912,14 @@ File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
 \l__pdf_internal_box=\box71
 )
 (./beyond_random_walks.aux)
+Runaway argument?
+{\contentsline {figure}{\numberline {3}{\ignorespaces Generalized Hur\ETC.
+! File ended while scanning use of \@writefile.
+<inserted text> 
+                \par 
+l.58 \begin{document}
+                     
+? 
 \openout1 = `beyond_random_walks.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -940,7 +948,6 @@ Package french.ldf Info: Setting StandardEnumerateEnv=true for
 (french.ldf)             compatibility with enumitem package,
 (french.ldf)             reported on input line 58.
 LaTeX Info: Redefining \up on input line 58.
-
 (/usr/local/texlive/2024/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count360
@@ -1029,8 +1036,13 @@ al/texlive/2024/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}]
 
 [2]
 
+LaTeX Warning: Reference `sec:covariance_fbm' on page 3 undefined on input line
+ 135.
+
+
+
 [3]
-<img/fdm_autocorr.png, id=129, 6022.5pt x 5018.75pt>
+<img/fdm_autocorr.png, id=38, 6022.5pt x 5018.75pt>
 File: img/fdm_autocorr.png Graphic file (type png)
 <use img/fdm_autocorr.png>
 Package pdftex.def Info: img/fdm_autocorr.png  used on input line 173.
@@ -1041,7 +1053,17 @@ Package pdftex.def Info: img/fdm_autocorr.png  used on input line 173.
 
 [5 <./img/fdm_autocorr.png>]
 
+LaTeX Warning: Reference `table:critical_values' on page 6 undefined on input l
+ine 249.
+
+
+
 [6]
+
+LaTeX Warning: Reference `table:adf_results' on page 7 undefined on input line 
+263.
+
+
 Underfull \hbox (badness 10000) in paragraph at lines 273--274
 
  []
@@ -1053,15 +1075,35 @@ Overfull \hbox (22.26482pt too wide) in paragraph at lines 289--292
  []
 
 
+LaTeX Warning: Reference `sec:long_range_dependence' on page 7 undefined on inp
+ut line 292.
+
+
+LaTeX Warning: Reference `sec:long_range_dependence' on page 7 undefined on inp
+ut line 292.
+
+
 
 [7]
 
+LaTeX Warning: Reference `sec:proof_F0' on page 8 undefined on input line 348.
+
+
+
 [8]
-PGFPlots: reading {"data/multifractal_spectrum_daily_Russell 2000.csv"}
+
+LaTeX Warning: Reference `fig:cumulative_profile_segment_partitioning' on page 
+9 undefined on input line 364.
+
+
+LaTeX Warning: Reference `fig:cumulative_returns' on page 9 undefined on input 
+line 373.
+
+PGFPlots: reading {"data/multifractal_spectrum_daily_Russel 2000.csv"}
 
 
 [9]
-PGFPlots: reading {"data/multifractal_spectrum_daily_Russell 2000.csv"}
+PGFPlots: reading {"data/multifractal_spectrum_daily_Russel 2000.csv"}
 PGFPlots: reading {data/multifractal_spectrum_daily_SP500.csv}
 
 
@@ -1082,135 +1124,98 @@ PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
 
 
 [12]
-PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
-PGFPlots: reading {"data/f_alpha_alpha_Russel 2000.csv"}
-PGFPlots: reading {data/f_alpha_alpha_random_walk.csv}
-
 
 [13]
+<img/price_and_inefficiency_russell_mrs.png, id=132, 1206.00563pt x 607.51968pt
+>
+File: img/price_and_inefficiency_russell_mrs.png Graphic file (type png)
+<use img/price_and_inefficiency_russell_mrs.png>
+Package pdftex.def Info: img/price_and_inefficiency_russell_mrs.png  used on in
+put line 783.
+(pdftex.def)             Requested size: 469.75502pt x 236.63507pt.
+
 
 [14]
-<img/price_and_inefficiency_surrogate_russell.png, id=236, 1190.94937pt x 605.2
-6125pt>
-File: img/price_and_inefficiency_surrogate_russell.png Graphic file (type png)
-<use img/price_and_inefficiency_surrogate_russell.png>
-Package pdftex.def Info: img/price_and_inefficiency_surrogate_russell.png  used
- on input line 851.
-(pdftex.def)             Requested size: 469.75502pt x 238.73846pt.
-<img/price_and_inefficiency_surrogate_sp500.png, id=237, 1190.94937pt x 598.485
-93pt>
-File: img/price_and_inefficiency_surrogate_sp500.png Graphic file (type png)
-<use img/price_and_inefficiency_surrogate_sp500.png>
-Package pdftex.def Info: img/price_and_inefficiency_surrogate_sp500.png  used o
-n input line 860.
-(pdftex.def)             Requested size: 469.75502pt x 236.06602pt.
+<img/price_and_inefficiency_sp500_mrs.png, id=146, 1194.71344pt x 606.76688pt>
+File: img/price_and_inefficiency_sp500_mrs.png Graphic file (type png)
+<use img/price_and_inefficiency_sp500_mrs.png>
+Package pdftex.def Info: img/price_and_inefficiency_sp500_mrs.png  used on inpu
+t line 792.
+(pdftex.def)             Requested size: 469.75502pt x 238.57315pt.
 
 
-[15 <./img/price_and_inefficiency_surrogate_russell.png>]
-PGFPlots: reading {data/granger_pvalues_signed.csv}
+[15 <./img/price_and_inefficiency_russell_mrs.png> <./img/price_and_inefficienc
+y_sp500_mrs.png>]
+<img/price_and_ineffiency_ftse_mrs.png, id=155, 1193.96063pt x 612.03656pt>
+File: img/price_and_ineffiency_ftse_mrs.png Graphic file (type png)
+<use img/price_and_ineffiency_ftse_mrs.png>
+Package pdftex.def Info: img/price_and_ineffiency_ftse_mrs.png  used on input l
+ine 800.
+(pdftex.def)             Requested size: 469.75502pt x 240.8039pt.
+<img/price_and_inefficiency_ssec_mrs.png, id=156, 1261.71375pt x 612.78937pt>
+File: img/price_and_inefficiency_ssec_mrs.png Graphic file (type png)
+<use img/price_and_inefficiency_ssec_mrs.png>
+Package pdftex.def Info: img/price_and_inefficiency_ssec_mrs.png  used on input
+ line 809.
+(pdftex.def)             Requested size: 469.75502pt x 228.14978pt.
 
-Overfull \hbox (210.0699pt too wide) in paragraph at lines 886--887
- [][] 
- []
 
+[16
 
-
-[16 <./img/price_and_inefficiency_surrogate_sp500.png>]
-<img/log_cumulative_returns.png, id=253, 1199.23032pt x 590.205pt>
+ <./img/price_and_ineffiency_ftse_mrs.png>]
+<img/log_cumulative_returns.png, id=163, 1199.23032pt x 590.205pt>
 File: img/log_cumulative_returns.png Graphic file (type png)
 <use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 921
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 843
 .
 (pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
 
 
-[17 <./img/log_cumulative_returns.png>]
+[17 <./img/price_and_inefficiency_ssec_mrs.png>]
 PGFPlots: reading {data/adf_results.csv}
 
-
-[18]
-Underfull \hbox (badness 10000) in paragraph at lines 1045--1047
-
- []
-
-<img/cumulative_profile_segment_partitioning.png, id=273, 1290.32062pt x 615.04
-78pt>
-File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
-<use img/cumulative_profile_segment_partitioning.png>
-Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
-on input line 1084.
-(pdftex.def)             Requested size: 375.80544pt x 179.12885pt.
-
-
-[19]
-<img/log_variance_log_scale.png, id=282, 1727.45375pt x 856.19875pt>
-File: img/log_variance_log_scale.png Graphic file (type png)
-<use img/log_variance_log_scale.png>
-Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 109
-8.
-(pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
-<img/delta_alpha_resample_m.png, id=283, 1839.87375pt x 908.39375pt>
-File: img/delta_alpha_resample_m.png Graphic file (type png)
-<use img/delta_alpha_resample_m.png>
-Package pdftex.def Info: img/delta_alpha_resample_m.png  used on input line 111
-0.
-(pdftex.def)             Requested size: 375.80544pt x 185.54274pt.
-
-
-[20 <./img/cumulative_profile_segment_partitioning.png> <./img/log_variance_log
-_scale.png>]
-<img/position_switching.png, id=291, 1762.585pt x 855.195pt>
-File: img/position_switching.png Graphic file (type png)
-<use img/position_switching.png>
-Package pdftex.def Info: img/position_switching.png  used on input line 1120.
-(pdftex.def)             Requested size: 375.80544pt x 182.33658pt.
-
-
-LaTeX Warning: Reference `sec:backtest_results' on page 21 undefined on input l
-ine 1125.
-
-
-LaTeX Warning: Reference `sec:backtest_results' on page 21 undefined on input l
-ine 1125.
-
-
-
-[21 <./img/delta_alpha_resample_m.png> <./img/position_switching.png>]
-PGFPlots: reading {data/backtest_results_window_120.csv}
-
-
-LaTeX Warning: Reference `sec:backtest_results' on page 22 undefined on input l
-ine 1143.
-
-
-LaTeX Warning: Reference `sec:backtest_results' on page 22 undefined on input l
-ine 1143.
-
-PGFPlots: reading {data/backtest_results_window_252.csv}
-PGFPlots: reading {data/backtest_results_window_504.csv}
-PGFPlots: reading {data/backtest_results_window_1260.csv}
-PGFPlots: reading {data/backtest_results_window_2520.csv}
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
 
-[22
-
-]
-Underfull \hbox (badness 10000) in paragraph at lines 1210--1211
+[18 <./img/log_cumulative_returns.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 967--969
 
  []
 
 
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1226--1227
+
+[19]
+<img/cumulative_profile_segment_partitioning.png, id=200, 1290.32062pt x 615.04
+78pt>
+File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
+<use img/cumulative_profile_segment_partitioning.png>
+Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
+on input line 1006.
+(pdftex.def)             Requested size: 375.80544pt x 179.12885pt.
+<img/log_variance_log_scale.png, id=203, 1727.45375pt x 856.19875pt>
+File: img/log_variance_log_scale.png Graphic file (type png)
+<use img/log_variance_log_scale.png>
+Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 102
+0.
+(pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
+
+
+[20 <./img/cumulative_profile_segment_partitioning.png>]
+Underfull \hbox (badness 10000) in paragraph at lines 1031--1032
+
+ []
+
+
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1047--1048
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
 
 
 
-[23] (./beyond_random_walks.aux)
+[21 <./img/log_variance_log_scale.png>] (./beyond_random_walks.aux)
  ***********
 LaTeX2e <2024-11-01>
 L3 programming layer <2024-11-02>
@@ -1219,14 +1224,23 @@ L3 programming layer <2024-11-02>
 
 LaTeX Warning: There were undefined references.
 
-Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
-(rerunfilecheck)             Checksum: C902D6F89BE2071D4AF38AEA58F7D1D9;4318.
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `beyond_random_walks.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `beyond_random_walks.out':
+(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
+(rerunfilecheck)             After:  31F6C1A748FC5E1969CEC4683EB8A034;3717.
  ) 
 Here is how much of TeX's memory you used:
- 36479 strings out of 473362
- 859146 string characters out of 5720989
- 1367804 words of memory out of 5000000
- 58883 multiletter control sequences out of 15000+600000
+ 36373 strings out of 473362
+ 856335 string characters out of 5720989
+ 1375569 words of memory out of 5000000
+ 58802 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  99i,19n,107p,736b,2316s stack positions out of 10000i,1000n,20000p,200000b,200000s
@@ -1249,10 +1263,10 @@ ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
 4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
 texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on beyond_random_walks.pdf (23 pages, 1920828 bytes).
+Output written on beyond_random_walks.pdf (21 pages, 1763757 bytes).
 PDF statistics:
- 424 PDF objects out of 1000 (max. 8388607)
- 336 compressed objects within 4 object streams
- 107 named destinations out of 1000 (max. 500000)
- 237 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 326 PDF objects out of 1000 (max. 8388607)
+ 242 compressed objects within 3 object streams
+ 96 named destinations out of 1000 (max. 500000)
+ 53 words of extra memory for PDF output out of 10000 (max. 10000000)
 
