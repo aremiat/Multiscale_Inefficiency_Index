@@ -9,6 +9,7 @@ from utils.DFA import rolling_hurst_dfa
 from scipy.stats import skew, kurtosis
 from scipy.stats import jarque_bera
 import yfinance as yf
+from utils.scaled_window_variance import ScaledWindowedVariance
 
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
@@ -45,22 +46,46 @@ def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
     """
     return delta_alpha_diff * (rolling_hurst - 0.5)
 
+def hurst_swv(window: np.ndarray | pd.Series,
+              method: str = "SD",
+              exclusions: bool = True) -> float:
+    """
+    Calcule l’exposant de Hurst sur une fenêtre donnée à l’aide de
+    la méthode Scaled Windowed Variance.
+
+    • window      : séquence de rendements (1-d array-like)
+    • method      : 'SD', 'LD' ou 'BD'
+    • exclusions  : applique (True) ou non (False) les bandes d’exclusion
+                    proposées par Zhang & al. (1997)
+
+    Retourne
+    --------
+    H_hat (float) : estimateur de H
+    """
+    # on convertit en Series pour profiter des méthodes pandas
+    series = pd.Series(window, copy=False)
+    estimator = ScaledWindowedVariance(series,
+                                       method=method,
+                                       exclusions=exclusions)
+    return estimator.estimate()
+
 
 if __name__ == "__main__":
     # Chargement des données pour '^RUT'
     window_mfdfa = 252
     q_list = np.linspace(-4, 4, 17)
     scales = np.unique(np.logspace(np.log10(10), np.log10(50), 10, dtype=int))
-    # tickers = ["^FCHI", "^GSPC", "^RUT", "^FTSE", "^N225"]
+    tickers = ["^FCHI", "^GSPC", "^RUT", "^FTSE", "^N225"]
     multi_asset_tickers = ['BTC-USD', 'EURUSD=X', 'GBPUSD=X']
-    data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
+    # data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
     # data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
+    data = pd.read_csv(os.path.join(DATA_PATH, "ssec.csv"), index_col=0, parse_dates=True)
 
     # tickers = ["^BVSP","^MXX", "000001.SS"]
     # data = yf.download(tickers, start="2000-01-01")  # prix journaliers
     # data = data.xs("Close", level=data.columns.names.index('Price'), axis=1)
 
-    for tick in multi_asset_tickers[0:1]:
+    for tick in data.columns:
         # print(tick)
         # if tick == '^RUT':
         #     name = "Russel 2000"
@@ -88,10 +113,15 @@ if __name__ == "__main__":
             print(f"Jarque-Bera test for {name}: stat={stat}, p-value={p_value}")
 
             # Calcul du rolling Hurst classique (overlapping) via R/S modified statistic sur 120 jours
-            rolling_hurst = returns.rolling(window=120).apply(
-                lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window))) / np.log(len(window)),
-                raw=False
-            ).dropna()
+            rolling_hurst = (
+                returns
+                .rolling(window=120)
+                .apply(lambda w: hurst_swv(w,
+                                           method="LD",
+                                           exclusions=True),
+                       raw=True)  # raw=True → w est un ndarray, plus rapide
+                .dropna()
+            )
 
             # rolling_hurst = rolling_hurst_dfa(returns, window = 120)
 
