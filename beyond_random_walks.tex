@@ -74,13 +74,17 @@ The inferential outcomes remain inconclusive, as the computation of a solitary s
 across the entire time series lacks sufficient robustness and can be influenced by the length of the series, the presence of trends, or structural breaks.
 To address these issues, we employed the Multifractal Detrended Fluctuation Analysis (MF-DFA) to investigate the
 local behavior of the series and characterize its multifractal spectrum. The multifractal spectrum reveals that the series
-might exhibit multifractal properties. To take advantage of this, we propose a trading strategy based on the Hurst
-exponent, the multifractal spectrum and a proposed inefficiency index that combines the multifractality and the Hurst exponent.
-We examine trading pairs whose patterns or behaviors vary depending on the scale at which the data is viewed.
-The inefficiency index is used as a filter to determine the significance of our trading signal.
-The strategy (ModifOverlap120) outperforms the long-only S\&P 500 portfolio, the long-only Russell 2000 portfolio and
-50/50 portfolio. Moreover, the strategies that used the inefficiency index as a filter
-outperform the strategies that did not use it on max drawdown and volatility therefore confirming the hypothesis that our inefficiency index behaves as a risk management tool.
+might exhibit multifractal properties. We propose an inefficiency index that combines two complementary perspectives on market dynamics:
+(i) the width of the multifractal spectrum, which uncovers scale-invariant long-range correlations, and
+(ii) the departure of a rolling Hurst exponent from the benchmark value of 0.5, signalling momentum or mean-reversion.
+Based on the first results that we have, this index behave as a endogenous bubble predictors especially on the Shangai
+Stock Exchange. Further estimation methods, frequencies and rolling length should be used to further asses the statistical
+validity of our index.
+
+
+
+
+
 
 
 
@@ -538,10 +542,9 @@ Type I multifractality arises
 from a broad probability density function of the series values Jan W. Kantelhardt (2002) and al whereas Type II
 multifractality stems from long-range correlations within the time series. This distinction enables us to identify and quantify
 the type of multifractality present. By shuffling the series, we effectively eliminate the long-range correlations,
-retaining only the influence of the value distribution. In an ideal monofractal series, the Hölder exponent would peak
-at 0.5 thus, the difference between the exponents of the original and shuffled series reflects the contribution of
-long-range correlations to the multifractality.
-
+retaining only the influence of the value distribution. By using a phase randomization algorithm we can generate a surrogate which keeps the long term correlation in the series intact
+and make the distribution gaussian.
+The difference in width between spectrums showcase the degree of multifractality and hence inefficience of both sources.
 
 \begin{figure}[htbp]
     \centering
@@ -621,11 +624,11 @@ in the Russell 2000 returns is around 0.55. In general, $\alpha > 0.5$ suggests 
 , $\alpha = 0.5$ aligns with a standard Brownian motion (random walk) where nor smoothness nor irregularity overweigh,
 and $\alpha < 0.5$ signifies more erratic behavior. Thus, an exponent of 0.55 may implies a
 moderately rough signal neither purely random nor overly smooth highlighting the presence of multifractal characteristics.
-Comparing it with the shuffled series, we observe that the $\alpha$ peak is lower than the original series, indicating that the
-shuffled series exhibits a more uniform behavior with less multifractality. The surrogate version of the series is really narrow
+Comparing it with the shuffled series, we observe that the width of the spectrum is lower than the original series, indicating that the
+shuffled series exhibits a more uniform behavior with less multifractality. The surrogate version of the series is narrower
 meaning that most of the multifractality that we observe are due to the non-gaussian distribution of returns. The multifractality linked to
 the non-gaussian distribution cannot be quantified as true multifractality since it's due to the finite sample size (Jarosław Kwapień (2023)).
-The relationship of multifractality are non-linear, therefore the only way to quantifie for each of those sources is via the shuffled and the surrogate one.
+The only true multifractality comes from the long term correlation therefore, we use the width of the surrogate spectrum to quantifie for it.
 
 
 
@@ -695,10 +698,9 @@ The relationship of multifractality are non-linear, therefore the only way to qu
 \FloatBarrier
 
 The multifractal spectrum $f(\alpha)$ for the S\&P 500 returns exhibits a different curve shortened on the right side.
-The spectrum is narrower (0.27 between the maximum and minimum) compared to the Russell 2000 (0.4),
+The spectrum is narrower (0.4 between the maximum and minimum) compared to the Russell 2000 (0.55),
 suggesting a possibly weaker multifractal nature, the difference between $\alpha$ min and $\alpha$ max is lower than the Russell 2000 ones
-therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000. Let's recall that for
-a random walk the alpha pic would be close to 0.5 and the spectrum width narrow.
+therefore it implies that the S\&P 500 returns exhibit a more uniform behavior compared to the Russell 2000.
 The peak near the center for the original series is around 0.486. This may imply that the S\&P 500 returns exhibit a more stable
 behavior compared to the Russell 2000, with less pronounced volatility clustering across multiple timescales.
 The fact that the curve is shortened on the right but stretches deeper on the left means that the market exhibits fewer
@@ -707,13 +709,13 @@ exhibit fatter tails.
 Let's recall that from our analysis with M-R/S, the S\&P 500 had a Hurst exponent of 0.501, indicating that the series is likely to be a random walk.
 Moreover, the $\alpha$ peak of the original series is close to 0.5 (0.486)
 reinforcing our first result via Hurst.
-For both series, the width of the spectrum is approximately 0.27, if you look back at the Russell 2000, the width of the spectrum
-shrinks to 0.2 when shuffling the series, indicating that the multifractality is driven by long-range correlations.
+For both series, the width of the spectrum is approximately 0.4, if you look back at the Russell 2000, the width of the spectrum
+shrinks when shuffling the series, indicating that some multifractality is driven by long-range correlations.
 In this spectrum, there is no long term correlation, the multifractality is only due to the non-gaussian nature of returns.
 In the original returns, large jumps cluster together, creating many consecutive “rough” segments with low Hölder exponents.
 Shuffling breaks up these clusters, so extreme returns become isolated among calmer data.
 As a result, the modal Hölder exponent shifts upward even though the overall width remains unchanged. Shuffling the
-series repeatedly won’t narrow the spectrum’s width; instead, it produces different modal $\alpha$ values. The width of the surrogate
+series repeatedly won’t narrow the spectrum’s width, instead, it produces different modal $\alpha$ values. The width of the surrogate
 is narrower than that of the Russell meaning that for the S\&P, the multifractality due to long term correlation is lower.
 
 
@@ -778,27 +780,19 @@ Using both pieces together gives a more complete and internally consistent pictu
 H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-linear structure that is captured through the surogate series.
 
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=\textwidth]{img/price_and_inefficiency_russell_mrs}
-    \caption{Log–price trajectory of the Russell 2000. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
-    \label{fig:russell-inefficiency}
-\end{figure}
-\FloatBarrier
-
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/price_and_inefficiency_sp500_mrs}
-    \caption{Log–price trajectory of the S\&P 500. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \includegraphics[width=0.85\textwidth]{img/price_and_inefficiency_sp500_mrs}
+    \caption{Top : Log–price trajectory of the S\&P 500. Bottom : Inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
     \label{fig:sp500-inefficiency}
 \end{figure}
 \FloatBarrier
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/price_and_ineffiency_ftse_mrs}
-    \caption{Log–price trajectory of the FTSE. Bottom graph corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \includegraphics[width=0.85\textwidth]{img/price_and_inefficiency_russell_mrs}
+    \caption{Top : Log–price trajectory of the Russell 2000. Bottom : Inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
     \label{fig:russell-inefficiency}
 \end{figure}
 \FloatBarrier
@@ -806,8 +800,17 @@ H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-
 
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{img/price_and_inefficiency_ssec_mrs}
-    \caption{Log–price trajectory of the SSEC. Bottom corresponding inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \includegraphics[width=0.85\textwidth]{img/price_and_ineffiency_ftse_mrs}
+    \caption{Top : Log–price trajectory of the FTSE. Bottom : Inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
+    \label{fig:russell-inefficiency}
+\end{figure}
+\FloatBarrier
+
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.85\textwidth]{img/price_and_inefficiency_ssec_mrs}
+    \caption{Top : Log–price trajectory of the SSEC. Bottom : Inefficiency index \(I=\Delta\alpha_{\text{surrogate}} * |H-0.5|\).}
     \label{fig:sp500-inefficiency}
 \end{figure}
 \FloatBarrier
@@ -820,21 +823,25 @@ In this paper, we examined the long-term memory and multifractal properties of m
 traditional and modified R/S analysis alongside Multifractal Detrended Fluctuation Analysis (MF-DFA). Our findings
 suggest that, while most series display Hurst exponents greater than 0.5 implying some degree of persistence the
 modified R/S approach indicates that only the Russell 2000 exhibits statistically significant long memory.
-In contrast, the S\&P 500 shows a more subdued multifractal behavior, with a narrower spectrum and lower extremal Hölder
-exponents. This difference may reflect underlying market microstructure characteristics, such as liquidity and the size
-of constituent companies, but these interpretations should be treated with caution.
+We introduce an inefficiency index I that gauges how far a market departs from efficiency by combining two elements:
+the width of its multifractal spectrum, which captures long-range correlations revealed through surrogate analysis, and
+the deviation of a rolling Hurst exponent from the benchmark value of 0.5, signalling momentum or mean-reversion effects.
+By integrating these components, II simultaneously quantifies directional inefficiencies and multifractal complexity across
+all orders. When plotted alongside the log-price trajectory, this index can serve as a forward-looking marker for turning
+points driven by endogenous bubble dynamics.
 
 \section{Discussion}
 
 It is important to emphasize that the methods used in our study both the static Hurst exponent and the multifractal
-analysis are highly sensitive to the chosen data frequency, evaluation period, and potential structural breaks. The
-apparent persistence observed in the Russell 2000, for instance, may be influenced by these factors, while the more
-stable behavior seen in the S\&P 500 could result from its larger, more liquid market composition.
+analysis are highly sensitive to the chosen data frequency, evaluation period, and potential structural breaks.
 
-Overall, while our results provide an intriguing perspective on market dynamics and offer a foundation for a trading
-strategy based on these multifractal measures, they should be interpreted with a degree of caution. Future research
-should aim to extend this analysis to a broader set of assets (pair clustering) and refine the estimation techniques
-to confirm the statistical significance of the observed multifractal effects.
+Because the inefficiency index I inherits the limitations of its inputs, it should be stress-tested with alternative
+rolling windows and multiple Hurst-exponent estimators to gauge its robustness. Both the static Hurst exponent and
+multifractal spectrum are notoriously sensitive to data sampling frequency, the length of the evaluation window, and
+structural breaks, so systematic variation of these settings is essential. While our results offer a novel lens on market
+dynamics and outline the skeleton of a multifractal-based trading strategy, they remain exploratory, future work should
+broaden the asset universe (e.g., through pair-wise clustering) and refine estimation procedures to establish the statistical
+strength and practical relevance of the detected multifractal effects.
 
 \section{Appendix}
 
