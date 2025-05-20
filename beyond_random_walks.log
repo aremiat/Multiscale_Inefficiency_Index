@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  20 MAY 2025 14:37
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  20 MAY 2025 16:41
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1099,14 +1099,14 @@ t line 784.
 
 
 [14]
-<img/price_and_inefficiency_russell_mrs.png, id=230, 1206.00563pt x 607.51968pt
+<img/price_and_inefficiency_russell_mrs.png, id=231, 1206.00563pt x 607.51968pt
 >
 File: img/price_and_inefficiency_russell_mrs.png Graphic file (type png)
 <use img/price_and_inefficiency_russell_mrs.png>
 Package pdftex.def Info: img/price_and_inefficiency_russell_mrs.png  used on in
 put line 792.
 (pdftex.def)             Requested size: 399.29463pt x 201.14027pt.
-<img/price_and_ineffiency_ftse_mrs.png, id=231, 1193.96063pt x 612.03656pt>
+<img/price_and_ineffiency_ftse_mrs.png, id=232, 1193.96063pt x 612.03656pt>
 File: img/price_and_ineffiency_ftse_mrs.png Graphic file (type png)
 <use img/price_and_ineffiency_ftse_mrs.png>
 Package pdftex.def Info: img/price_and_ineffiency_ftse_mrs.png  used on input l
@@ -1116,7 +1116,7 @@ ine 801.
 
 [15 <./img/price_and_inefficiency_sp500_mrs.png> <./img/price_and_inefficiency_
 russell_mrs.png>]
-<img/price_and_inefficiency_ssec_mrs.png, id=240, 1261.71375pt x 612.78937pt>
+<img/price_and_inefficiency_ssec_mrs.png, id=241, 1261.71375pt x 612.78937pt>
 File: img/price_and_inefficiency_ssec_mrs.png Graphic file (type png)
 <use img/price_and_inefficiency_ssec_mrs.png>
 Package pdftex.def Info: img/price_and_inefficiency_ssec_mrs.png  used on input
@@ -1137,13 +1137,13 @@ Underfull \hbox (badness 10000) in paragraph at lines 963--965
 
 
 [18]
-<img/log_cumulative_returns.png, id=264, 1199.23032pt x 590.205pt>
+<img/log_cumulative_returns.png, id=265, 1199.23032pt x 590.205pt>
 File: img/log_cumulative_returns.png Graphic file (type png)
 <use img/log_cumulative_returns.png>
 Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 968
 .
 (pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-<img/cumulative_profile_segment_partitioning.png, id=268, 1290.32062pt x 615.04
+<img/cumulative_profile_segment_partitioning.png, id=269, 1290.32062pt x 615.04
 78pt>
 File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
 <use img/cumulative_profile_segment_partitioning.png>
@@ -1153,7 +1153,7 @@ on input line 1012.
 
 
 [19 <./img/log_cumulative_returns.png>]
-<img/log_variance_log_scale.png, id=278, 1727.45375pt x 856.19875pt>
+<img/log_variance_log_scale.png, id=279, 1727.45375pt x 856.19875pt>
 File: img/log_variance_log_scale.png Graphic file (type png)
 <use img/log_variance_log_scale.png>
 Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 102
@@ -1184,12 +1184,18 @@ L3 programming layer <2024-11-02>
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
-(rerunfilecheck)             Checksum: 31F6C1A748FC5E1969CEC4683EB8A034;3717.
+
+Package rerunfilecheck Warning: File `beyond_random_walks.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `beyond_random_walks.out':
+(rerunfilecheck)             Before: 31F6C1A748FC5E1969CEC4683EB8A034;3717
+(rerunfilecheck)             After:  A9BB3D1409734AFA8615E1D8F07FB9B7;3952.
  ) 
 Here is how much of TeX's memory you used:
- 36395 strings out of 473362
- 856638 string characters out of 5720989
+ 36396 strings out of 473362
+ 856652 string characters out of 5720989
  1376416 words of memory out of 5000000
  58824 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
@@ -1214,10 +1220,10 @@ ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
 4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
 texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on beyond_random_walks.pdf (21 pages, 1764936 bytes).
+Output written on beyond_random_walks.pdf (21 pages, 1765053 bytes).
 PDF statistics:
- 399 PDF objects out of 1000 (max. 8388607)
- 313 compressed objects within 4 object streams
- 96 named destinations out of 1000 (max. 500000)
+ 401 PDF objects out of 1000 (max. 8388607)
+ 315 compressed objects within 4 object streams
+ 97 named destinations out of 1000 (max. 500000)
  221 words of extra memory for PDF output out of 10000 (max. 10000000)
 
