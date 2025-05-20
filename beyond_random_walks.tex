@@ -715,8 +715,7 @@ In this spectrum, there is no long term correlation, the multifractality is only
 In the original returns, large jumps cluster together, creating many consecutive “rough” segments with low Hölder exponents.
 Shuffling breaks up these clusters, so extreme returns become isolated among calmer data.
 As a result, the modal Hölder exponent shifts upward even though the overall width remains unchanged. Shuffling the
-series repeatedly won’t narrow the spectrum’s width, instead, it produces different modal $\alpha$ values. The width of the surrogate
-is narrower than that of the Russell meaning that for the S\&P, the multifractality due to long term correlation is lower.
+series repeatedly won’t narrow the spectrum’s width, instead, it produces different modal $\alpha$ values.
 
 
 From this analysis, we can conclude that the S\&P 500 returns exhibit a behavior close to the one of a random walk and
@@ -775,9 +774,8 @@ so any deviation quantified by $\left|H_{\text{rolling}} - 0.5\right|$ indicates
     \item $H<0.5$ signals anti-persistence (a tendency for mean reversion).
 \end{itemize}
 
-In this framework the moment of order 2 is handled separately via the classical Hurst exponent H, while all higher-order moments are captured through the MF-DFA multifractal spectrum.
-Using both pieces together gives a more complete and internally consistent picture of market inefficiency:
-H anchors the second-order dynamics, while MF-DFA reveals any higher-order, non-linear structure that is captured through the surogate series.
+In this framework the moment of order 2 is handled separately via the classical Hurst exponent H, while all order moments are captured through the MF-DFA multifractal spectrum.
+Using both pieces together gives a more complete and internally consistent picture of market inefficiency.
 
 
 
@@ -840,20 +838,11 @@ rolling windows and multiple Hurst-exponent estimators to gauge its robustness. 
 multifractal spectrum are notoriously sensitive to data sampling frequency, the length of the evaluation window, and
 structural breaks, so systematic variation of these settings is essential. While our results offer a novel lens on market
 dynamics and outline the skeleton of a multifractal-based trading strategy, they remain exploratory, future work should
-broaden the asset universe (e.g., through pair-wise clustering) and refine estimation procedures to establish the statistical
+broaden the asset universe and refine estimation procedures to establish the statistical
 strength and practical relevance of the detected multifractal effects.
 
 \section{Appendix}
 
-\begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
-    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
-    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
-    \label{fig:cumulative_returns}
-\end{figure}
-
-\FloatBarrier
 
 \subsection{Definition (Time Domain)}
 \label{sec:long_range_dependence}
@@ -973,6 +962,16 @@ Factoring out the term \( \sigma^2 \), we arrive at the final covariance formula
 
 This covariance function entirely characterizes the dependence structure of fractional Brownian motion, revealing long-term correlation when \(H>0.5\) (persistence) and anti-correlation when \(H<0.5\) (anti-persistence).
 To comeback where you left off, see Section~\ref{eq:fbm_covariance}. \\
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.8\textwidth]{img/log_cumulative_returns.png}
+    \caption{Log cumulative returns of S\&P 500 (blue) and Russell 2000 (red) from 1987-09-11 to 2025-02-28.
+    To come back where you left off, see Section~\ref{subsec:gen_hurst}.}
+    \label{fig:cumulative_returns}
+\end{figure}
+
+\FloatBarrier
 
 
 \subsection{MF-DFA Analysis}

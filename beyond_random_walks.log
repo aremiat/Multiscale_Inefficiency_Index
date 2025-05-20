@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  19 MAY 2025 17:05
+This is pdfTeX, Version 3.141592653-2.6-1.40.26 (TeX Live 2024) (preloaded format=pdflatex 2024.11.13)  20 MAY 2025 14:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1094,7 +1094,7 @@ PGFPlots: reading {data/f_alpha_alpha_SP500.csv}
 File: img/price_and_inefficiency_sp500_mrs.png Graphic file (type png)
 <use img/price_and_inefficiency_sp500_mrs.png>
 Package pdftex.def Info: img/price_and_inefficiency_sp500_mrs.png  used on inpu
-t line 787.
+t line 784.
 (pdftex.def)             Requested size: 399.29463pt x 202.78903pt.
 
 
@@ -1104,13 +1104,13 @@ t line 787.
 File: img/price_and_inefficiency_russell_mrs.png Graphic file (type png)
 <use img/price_and_inefficiency_russell_mrs.png>
 Package pdftex.def Info: img/price_and_inefficiency_russell_mrs.png  used on in
-put line 795.
+put line 792.
 (pdftex.def)             Requested size: 399.29463pt x 201.14027pt.
 <img/price_and_ineffiency_ftse_mrs.png, id=231, 1193.96063pt x 612.03656pt>
 File: img/price_and_ineffiency_ftse_mrs.png Graphic file (type png)
 <use img/price_and_ineffiency_ftse_mrs.png>
 Package pdftex.def Info: img/price_and_ineffiency_ftse_mrs.png  used on input l
-ine 804.
+ine 801.
 (pdftex.def)             Requested size: 399.29463pt x 204.68097pt.
 
 
@@ -1120,47 +1120,47 @@ russell_mrs.png>]
 File: img/price_and_inefficiency_ssec_mrs.png Graphic file (type png)
 <use img/price_and_inefficiency_ssec_mrs.png>
 Package pdftex.def Info: img/price_and_inefficiency_ssec_mrs.png  used on input
- line 813.
+ line 810.
 (pdftex.def)             Requested size: 399.29463pt x 193.9273pt.
 
 
 [16 <./img/price_and_ineffiency_ftse_mrs.png> <./img/price_and_inefficiency_sse
 c_mrs.png>]
-<img/log_cumulative_returns.png, id=249, 1199.23032pt x 590.205pt>
-File: img/log_cumulative_returns.png Graphic file (type png)
-<use img/log_cumulative_returns.png>
-Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 851
-.
-(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
-
-
-[17 <./img/log_cumulative_returns.png>]
 PGFPlots: reading {data/adf_results.csv}
 
 
-[18]
-Underfull \hbox (badness 10000) in paragraph at lines 975--977
+[17]
+Underfull \hbox (badness 10000) in paragraph at lines 963--965
 
  []
 
-<img/cumulative_profile_segment_partitioning.png, id=269, 1290.32062pt x 615.04
+
+
+[18]
+<img/log_cumulative_returns.png, id=264, 1199.23032pt x 590.205pt>
+File: img/log_cumulative_returns.png Graphic file (type png)
+<use img/log_cumulative_returns.png>
+Package pdftex.def Info: img/log_cumulative_returns.png  used on input line 968
+.
+(pdftex.def)             Requested size: 375.80544pt x 184.95193pt.
+<img/cumulative_profile_segment_partitioning.png, id=268, 1290.32062pt x 615.04
 78pt>
 File: img/cumulative_profile_segment_partitioning.png Graphic file (type png)
 <use img/cumulative_profile_segment_partitioning.png>
 Package pdftex.def Info: img/cumulative_profile_segment_partitioning.png  used 
-on input line 1014.
+on input line 1012.
 (pdftex.def)             Requested size: 375.80544pt x 179.12885pt.
 
 
-[19]
+[19 <./img/log_cumulative_returns.png>]
 <img/log_variance_log_scale.png, id=278, 1727.45375pt x 856.19875pt>
 File: img/log_variance_log_scale.png Graphic file (type png)
 <use img/log_variance_log_scale.png>
 Package pdftex.def Info: img/log_variance_log_scale.png  used on input line 102
-8.
+6.
 (pdftex.def)             Requested size: 375.80544pt x 186.26091pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 1039--1040
+Underfull \hbox (badness 10000) in paragraph at lines 1037--1038
 
  []
 
@@ -1168,7 +1168,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 1039--1040
 
 [20 <./img/cumulative_profile_segment_partitioning.png> <./img/log_variance_log
 _scale.png>]
-Overfull \hbox (3.43764pt too wide) in paragraph at lines 1055--1056
+Overfull \hbox (3.43764pt too wide) in paragraph at lines 1053--1054
 []\T1/cmr/m/n/10.95 Mandelbrot, B.B. and Wal-lis, J.R. (1969a). "Some Long-Run 
 Prop-er-ties of Geo-phys-i-cal Records",
  []
@@ -1190,7 +1190,7 @@ Package rerunfilecheck Info: File `beyond_random_walks.out' has not changed.
 Here is how much of TeX's memory you used:
  36395 strings out of 473362
  856638 string characters out of 5720989
- 1376413 words of memory out of 5000000
+ 1376416 words of memory out of 5000000
  58824 multiletter control sequences out of 15000+600000
  574116 words of font info for 74 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -1214,7 +1214,7 @@ ve/2024/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/local/texlive
 4/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/local/texlive/2024/
 texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/local/texlive/2024/te
 xmf-dist/fonts/type1/public/cm-super/sfti1095.pfb>
-Output written on beyond_random_walks.pdf (21 pages, 1765702 bytes).
+Output written on beyond_random_walks.pdf (21 pages, 1764936 bytes).
 PDF statistics:
  399 PDF objects out of 1000 (max. 8388607)
  313 compressed objects within 4 object streams
