@@ -312,7 +312,7 @@ if __name__ == "__main__":
         rebalancing_dates = positions.index[rebalance_mask]
         rebalancing_pos = positions.loc[rebalancing_dates]
         portfolio = Portfolio(rebalancing_pos, backtest_prices, end_nav=date(2025, 2, 28), keep_currency_effect=True, include_dividends=False,
-                              transaction_fees=0.0005, management_fees=0)
+                              transaction_fees=0, management_fees=0)
         nav = portfolio.nav
         cum_returns = nav / nav.iloc[0]
 
