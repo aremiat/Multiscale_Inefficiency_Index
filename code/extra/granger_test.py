@@ -76,23 +76,21 @@ def granger_pairwise(df, maxlags=10):
     return pvals.round(3)
 
 if __name__ == "__main__":
-    # 1. Paramètres
-    DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
-    tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
+    pd.set_option("display.max_rows", 200)
+    pd.set_option("display.max_columns", 30)
+    pd.set_option("display.width", 250)
 
-    # 2. Chargement des prix et log-retours
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
+    tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
     df_prices = pd.read_csv(f"{DATA_PATH}/index_prices2.csv",
                             index_col=0, parse_dates=True)[tickers]
     df_prices = df_prices.loc["1987-09-10":"2025-02-28"]
     log_returns = np.log(df_prices).diff().dropna()
-
-    # 3. Paramètres MF-DFA rolling
     mfdfa_window = 252
     q_list = np.linspace(-3, 3, 13)
     scales = np.unique(np.logspace(np.log10(10),
                                    np.log10(50), 10, dtype=int))
     np.random.seed(42)
-    # 4. Calcul rolling Δα et Hurst
     rolling_delta = {}
     rolling_hurst = {}
     for tic in tickers:
@@ -125,13 +123,10 @@ if __name__ == "__main__":
             method='modified', rolling_type='overlapping', chin=False
         )
 
-    # 5. Intersection des dates communes
     idx = set(rolling_delta[tickers[0]].index)
     for tic in tickers:
         idx &= set(rolling_delta[tic].index) & set(rolling_hurst[tic].index)
     idx = sorted(idx)
-
-    # 6. Construction DataFrames ineff_abs et ineff_signed
     df_abs = pd.DataFrame({tic: compute_inefficiency_index_abs_value(
                                 rolling_delta[tic].loc[idx],
                                 rolling_hurst[tic].loc[idx])
@@ -141,7 +136,6 @@ if __name__ == "__main__":
                                    rolling_hurst[tic].loc[idx])
                               for tic in tickers}, index=idx).dropna()
 
-    # 7. Sauvegarde métriques individuelles
     out_dir = os.path.join(DATA_PATH)
     os.makedirs(out_dir, exist_ok=True)
     for tic in tickers:
@@ -152,32 +146,20 @@ if __name__ == "__main__":
             'ineff_signed': df_signed[tic],
         }).dropna().to_csv(os.path.join(out_dir, f"{tic[1:]}_metrics.csv"))
 
-    # 8. Préparation des séries stationnaires pour Granger
     df_abs_stat = pd.DataFrame()
     df_signed_stat = pd.DataFrame()
-    # on diff uniquement si nécessaire, et on aligne ensuite
     for tic in tickers:
         s_abs, _ = adf_test_and_diff(df_abs[tic], f"{tic} abs")
         s_sgn, _ = adf_test_and_diff(df_signed[tic], f"{tic} signed")
         df_abs_stat[tic] = s_abs
         df_signed_stat[tic] = s_sgn
 
-    # tronquer au plus court afin d'avoir les mêmes dates pour tous
     df_abs_stat = df_abs_stat.dropna()
     df_signed_stat = df_signed_stat.dropna()
-
-    # 9. Granger causality pairwise
     pvals_abs = granger_pairwise(df_abs_stat)
     pvals_signed = granger_pairwise(df_signed_stat)
 
-    print("✅ Calculs terminés.")
     print(pvals_abs)
     print(pvals_signed)
-
-    # 10. Sauvegarde des p-values
     pvals_abs.to_csv(os.path.join(out_dir, "granger_pvalues_abs.csv"))
     pvals_signed.to_csv(os.path.join(out_dir, "granger_pvalues_signed.csv"))
-
-    print("✅ Calculs terminés.")
-    print("→ inefficiency metrics + CSV individuels dans", out_dir)
-    print("→ p-values Granger dans granger_pvalues_*.csv")

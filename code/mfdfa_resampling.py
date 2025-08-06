@@ -1,38 +1,16 @@
-# -*- coding: utf-8 -*-
-"""mfdfa_resampling.py
-
-Compute the MF‑DFA multifractal spectrum width (Δα = α_max − α_min) for a set of
-stock‑index return series and evaluate estimation error via bootstrap. At each
-bootstrap iteration we also generate a phase‑randomised surrogate so that we
-obtain a reference distribution where heavy‑tail effects are preserved but
-long‑range correlations are destroyed.
-
-Outputs (printed to stdout for each ticker):
-  • Δα on the original series;
-  • Δα on one surrogate realisation (quick sanity check);
-  • mean, standard deviation and 95 % percentile CI of Δα over
-    n_resamples for both the original and surrogate.
-"""
-
 import os
 import numpy as np
 import pandas as pd
 from scipy.stats import jarque_bera
 
-from utils.MFDFA import ComputeMFDFA  # adjust if the module lives elsewhere
-
-# ------------------------ PARAMETERS --------------------------------------
+from utils.MFDFA import ComputeMFDFA
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
-
 q_list = np.linspace(-3, 3, 13)
 scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
-
 TICKERS = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
 N_RESAMPLES = 500
 SEED = 45
-
-# -------------------- UTILITY FUNCTIONS -----------------------------------
 
 def delta_alpha(series: np.ndarray, scales: np.ndarray, q_list: np.ndarray) -> float:
     """Return the multifractal spectrum width Δα for *series*."""
@@ -59,12 +37,9 @@ def bootstrap_dalpha(returns: pd.Series,
     boot_surr = np.empty(n_resamples)
 
     for b in range(n_resamples):
-        # --- bootstrap on the *original* data ---
         idx = rng.integers(0, n, size=n)
         resample = returns.values[idx]
         boot_orig[b] = delta_alpha(resample, scales, q_list)
-
-        # --- generate a *new* surrogate each time ---
         surrogate = ComputeMFDFA.surrogate_gaussian_corr(returns.values)
         boot_surr[b] = delta_alpha(surrogate, scales, q_list)
 
@@ -79,6 +54,10 @@ def summary_stats(arr: np.ndarray):
 
 
 if __name__ == "__main__":
+    pd.set_option("display.max_rows", 200)
+    pd.set_option("display.max_columns", 30)
+    pd.set_option("display.width", 250)
+
     np.random.seed(SEED)
     rng = np.random.default_rng(SEED)
 
@@ -86,16 +65,16 @@ if __name__ == "__main__":
     df = data_equity.loc["1987-09-10":"2025-02-28"]
 
     NAME_MAP = {
-        "^RUT": "Russell 2000",
-        "^GSPC": "S&P 500",
-        "^FTSE": "FTSE 100",
-        "^N225": "Nikkei 225",
+        "^RUT": "Russell2000",
+        "^GSPC": "S&P500",
+        "^FTSE": "FTSE100",
+        "^N225": "Nikkei225",
         "^GDAXI": "DAX"
     }
 
     results = []
 
-    for ticker in TICKERS[:2]:
+    for ticker in TICKERS:
         prices = df[ticker].dropna()
         returns = np.log(prices).diff().dropna()
 

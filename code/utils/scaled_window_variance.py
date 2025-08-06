@@ -100,7 +100,6 @@ class ScaledWindowedVariance(AbstractHurstEstimator):
     def _create_exclusion_mask(self):
         lower_bound, upper_bound = self._find_exclusions_bounds()
 
-        # Création du masque
         mask = np.zeros(len(self.window_sizes), dtype=bool)
         mask[lower_bound:len(self.window_sizes) - upper_bound] = True
 
@@ -108,14 +107,13 @@ class ScaledWindowedVariance(AbstractHurstEstimator):
 
     def estimate(self):
 
-        # Calcul des tailles de fenêtres valides et des écarts types moyens
-        avg_sds = []  # Liste pour stocker l'écart type moyen pour chaque taille de fenêtre
-        valid_window_sizes = []  # On ne retient que les tailles pour lesquelles la division est possible
+        avg_sds = []
+        valid_window_sizes = []
 
         for n in self.window_sizes:
-            num_windows = self.N // n  # Nombre de fenêtres non chevauchantes
+            num_windows = self.N // n
             if num_windows < 1:
-                continue  # Ignorer les tailles de fenêtres trop grandes
+                continue
 
             sds = [np.std(self._manage_detrending(self.data[i * n:(i + 1) * n]), ddof=0) for i in range(num_windows)]
 
@@ -126,15 +124,13 @@ class ScaledWindowedVariance(AbstractHurstEstimator):
         valid_window_sizes = np.array(valid_window_sizes)
         avg_sds = np.array(avg_sds)
 
-        # Génération du masque basé sur les tailles de fenêtres valides
         mask = np.zeros(len(valid_window_sizes), dtype=bool)
         if self.exclusions:
             lower_bound, upper_bound = self._find_exclusions_bounds()
             mask[lower_bound:len(valid_window_sizes) - upper_bound] = True
         else:
-            mask[:] = True  # Pas d'exclusions, tout est inclus
+            mask[:] = True
 
-        # Calcul des logarithmes
         x = np.log2(valid_window_sizes)
         y = np.log2(avg_sds)
 

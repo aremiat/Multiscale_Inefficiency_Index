@@ -203,8 +203,8 @@ def plot_positions_and_hurst(rolling_hurst, positions, ticker1, ticker2):
 
 
 if __name__ == "__main__":
-    DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
-    IMG_PATH = os.path.join(os.path.dirname(__file__), "../img")
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
+    IMG_PATH = os.path.join(os.path.dirname(__file__), "../../img")
 
     # Lecture des prix (indices SP500 et Russell)
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
@@ -271,11 +271,11 @@ if __name__ == "__main__":
     # Configurations pour le rolling sur RS
     rolling_configs = {
         "ModifOverlap120": {"method": "modified", "rolling_type": "overlapping", "window_size": 120},
-        # "TradOverlap120": {"method": "traditional", "rolling_type": "overlapping", "window_size": 120},
-        # "ModifOverlap252": {"method": "modified", "rolling_type": "overlapping", "window_size": 252},
-        # "ModifOverlap504": {"method": "modified", "rolling_type": "overlapping", "window_size": 504},
-        # "ModifOverlap1260": {"method": "modified", "rolling_type": "overlapping", "window_size": 1260},
-        # "ModifOverlap2520": {"method": "modified", "rolling_type": "overlapping", "window_size": 2520},
+        "TradOverlap120": {"method": "traditional", "rolling_type": "overlapping", "window_size": 120},
+        "ModifOverlap252": {"method": "modified", "rolling_type": "overlapping", "window_size": 252},
+        "ModifOverlap504": {"method": "modified", "rolling_type": "overlapping", "window_size": 504},
+        "ModifOverlap1260": {"method": "modified", "rolling_type": "overlapping", "window_size": 1260},
+        "ModifOverlap2520": {"method": "modified", "rolling_type": "overlapping", "window_size": 2520},
     }
     for config_name, config in rolling_configs.items():
         cumulative_returns_dict = {}
@@ -329,7 +329,7 @@ if __name__ == "__main__":
                           xaxis_title="Date",
                           yaxis_title="Inefficiency Index sp500",
                           template="plotly_white")
-        fig.show()
+        # fig.show()
         #
         inef_russel = pd.Series(
             compute_inefficiency_index(rolling_delta_ticker2, signal),
@@ -344,7 +344,7 @@ if __name__ == "__main__":
                           xaxis_title="Date",
                           yaxis_title="Inefficiency Index Russell 2000",
                           template="plotly_white")
-        fig.show()
+        # fig.show()
 
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=ineff_index.resample('M').last().index, y=ineff_index.resample('M').last(),
@@ -354,11 +354,11 @@ if __name__ == "__main__":
                           xaxis_title="Date",
                           yaxis_title="Inefficiency Index",
                           template="plotly_white")
-        fig.show()
+        # fig.show()
         # ineff_index.index.name = "Date"
         # # ineff_index.to_csv(f"{DATA_PATH}/inefficiency_index.csv")
         #
-        # plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
+        plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions, ticker1=ticker1, ticker2=ticker2)
 
         new_p = all_prices.loc[first_valid_index:]
         new_p = new_p.loc[new_p.index.intersection(cum_returns.index)]

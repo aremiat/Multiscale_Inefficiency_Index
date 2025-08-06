@@ -1,0 +1,4 @@
+Strategy,Annualized Return,Annualized Volatility,Sharpe,Max Drawdown
+Long/Short SSEC with inefficiency,5.621,23.307,0.241,-70.077
+Long Only SSEC,3.185,23.31,0.137,-71.985
+Long/short SSEC without inefficiency,5.099,23.308,0.219,-62.687

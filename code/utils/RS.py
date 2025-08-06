@@ -20,32 +20,28 @@ class ComputeRS:
     @staticmethod
     def compute_S_modified(series, chin=False):
         s = series
-        t = len(s)  # Number of observations
-        mean_y = np.mean(s)  # Mean of the series
+        t = len(s)
+        mean_y = np.mean(s)
         s = s.squeeze()
 
         if not chin:
-            rho_1 = np.corrcoef(s[:-1], s[1:])[0, 1] # First-order autocorrelation
+            rho_1 = np.corrcoef(s[:-1], s[1:])[0, 1]
 
             if rho_1 < 0:
                 return np.sum((s - mean_y) ** 2) / t
 
-            # Calculate q according to Andrews (1991)
             q = ((3 * t) / 2) ** (1 / 3) * ((2 * rho_1) / (1 - (rho_1**2))) ** (2 / 3)
         else:
             q = 4*(t/100)**(2/9)
 
-        # lower bound for q
         q = int(np.floor(q))
 
-        # First term: classical variance
         var_term = np.sum((s - mean_y) ** 2) / t
 
-        # Second term: weighted sum of autocovariances
         auto_cov_term = 0
-        for j in range(1, q + 1):  # j ranges from 1 to q
-            w_j = 1 - (j / (q + 1))  # Newey-West weights
-            sum_cov = np.sum((s[:-j] - mean_y) * (s[j:] - mean_y))  # Lagged autocovariance
+        for j in range(1, q + 1):
+            w_j = 1 - (j / (q + 1))
+            sum_cov = np.sum((s[:-j] - mean_y) * (s[j:] - mean_y))
             auto_cov_term += w_j * sum_cov
 
         auto_cov_term = (2 / t) * auto_cov_term

@@ -9,6 +9,9 @@ DATA_PATH = os.path.dirname(__file__) + "/../data"
 TICKER = ["^RUT"]
 
 if __name__ == "__main__":
+    pd.set_option("display.max_rows", 200)
+    pd.set_option("display.max_columns", 30)
+    pd.set_option("display.width", 250)
 
     p = pd.read_csv(f"{DATA_PATH}/index_prices2.csv", index_col=0, parse_dates=True)
     frequencies = {"D" : 2520, "W" : 520, "M" : 120}
@@ -16,12 +19,12 @@ if __name__ == "__main__":
     rolling_periods = pd.DataFrame()
     fig = go.Figure()
     start_years = ["1987-09-10", "1990-01-02", "1995-01-02", "2005-01-02", "2010-01-02", "2015-01-02"]
-    # for freq, period in frequencies.items():
     p_ticker = p[TICKER].dropna()
     p_ticker = p_ticker.loc["1987-09-10": "2025-02-28"]
     log_p = np.log(p_ticker)
     r = log_p.diff().dropna()
     r = r.resample('M').last().dropna()
+
     rolling_critical = r.rolling(120).apply(
         lambda window: ComputeRS.rs_modified_statistic(window, window_size=len(window), chin=False) / np.sqrt(
             len(window)),
@@ -30,9 +33,9 @@ if __name__ == "__main__":
     #
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True,
                         subplot_titles=(f"Russel Price Evolution", "Rolling Critical Value"))
-    fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker["^RUT"], mode='lines', name=f'Russel Price', line=dict(color='red')),
+    fig.add_trace(go.Scatter(x=p_ticker.index, y=p_ticker[TICKER], mode='lines', name=f'Russel Price', line=dict(color='red')),
                   row=1, col=1)
-    fig.add_trace(go.Scatter(x=rolling_critical.index, y=rolling_critical["^RUT"], mode='lines', name='Rolling Critical Value',
+    fig.add_trace(go.Scatter(x=rolling_critical.index, y=rolling_critical[TICKER], mode='lines', name='Rolling Critical Value',
                              line=dict(color='green')), row=2, col=1)
     fig.add_trace(
         go.Scatter(x=rolling_critical.index, y=[1.620] * len(rolling_critical), mode='lines', name='Threshold (V=1.620)',

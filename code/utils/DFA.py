@@ -13,13 +13,13 @@ __all__ = [
 
 
 def _profile(series: np.ndarray) -> np.ndarray:
-    """Profil cumulatif Y(k) = Σ_{i≤k}(x_i − m)."""
+    """Compute the profile of a time series by removing the mean and computing the cumulative sum."""
     x = series[np.isfinite(series)]
     return np.cumsum(x - x.mean())
 
 
 def _local_fluctuation(y: np.ndarray, scale: int, order: int = 1) -> float:
-    """Fluctuation RMS pour une échelle donnée."""
+    """Compute the local fluctuation for a given scale and polynomial order."""
     n = len(y)
     if scale >= n:
         raise ValueError("`scale` doit être < len(profile)`")
@@ -41,17 +41,8 @@ def dfa_hurst(
     scales: Sequence[int] | None = None,
     order: int = 1,
 ) -> Tuple[float, np.ndarray, np.ndarray]:
-    """Exposant de Hurst via DFA.
-
-    Paramètres
-    ----------
-    series : données d’entrée (list/array/Series).
-    scales : liste d’échelles DFA (taille de segments).
-    order  : ordre du polynôme de dé‑trending.
-
-    Retourne
-    --------
-    H, scales, fluct — pente log‑log, échelles, fluctuations.
+    """
+    Compute the Hurst exponent using the Detrended Fluctuation Analysis (DFA) method.
     """
     x = np.asarray(series, dtype=float)
     y = _profile(x)
@@ -71,12 +62,9 @@ def dfa_hurst(
     hurst = coef[1]  # pente
     return float(hurst), scales, fluct
 
-###############################################################################
-# 2 Classe ComputeDFA (style ComputeRS)                                     #
-###############################################################################
 
 class ComputeDFA:
-    """Mêmes principes que ComputeRS mais pour DFA."""
+    """Utils class for computing the Hurst exponent using DFA."""
 
     def __init__(self):
         pass
@@ -89,10 +77,8 @@ class ComputeDFA:
         order: int = 1,
         scales: Sequence[int] | None = None,
     ) -> float:
-        """Renvoie H (DFA) sur la *dernière* fenêtre `window_size`.
-
-        Si `window_size` ≤ 0 ou dépasse la longueur de la série,
-        la fenêtre entière est utilisée.
+        """
+        Compute the Hurst exponent using the DFA method on a given series.
         """
         if not isinstance(series, pd.Series):
             raise TypeError("`series` doit être une pandas.Series")
@@ -115,7 +101,7 @@ def rolling_hurst_dfa(
     scales: Sequence[int] | None = None,
     min_valid: int | None = None,
 ) -> pd.Series:
-    """Série temps de H (DFA) sur fenêtres glissantes."""
+    """Compute the Hurst exponent using DFA on rolling windows."""
     if not isinstance(series, pd.Series):
         raise TypeError("`series` doit être une pandas.Series")
 

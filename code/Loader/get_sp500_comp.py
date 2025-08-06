@@ -18,37 +18,33 @@ def get_sp500_tickers(year: int) -> list:
         print("Failed to retrieve data from Wikipedia")
         return []
 
-    # Load the page into a pandas DataFrame directly
     dfs = pd.read_html(response.text)
-
-    # The first dataframe should contain the S&P 500 list, we'll check the right one
     sp500_df = dfs[0]
-
-    # Extract tickers for the specified year
     tickers = sp500_df['Symbol'].tolist()
 
     return tickers
 
 
-# Loop over the years 1995 to 2024 and collect tickers
-sp500_tickers_by_year = {}
-for year in range(1995, 2025):
-    print(f"Fetching tickers for {year}...")
-    tickers = get_sp500_tickers(year)
-    sp500_tickers_by_year[year] = tickers
-    print(f"Found {len(tickers)} tickers for {year}")
+if __name__ == "__main__":
 
-# Convert the dictionary into a DataFrame
-data = []
-for year, tickers in sp500_tickers_by_year.items():
-    for ticker in tickers:
-        data.append([year, ticker])
+    sp500_tickers_by_year = {}
+    for year in range(1995, 2025):
+        print(f"Fetching tickers for {year}...")
+        tickers = get_sp500_tickers(year)
+        sp500_tickers_by_year[year] = tickers
+        print(f"Found {len(tickers)} tickers for {year}")
 
-# Create a DataFrame
-df = pd.DataFrame(data, columns=['Year', 'Ticker'])
+    # Convert the dictionary into a DataFrame
+    data = []
+    for year, tickers in sp500_tickers_by_year.items():
+        for ticker in tickers:
+            data.append([year, ticker])
 
-grouped = df.groupby('Year')['Ticker'].apply(list).reset_index()
+    # Create a DataFrame
+    df = pd.DataFrame(data, columns=['Year', 'Ticker'])
 
-grouped.to_csv('sp500_tickers_by_year.csv', index=False)
+    grouped = df.groupby('Year')['Ticker'].apply(list).reset_index()
 
-print("Data has been saved to 'sp500_tickers_by_year.csv'.")
+    grouped.to_csv('sp500_tickers_by_year.csv', index=False)
+
+    print("Data has been saved to 'sp500_tickers_by_year.csv'.")

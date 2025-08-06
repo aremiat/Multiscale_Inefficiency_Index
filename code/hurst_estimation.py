@@ -26,10 +26,11 @@ def adf_test(series):
 all_results = pd.DataFrame()
 
 if __name__ == "__main__":
+    pd.set_option("display.max_rows", 200)
+    pd.set_option("display.max_columns", 30)
+    pd.set_option("display.width", 250)
 
     tickers = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
-    # fait un dictionnaire pour les vrais non tickers
-
     noms_indices = {
         "^GSPC": "S\&P 500",
         "^RUT": "Russell 2000",

@@ -9,33 +9,31 @@ from sklearn.preprocessing import PolynomialFeatures
 from sklearn.ensemble import RandomForestRegressor
 import plotly.graph_objects as go
 
-# Liste de tickers à analyser
 tickers = [
     "^GSPC",
     "^RUT",
     "^FTSE",
     "^N225",
     "^GSPTSE",
-    "AAPL",  # Apple Inc.
-    "MSFT",  # Microsoft Corporation
-    "AMZN",  # Amazon.com, Inc.
-    "GOOGL",  # Alphabet Inc.
-    "CALM",  # Cal-Maine Foods, Inc.
-    "NARI",  # Inari Medical, Inc.
-    "FARO",  # FARO Technologies, Inc.
-    "ALGT",  # Allegiant Travel Company
-    "SMTC",  # SMTC Corporation
-    "AGYS"  # Agilysys, Inc.
+    "AAPL",
+    "MSFT",
+    "AMZN",
+    "GOOGL",
+    "CALM",
+    "NARI",
+    "FARO",
+    "ALGT",
+    "SMTC",
+    "AGYS"
 ]
 
 if __name__ == "__main__":
-    # Configuration des options d'affichage
     pd.set_option("display.max_rows", 200)
     pd.set_option("display.max_columns", 30)
     pd.set_option("display.width", 250)
 
     # Chemin vers le dossier data
-    DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
+    DATA_PATH = os.path.join(os.path.dirname(__file__), "../../data")
 
     # Dictionnaire pour stocker les résultats de chaque ticker
     results_summary = {}

@@ -79,13 +79,13 @@ if __name__ == "__main__":
     multi_asset_tickers = ['BTC-USD', 'EURUSD=X', 'GBPUSD=X']
     data =  pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
     # data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
-    # data = pd.read_csv(os.path.join(DATA_PATH, "ssec.csv"), index_col=0, parse_dates=True)
+    data = pd.read_csv(os.path.join(DATA_PATH, "ssec.csv"), index_col=0, parse_dates=True)
 
     # tickers = ["^BVSP","^MXX", "000001.SS"]
     # data = yf.download(tickers, start="2000-01-01")  # prix journaliers
     # data = data.xs("Close", level=data.columns.names.index('Price'), axis=1)
 
-    for tick in multi_asset_tickers:
+    for tick in data.columns:
         # print(tick)
         # if tick == '^RUT':
         #     name = "Russel 2000"
@@ -113,14 +113,14 @@ if __name__ == "__main__":
             print(f"Jarque-Bera test for {name}: stat={stat}, p-value={p_value}")
 
             # Calcul du rolling Hurst classique (overlapping) via R/S modified statistic sur 120 jours
-            # rolling_hurst = returns.rolling(window=120).apply(
-            #     lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window))) / np.log(len(window)),
-            #     raw=False
-            # ).dropna()
+            rolling_hurst = returns.rolling(window=120).apply(
+                lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window))) / np.log(len(window)),
+                raw=False
+            ).dropna()
 
-
-            rolling_hurst = returns.rolling(120).apply(lambda x : hurst_swv(x,  method="SD", exclusions=True),
-                                                       raw=True).dropna()
+            #
+            # rolling_hurst = returns.rolling(120).apply(lambda x : hurst_swv(x,  method="SD", exclusions=True),
+            #                                            raw=True).dropna()
 
 
             # rolling_hurst = rolling_hurst_dfa(returns, window = 120)

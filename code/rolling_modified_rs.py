@@ -6,13 +6,10 @@ from utils.RS import ComputeRS
 import os
 
 
-DATA_PATH = os.path.dirname(__file__) + "/../data"
 
 def non_overlapping_rolling(series, window, func):
     """
-    Applique la fonction 'func' à des fenêtres non chevauchantes de taille 'window' sur la série.
-    Retourne une Series avec, pour chaque segment, la valeur calculée, indexée par la date
-    du dernier point du segment.
+    Apply a function to non-overlapping segments of a time series.
     """
     results = []
     indices = []
@@ -23,12 +20,16 @@ def non_overlapping_rolling(series, window, func):
         indices.append(seg.index[-1])
     return pd.Series(results, index=indices)
 
+DATA_PATH = os.path.dirname(__file__) + "/../data"
+WINDOW_SIZE = 120
+TICKERS = ['^RUT', '^GSPC']
 
 if __name__ == "__main__":
-    window_size = 120
-    tickers = ['^RUT', '^GSPC']
+    pd.set_option("display.max_rows", 200)
+    pd.set_option("display.max_columns", 30)
+    pd.set_option("display.width", 250)
 
-    for tick in tickers:
+    for tick in TICKERS:
         if tick == '^RUT':
             name = "Russel 2000"
         elif tick == '^GSPC':
@@ -39,7 +40,7 @@ if __name__ == "__main__":
         log_prices = np.log(data).dropna()
         returns = log_prices.diff().dropna()
 
-        rolling_modified_rs = returns.rolling(window=window_size).apply(
+        rolling_modified_rs = returns.rolling(window=WINDOW_SIZE).apply(
             lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window), chin=False)) / np.log(len(window)),
             raw=False
         ).dropna()
