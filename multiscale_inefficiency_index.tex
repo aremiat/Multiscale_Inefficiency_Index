@@ -62,7 +62,7 @@
 
 \section*{Abstract}
 
-This paper investigates the long-term memory and multifractal properties of financial time series through advanced Hurst
+This paper investigates the long-term memory and multifractal properties of financial time series through Hurst
 exponent estimation techniques, including both the classical R/S statistic and its modified version (M-R/S). Recognizing
 the limitations of a single static Hurst exponent often distorted by trends, sample length, or structural breaks we
 complement our analysis with Multifractal Detrended Fluctuation Analysis (MF-DFA), which reveals the local scaling
@@ -105,7 +105,7 @@ for understanding these phenomena, our study focuses on practical estimation met
 
 \section{Literature Review}
 
-Memory diagnostics in finance revolve around RS and its modified M-RS tests; Mandelbrot and Wallis pioneered the use
+Memory diagnostics in finance revolve around R/S and its modified M-RS tests; Mandelbrot and Wallis pioneered the use
 of the rescaled range (R/S) statistic to detect long-term memory in geophysical and financial time series, highlighting
 its sensitivity to persistent and anti-persistent behaviors \cite{mandelbrot1968, mandelbrot1969a, mandelbrot1969b}.
 Mandelbrot further emphasized the limitations of classical methods and the need for robust estimators in the presence
@@ -183,7 +183,7 @@ The results of the Hurst exponent estimation using the traditional R/S method ar
 Based on the results obtained from applying the traditional R/S method, all the series appear to exhibit long-term memory,
 as the Hurst exponents are consistently greater than 0.5. However, the unknown asymptotic distribution of the traditional R/S
 statistic prevents us from determining whether these Hurst values are statistically significant. To address this, we use the modified
-R/S method, comparing the statistic \( V \) to the critical values provided by Lo (1991) (1.620 at the 10\% level and 1.747 at the 5\%
+R/S method, comparing the statistic \( V \) to the critical values provided by \cite{lo1991} (1.620 at the 10\% level and 1.747 at the 5\%
 level in a one-tailed test). Our analysis shows that only one series the returns of the Russell 2000 small and mid cap (US) exhibits
 statistically significant persistence, for the other series, despite Hurst exponents greater than 0.5, the null hypothesis of short memory cannot be rejected.
 
@@ -209,7 +209,7 @@ These discrepancies between the two series highlight their distinct scaling prop
 the multifractal analysis is to capture and quantify these differences in local scaling behavior. By analyzing the multifractal spectrum
 of each index, we hope to match these structural discrepancies, thereby providing deeper insights into the dynamics of each market.
 By analyzing both the S\&P 500 and Russell 2000, we gain insight into how differences in efficiency and persistence
-affect their multifractal characteristics, thereby allowing us to exploit these structural differences in our trading strategy.
+affect their multifractal characteristics.
 For this analysis, we will use the daily returns of the Russell 2000 index, S\&P 500 index from September 10th, 1987, to February 28th, 2025 (about 10 000 data points).
 
 
@@ -370,21 +370,24 @@ See Figure~\ref{sec:inefficiency_index} for the inefficiency index $I$ computed 
 \section{Trading Strategy}
 
 To emphasize the practical implications of our inefficiency index, we propose a simple trading strategy based on a rolling hurst and the index's values.
+The strategy is based on the ssec since given the inefficiency plot it seems like the ssec might be the most inefficient
+series with highest inefficiency corresponding to crises of 2008 and 2015.
 If we relied solely on a simple momentum or mean reversion strategy based on the Hurst exponent, we would encounter
 numerous false signals and often hold positions for only one or two days. This would result in high transaction costs
 and poor performance. The purpose of our inefficiency index is to act as a filter for the Hurst signal, allowing us to
 take positions only when the market is broadly inefficient across all scales.
 The strategy is as follows:
 \begin{enumerate}
-    \item Calculate the rolling Hurst exponent $H_{\text{rolling}}$ using a window size of 120 days via the Modified R/S method.
+    \item Calculate the rolling Hurst exponent $H_{\text{rolling}}$ using a window size of 6 months via the Modified R/S method.
     \item Calculate the inefficiency index $I$ using the formula defined in Section~\ref{subsec:inefficiency_index}.
     \item Set a threshold for the inefficiency index, denoted as $I_{\text{threshold}}$. This threshold is set on 1.5 standard deviation based
     on a rolling 6 months.
     \item If $I > I_{\text{threshold}}$ and Hurst < 0.5, it indicates a potential market inefficiency, and mean reversion so we take a short position in the asset, otherwise we are long.
 \end{enumerate}
 The performance can be found in Table~\ref{tab:perfs_with_and_without_inef}, the graphical representation respectively in Figure~\ref{fig:perf_with_inef} and
-Figure~\ref{fig:perf_without_inef}. The number of position taken is reduced with our index (353 vs 443), which showcases that our inefficiency
-index serves as a filter for the Hurst signal, reducing the number of false signals and improving the overall performance of the strategy.
+Figure~\ref{fig:perf_without_inef}. The number of position taken is reduced with our index (421 vs 443), which showcases that our inefficiency
+index serves as a filter for the Hurst signal, reducing the number of false signals and drastically improving the overall
+performance of the strategy in terms of Sharpe ratio, Annualized return and Max Drawdown.
 
 \section{Conclusion}
 
@@ -396,7 +399,7 @@ We introduce an inefficiency index that gauges how far a market departs from eff
 the width of its multifractal spectrum, which captures long-range correlations revealed through surrogate analysis, and
 the deviation of a rolling Hurst exponent from the benchmark value of 0.5, signalling momentum or mean-reversion effects.
 By integrating these components, our index simultaneously quantifies directional inefficiencies and multifractal complexity across
-all orders. This index can serve as a filter of the Hurst signal to reduce the number of positions taken and improving performance.
+all orders. This index can serve as a filter of the Hurst signal to reduce the number of false signals and improving performance.
 
 
 \newpage
@@ -647,7 +650,8 @@ The following table summarizes the results of the R/S statistic, modified R/S st
     ] {data/Hurst_results.csv}
     \caption{Results for R/S, Hurst exponent, modified Hurst exponent, critical value at 10\%, and rejection of the null
     hypothesis of no long memory from 1987-09-10 to 2025-02-28. The Hurst exponent can be equal for the R/S and modified R/S methods in the case where
-    the autocorrelation coefficients are less than zero (refer to Section~\ref{sec:long_range_dependence}), in this case we set $q$ equal to 0 and therefore the R/S and modified R/S share the same formula.}
+    the autocorrelation coefficients are less than zero (refer to Section~\ref{sec:long_range_dependence}), in this case we set $q$ equal to 0 and therefore the R/S and modified R/S share the same formula.
+    To come back where you left off, see Section~\ref{sec:results}}
     \label{tab:Hurst_results}
 \end{table}
 
@@ -908,9 +912,7 @@ exponent of 0.501 both underscore a near–random–walk dynamic. Unlike the Rus
 the series is shuffled—revealing the role of long-range correlations—the S\&P 500’s spectrum remains essentially unchanged
 by shuffling, indicating that its multifractality arises almost entirely from the non-Gaussian distribution of returns
 (kurtosis = 28.4). In practical terms, this means that extreme fluctuations in the S\&P 500 cluster together but lack
-persistent temporal dependence, whereas the Russell 2000 exhibits genuine long-term memory. Consequently, the width of
-the multifractal spectrum serves as a gauge of market inefficiency: the larger $\Delta \alpha$ for a surrogate series, the more the
-process departs from ideal randomness by containing distinct local regimes. To come back where you left off, see Section~\ref{sec:multifractal_spectrum}.
+persistent temporal dependence, whereas the Russell 2000 exhibits genuine long-term memory. To come back where you left off, see Section~\ref{sec:multifractal_spectrum}.
 
 \cleardoublepage
 

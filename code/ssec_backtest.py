@@ -7,13 +7,15 @@ from utils.RS import ComputeRS
 from utils.MFDFA import ComputeMFDFA
 
 
-# =====================================================================
-# Calcul de l'indice d'inefficience et stratégie de positionnement
-# =====================================================================
 def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
     """
-    Combine la différence de largeur de spectre (delta_alpha_diff),
-    l'écart absolu (rolling Hurst - 0.5).
+    Compute the inefficiency index as the product of the difference in spectrum width
+    and the deviation of the rolling Hurst exponent from 0.5.
+    Args:
+        delta_alpha_diff (pd.Series): Series of differences in spectrum width.
+        rolling_hurst (pd.Series): Series of rolling Hurst exponents.
+    Returns:
+        pd.Series: Series representing the inefficiency index.
     """
     return delta_alpha_diff * (rolling_hurst - 0.5).abs()
 
@@ -32,13 +34,21 @@ def compute_rolling_metric(series, window_size, method='modified', rolling_type=
                 raw=False
             ).dropna()
         else:
-            raise ValueError("Méthode inconnue")
+            raise ValueError("Unknown rolling method")
     else:
-        raise ValueError("Type de rolling inconnu")
+        raise ValueError("Unknown rolling type")
     return roll
 
 
 def compute_performance_stats(daily_returns: pd.Series, freq=252):
+    """Compute performance statistics from daily returns.
+
+    Args:
+        daily_returns (pd.Series): Daily returns of the asset.
+        freq (int): Frequency of returns, default is 252 for daily returns.
+    Returns:
+        tuple: Annualized return, annualized volatility, Sharpe ratio, and maximum drawdown.
+    """
     daily_returns = daily_returns.dropna()
     if len(daily_returns) == 0:
         return np.nan, np.nan, np.nan, np.nan
@@ -56,10 +66,17 @@ def compute_performance_stats(daily_returns: pd.Series, freq=252):
 
 
 def run_backtest(positions: pd.DataFrame, prices: pd.Series) -> pd.Series:
-    positions = positions.squeeze()  # Si DataFrame à une seule colonne
+    """Run a backtest based on positions and prices.
+
+    Args:
+        positions (pd.DataFrame): DataFrame of positions with dates as index.
+        prices (pd.Series): Series of asset prices with dates as index.
+    Returns:
+        pd.Series: Series of net asset value (NAV) over time.
+    """
+    positions = positions.squeeze()
     aligned_prices = prices.reindex(positions.index).fillna(method='ffill')
     returns = aligned_prices.pct_change().fillna(0)
-    pos_diff = positions.diff().fillna(0)
     net_returns = positions.shift(1).fillna(0) * returns
     nav = (1 + net_returns).cumprod()
     return nav
@@ -73,13 +90,15 @@ if __name__ == "__main__":
     DATA_PATH = os.path.join(os.path.dirname(__file__), "../data")
     IMG_PATH = os.path.join(os.path.dirname(__file__), "../img")
 
+    np.random.seed(43)
+
     p = pd.read_csv(f"{DATA_PATH}/ssec.csv", index_col=0, parse_dates=True).dropna()
     r = p.pct_change().dropna()
 
     surrogate_returns = ComputeMFDFA.surrogate_gaussian_corr(r['ssec'])
     surrogate_returns = pd.Series(surrogate_returns, index=r.index)
 
-    rolling_delta_ssec = ComputeMFDFA.mfdfa_rolling_opti(surrogate_returns.shift(1),
+    rolling_delta_ssec = ComputeMFDFA.mfdfa_rolling(surrogate_returns.shift(1),
                                                        mfdfa_window, q_list, scales, order=1).dropna()
     dates = pd.date_range(start='2001-09-03', periods=len(rolling_delta_ssec), freq='B')
     rolling_delta_ssec.index = dates
@@ -113,8 +132,7 @@ if __name__ == "__main__":
         ).dropna()
         all_prices_aligned = p.loc[common_dates]
 
-        # std_ineff = ineff_index.std() * 1.5
-        rolling_std_ineff = (ineff_index.rolling(window=126, min_periods=120).std() * 1.5).dropna()
+        rolling_std_ineff = (ineff_index.rolling(window=120, min_periods=116).std() * 1.5).dropna()
         ineff_index = ineff_index.reindex(rolling_std_ineff.index)
         common_dates = rolling_signal.index.intersection(rolling_std_ineff.index)
         signal = rolling_signal.loc[common_dates]
@@ -157,7 +175,10 @@ if __name__ == "__main__":
         nav = run_backtest(pd.DataFrame(positions), backtest_prices['ssec'])
         nav_without_ineff = run_backtest(pd.DataFrame(positions_inef), backtest_prices['ssec'])
 
-        plot_positions_and_hurst(rolling_hurst=rolling_signal, positions=positions)
+
+        ################################################################################################################
+        ############################################### Plotting the results ###########################################
+        ################################################################################################################
 
         fig_backtest = go.Figure()
 
@@ -196,6 +217,10 @@ if __name__ == "__main__":
         fig_backtest.update_xaxes(title_text="Date")
         fig_backtest.update_yaxes(title_text="Log Cumulative Return")
         fig_backtest.show()
+
+        ################################################################################################################
+        ############################################### Performances ###################################################
+        ################################################################################################################
 
         ann_ret, ann_vol, sharpe, max_dd = compute_performance_stats(nav.pct_change().dropna())
         ann_ret_ssec, ann_vol_ssec, sharpe_ssec, max_dd_ssec = compute_performance_stats(long_only_return.pct_change().dropna())

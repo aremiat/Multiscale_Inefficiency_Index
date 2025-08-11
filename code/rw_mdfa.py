@@ -1,13 +1,7 @@
-import os.path
-
 import numpy as np
 import plotly.graph_objects as go
 import os
-import plotly.io as pio
-from utils.MFDFA import ComputeMFDFA
-import matplotlib as plt
 import pandas as pd
-from utils.ADF import adf_test
 
 IMG_PATH = os.path.dirname(__file__) + "/../img/"
 DATA_PATH = os.path.dirname(__file__) + "/../data/"
@@ -21,13 +15,13 @@ if __name__ == "__main__":
     pd.set_option("display.max_columns", 30)
     pd.set_option("display.width", 250)
 
-    np.random.seed(42)
+    np.random.seed(43)
     increments = np.random.normal(0, 1, N)
     random_walk = np.cumsum(increments)
     returns = np.diff(random_walk)
     returns_centered = returns - np.mean(returns)
     Y = np.cumsum(returns_centered)
-    data = pd.read_csv(os.path.join(DATA_PATH, "russel_stocks.csv"), index_col=0, parse_dates=True)['^RUT']
+    data = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)['^RUT']
     df_ticker = data.loc["1987-09-10":"2025-02-28"]
     df_ticker = df_ticker.dropna()
     returns = np.log(df_ticker).diff().dropna()

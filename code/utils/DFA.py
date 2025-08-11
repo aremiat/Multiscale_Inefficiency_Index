@@ -69,7 +69,6 @@ class ComputeDFA:
     def __init__(self):
         pass
 
-    # ---------------------------------------------------------------------
     @staticmethod
     def dfa_statistic(
         series: pd.Series,

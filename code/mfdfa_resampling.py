@@ -10,7 +10,7 @@ q_list = np.linspace(-3, 3, 13)
 scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(500), 10)).astype(int))
 TICKERS = ["^GSPC", "^RUT", "^FTSE", "^N225", "^GDAXI"]
 N_RESAMPLES = 500
-SEED = 45
+SEED = 43
 
 def delta_alpha(series: np.ndarray, scales: np.ndarray, q_list: np.ndarray) -> float:
     """Return the multifractal spectrum width Δα for *series*."""
@@ -108,6 +108,6 @@ if __name__ == "__main__":
         })
 
         results_df = pd.DataFrame(results.round(3))
-        out_path = os.path.join(DATA_PATH, "inefficiency_results.csv")
+        out_path = os.path.join(DATA_PATH, "mfdfa_confidence_results.csv")
         results_df.to_csv(out_path, index=False)
         print(f"\nResults saved to {out_path}")

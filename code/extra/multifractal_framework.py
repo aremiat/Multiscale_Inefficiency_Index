@@ -29,19 +29,18 @@ class MultifractalFramework:
         verbose: bool = False,
     ) -> None:
         """
-        Initialise le cadre multifractal.
+        Initialize the MultifractalFramework.
 
         Args:
-            data (pd.Series) : Données d'entrée pour l'analyse multifractale.
-            ticker1 (str) : Symbole du premier actif.
-            ticker2 (str) : Symbole du second actif.
-            window_hurst (int) : Taille de la fenêtre pour le calcul de Hurst (rolling). Défaut 0.
-            window_mfdfa (int) : Taille de la fenêtre pour le calcul MFDFA en rolling. Défaut 0.
-            q_list (np.ndarray, optionnel) : Liste des exposants q. Par défaut np.linspace(-5, 5, 21).
-            scales (np.ndarray, optionnel) : Échelles pour MFDFA. Par défaut logspace de 10 à 500.
-            order (int) : Ordre du polynôme pour MFDFA. Défaut 1.
-            backtest (bool) : Active le backtest si True. Défaut False.
-            verbose (bool) : Active les messages détaillés. Défaut False.
+            data (pd.Series): Series of financial data.
+            ticker1 (str): First ticker symbol.
+            ticker2 (str): Second ticker symbol.
+            window_hurst (int): Window size for Hurst exponent calculation.
+            window_mfdfa (int): Window size for MF-DFA calculation.
+            q_list (Optional[np.ndarray]): List of q values for MF-DFA.
+            scales (Optional[np.ndarray]): Scales for MF-DFA.
+            order (int): Polynomial order for detrending in MF-DFA.
+            verbose (bool): If True, print verbose output during calculations.
         """
 
         self.data: pd.Series = data
@@ -68,10 +67,13 @@ class MultifractalFramework:
 
     def compute_multifractal(self, shuffle, surrogate) -> None:
         """
-        Calcule le spectre multifractal des données d'entrée.
+        Compute the multifractal spectrum using MF-DFA.
+        Args:
+            shuffle (bool): If True, compute the shuffled surrogate.
+            surrogate (bool): If True, compute the Gaussian correlated surrogate.
         """
         if self.verbose:
-            print("[Verbose] compute_multifractal début…")
+            print("[Verbose] compute_multifractal…")
         self.Fq = ComputeMFDFA.mfdfa(self.data, self.scales, self.q_list, self.order)
         self.h_q = ComputeMFDFA.compute_h_q(self.q_list, self.Fq, self.scales)
         self.alpha, self.f_alpha = ComputeMFDFA.compute_alpha_falpha(self.q_list, self.h_q)
@@ -90,14 +92,13 @@ class MultifractalFramework:
             self.alpha_shuffle, self.f_alpha_shuffle = ComputeMFDFA.compute_alpha_falpha(self.q_list, self.h_q_shuffle)
             self.alpha_surogate, self.f_alpha_surogate = ComputeMFDFA.compute_alpha_falpha(self.q_list, self.h_q_surogate)
         if self.verbose:
-            print("[Verbose] compute_multifractal terminé")
+            print("[Verbose] End compute_multifractal")
 
     def compute_delta_alpha_diff(self) -> pd.Series:
         """
-        Calcule la différence de largeur multifractale (∆α) rolling mellan les deux tickers.
-
+        Compute the difference in multifractal spectrum widths (Δα) between two tickers.
         Returns:
-            pd.Series: ∆α (ticker1 - ticker2)
+            pd.Series: Delta alpha difference indexed by window end positions.
         """
         if self.verbose:
             print("[Verbose] compute_delta_alpha_diff…")
@@ -110,15 +111,14 @@ class MultifractalFramework:
             )
             self.delta_alpha_diff = self.delta_alpha_diff_t1 - self.delta_alpha_diff_t2
         if self.verbose:
-            print("[Verbose] compute_delta_alpha_diff terminé")
+            print("[Verbose] compute_delta_alpha_diff ended")
         return self.delta_alpha_diff
 
     def compute_inefficiency_index(self) -> pd.Series:
         """
-        Calcule l'indice d'inefficacité: ∆α × |H_rolling - 0.5|.
-
+        Compute the inefficiency index based on the Hurst exponent and delta alpha difference.
         Returns:
-            pd.Series: inefficiency_index
+            pd.Series: Inefficiency index indexed by window end positions.
         """
         self.rolling_hurst = self.data.rolling(window=self.window_hurst).apply(
             lambda window: np.log(ComputeRS.rs_modified_statistic(window, len(window), chin=False)) / np.log(len(window)),
@@ -131,12 +131,12 @@ class MultifractalFramework:
             self.compute_delta_alpha_diff()
         self.inefficiency_index = self.delta_alpha_diff * (self.rolling_hurst - 0.5).abs()
         if self.verbose:
-            print("[Verbose] compute_inefficiency_index terminé")
+            print("[Verbose] compute_inefficiency_index ended")
         return pd.Series(self.inefficiency_index, index=self.rolling_hurst.index, name="inefficiency_index")
 
     def plot_multifractal_results(self, shuffle: bool = False, surogate: bool = False) -> None:
         """
-        Trace h(q), spectres multifractaux avec options shuffle/surogate.
+        Plot the results of the multifractal analysis.
         """
         if self.verbose:
             print(f"[Verbose] plot_results (shuffle={shuffle}, surogate={surogate})…")

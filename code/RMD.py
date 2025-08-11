@@ -5,7 +5,7 @@ from utils.ADF import adf_test
 from scipy.stats import skew, kurtosis
 
 # Random Midpoint Displacement
-def random_midpoint_displacement(num_points, roughness=0.5, seed=None):
+def random_midpoint_displacement(num_points, roughness=0.5, seed=43):
     """Generates a random midpoint displacement fractal curve."""
     if seed is not None:
         np.random.seed(seed)

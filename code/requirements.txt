@@ -11,5 +11,3 @@ plotly
 pandas_datareader
 hmmlearn
 arch
-
--e git+https://d6ab5d33c1ac475d1388095f6326ab01f9bd0ae1:x-oauth-basic@github.com/aeqcap/aeqlib.git#egg=aeqlib

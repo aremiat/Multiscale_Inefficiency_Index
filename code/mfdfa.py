@@ -19,10 +19,9 @@ if __name__ == "__main__":
     pd.set_option("display.max_columns", 30)
     pd.set_option("display.width", 250)
 
-    np.random.seed(45)
+    np.random.seed(43)
 
     data_equity = pd.read_csv(os.path.join(DATA_PATH, "index_prices2.csv"), index_col=0, parse_dates=True)
-    data_multi_assets = pd.read_csv(os.path.join(DATA_PATH, "multi_assets.csv"), index_col=0, parse_dates=True)
     df_ticker = data_equity.loc["1987-09-10":"2025-02-28"]
     scales = scales_rut
 
@@ -66,7 +65,7 @@ if __name__ == "__main__":
             yaxis_title='log(variance)',
             template='plotly_white'
         )
-        fig_var.show()
+        # fig_var.show()
 
         surogate_series = ComputeMFDFA.surrogate_gaussian_corr(returns.values)
         surogate_series = pd.Series(surogate_series, index=returns.index)

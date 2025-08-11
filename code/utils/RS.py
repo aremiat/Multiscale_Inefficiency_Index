@@ -8,6 +8,15 @@ class ComputeRS:
 
     @staticmethod
     def rs_statistic(series, window_size=0):
+        """Compute the R/S statistic for a given time series.
+
+        Args:
+            series (pd.Series): The time series data.
+            window_size (int): The size of the window to consider for the R/S calculation.
+                If 0, the entire series is used.
+        Returns:
+            float: The R/S statistic.
+        """
         if window_size < len(series):
             window_size = len(series)
         s = series.iloc[len(series) - window_size: len(series)]
@@ -19,6 +28,14 @@ class ComputeRS:
 
     @staticmethod
     def compute_S_modified(series, chin=False):
+        """Compute the modified S statistic for a given time series.
+
+        Args:
+            series (pd.Series): The time series data.
+            chin (bool): If True, use the Chin method for calculation.
+        Returns:
+            float: The modified S statistic.
+        """
         s = series
         t = len(s)
         mean_y = np.mean(s)
@@ -51,6 +68,16 @@ class ComputeRS:
 
     @staticmethod
     def rs_modified_statistic(series, window_size=0, chin=False):
+        """Compute the modified R/S statistic for a given time series.
+
+        Args:
+            series (pd.Series): The time series data.
+            window_size (int): The size of the window to consider for the R/S calculation.
+                If 0, the entire series is used.
+            chin (bool): If True, use the Chin method for calculation.
+        Returns:
+            float: The modified R/S statistic.
+        """
         if window_size > len(series):
             window_size = len(series)
 

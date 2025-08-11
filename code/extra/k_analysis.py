@@ -4,72 +4,51 @@ import matplotlib.pyplot as plt
 
 def simulate_msm_binomial(T, K, m0, gamma_list):
     """
-    Simule un modèle MSM binomial sur T périodes pour K niveaux.
+    Simulate a Markov Switching Model (MSM) using a binomial tree approach.
 
-    Paramètres:
-    -----------
-    T : int
-        Nombre de pas de temps
-    K : int
-        Nombre de niveaux
-    m0 : float
-        Valeur bas (et la valeur haut sera 2 - m0)
-    gamma_list : array-like (de taille K)
-        Probabilité de switch pour chaque niveau (du 1er au K-ième niveau)
-
-    Retourne:
-    --------
-    M : ndarray (T x K)
-        M[t, k] = valeur du multiplicateur au niveau k à l'instant t
-    vol : ndarray (T,)
-        Volatilité totale (produit des K multiplicateurs) à l'instant t
+    Args:
+        T (int): Number of time steps.
+        K (int): Number of levels in the MSM.
+        m0 (float): Initial multiplier value.
+        gamma_list (list): List of probabilities for switching between multipliers.
+    Returns:
+        M (np.ndarray): Array of multipliers at each time step for each level.
+        vol (np.ndarray): Volatility calculated as the product of multipliers at each time step.
     """
-    # Valeur "haut"
     m_high = 2.0 - m0
 
-    # Initialisation des états pour chaque niveau (on commence arbitrairement en "bas")
     M = np.zeros((T, K))
-    M[0, :] = m0  # on commence tout en état "bas"
+    M[0, :] = m0
 
     for t in range(1, T):
         for k in range(K):
-            # Test de switch
             if np.random.rand() < gamma_list[k]:
-                # On change d'état
                 if M[t - 1, k] == m0:
                     M[t, k] = m_high
                 else:
                     M[t, k] = m0
             else:
-                # On reste dans le même état
                 M[t, k] = M[t - 1, k]
 
-    # Calcul de la volatilité (produit des K multiplicateurs)
     vol = np.prod(M, axis=1)
 
     return M, vol
 
 
 if __name__ == "__main__":
-    np.random.seed(42)
+    np.random.seed(43)
 
-    T = 200  # nombre de périodes
-    K = 5  # nombre de niveaux
-    m0 = 0.8  # valeur "bas"
-    m_high = 2 - m0  # valeur "haut" = 1.2
+    T = 200
+    K = 5
+    m0 = 0.8
+    m_high = 2 - m0
 
-    # Probabilité de switch pour chaque niveau (exemple simple):
-    # Niveau 1 (rapide) : gamma_1 = 0.3
-    # Niveau 2 (moyen) : gamma_2 = 0.1
-    # Niveau 3 (lent)  : gamma_3 = 0.05
     for k in range(1, K + 1):
         gamma_list = [1 - (1 - 0.1) ** (2 ** (k - 1)) for k in range(1, K + 1)]
 
 
-    # Simulation
     M, vol = simulate_msm_binomial(T, K, m0, gamma_list)
 
-    # Affichage des séries pour chaque niveau
     fig, axes = plt.subplots(K + 1, 1, figsize=(8, 8), sharex=True)
 
     time = np.arange(T)

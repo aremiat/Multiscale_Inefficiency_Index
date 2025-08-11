@@ -8,14 +8,17 @@ from utils.RS import ComputeRS
 
 DATA_PATH = os.path.dirname(__file__) + "/../data"
 
-
-# =============================================================================
-# 1. Fonctions MF-DFA
-# =============================================================================
-
 def mfdfa(signal, scales, q_list, order=1):
     """
-    Calcule le MF-DFA pour une série temporelle.
+    Compute the Multifractal Detrended Fluctuation Analysis (MF-DFA) of a signal.
+    Args:
+        signal (np.ndarray): Input signal (time series).
+        scales (np.ndarray): Scales to use in MF-DFA.
+        q_list (np.ndarray): List of q values for MF-DFA.
+        order (int): Order of polynomial fit for detrending.
+    Returns:
+        Fq (np.ndarray): 2D array of shape (len(q_list), len(scales)),
+                         where Fq[i, j] is the q-order fluctuation function for scale s_j.
     """
     N = len(signal)
     signal = signal - np.mean(signal)
@@ -52,7 +55,13 @@ def mfdfa(signal, scales, q_list, order=1):
 
 def compute_alpha_falpha(q_list, h_q):
     """
-    Transformation de Legendre pour obtenir alpha et f(alpha) à partir de h(q).
+    Legendre transform to compute alpha(q) and f(alpha) from h(q).
+    Args:
+        q_list (np.ndarray): List of q values.
+        h_q (np.ndarray): Corresponding h(q) values.
+    Returns:
+        alpha (np.ndarray): Array of alpha(q) values.
+        f_alpha (np.ndarray): Array of f(alpha) values.
     """
     dq = q_list[1] - q_list[0]
     dh_dq = np.gradient(h_q, dq)
@@ -63,7 +72,15 @@ def compute_alpha_falpha(q_list, h_q):
 
 def mfdfa_rolling(series, window_size, q_list, scales, order=1):
     """
-    Applique MF-DFA sur des fenêtres glissantes et renvoie la largeur du spectre multifractal (Δα).
+    Apply MF-DFA in a rolling window manner to compute the multifractal spectrum width Δα.
+    Args:
+        series (pd.Series or np.ndarray): Time series data.
+        window_size (int): Size of the rolling window.
+        q_list (np.ndarray): List of q values for MF-DFA.
+        scales (np.ndarray): Scales to use in MF-DFA.
+        order (int): Order of polynomial fit for detrending.
+    Returns:
+        pd.Series: Series of Δα values with the rolling index.
     """
     if isinstance(series, pd.Series):
         data = series.values
@@ -94,17 +111,18 @@ def mfdfa_rolling(series, window_size, q_list, scales, order=1):
     return pd.Series(alpha_widths, index=rolling_index, name="alpha_width")
 
 
-# =============================================================================
-# 2. Simulation du modèle MSM (Markov Chain Multifracal)
-# =============================================================================
-
 def simulate_msm_volatility(T, K=3, b=1.5, p_vec=[1.0, 0.5, 0.1], sigma_base=1.0):
     """
-    Simule une volatilité MSM sur T périodes.
+    Simulate the Markov Chain Multifracal (MSM) volatility model.
 
-    Pour chaque composante k (de 1 à K), on initialise à 1.
-    À chaque période, avec probabilité p_vec[k], la composante passe à b (avec 0.5 prob.) ou reste à 1.
-    La volatilité MSM est le produit de ces composantes multiplié par sigma_base.
+    Args:
+        T (int): Number of time steps to simulate.
+        K (int): Number of components in the MSM model.
+        b (float): Base value for the components.
+        p_vec (list): Probability vector for each component.
+        sigma_base (float): Base volatility.
+    Returns:
+        np.ndarray: Simulated MSM volatility series.
     """
     msm_components = np.ones((T, K))
     for k in range(K):
@@ -121,28 +139,31 @@ def simulate_msm_volatility(T, K=3, b=1.5, p_vec=[1.0, 0.5, 0.1], sigma_base=1.0
 def forecast_msm_volatility(n_steps, K=3, b=1.5, p_vec=[1.0, 0.5, 0.1],
                             sigma_base=1.0, n_sims=1000):
     """
-    Exécute une projection (forecast) de la volatilité MSM sur n_steps, en partant d'un état stationnaire.
-    On génère n_sims simulations et on renvoie la moyenne et quelques percentiles.
-
-    Pour plus de précision, on peut aussi partir d'un état final "réel" si on a conservé
-    les composantes (M_{k,t}) à la fin de l'échantillon historique.
+    Run a simulation of the MSM volatility model for n_steps.
+    Args:
+        n_steps (int): Number of steps to simulate.
+        K (int): Number of components in the MSM model.
+        b (float): Base value for the components.
+        p_vec (list): Probability vector for each component.
+        sigma_base (float): Base volatility.
+        n_sims (int): Number of simulations to run.
+    Returns:
+        mean_forecast (np.ndarray): Mean forecast of volatility.
+        median_forecast (np.ndarray): Median forecast of volatility.
+        pct_05 (np.ndarray): 5th percentile of the forecast.
+        pct_95 (np.ndarray): 95th percentile of the forecast.
     """
-    # Distribution stationnaire (approximative) : on suppose 50% du temps à b, 50% à 1
-    # pour chaque composante, ou on peut simuler un burn-in plus long.
-    # Ici, on simplifie en initialisant chaque composante au hasard.
+
     results = np.zeros((n_sims, n_steps))
     for sim in range(n_sims):
-        # Initialisation aléatoire
         components = np.where(np.random.rand(K) < 0.5, b, 1.0)
         for step in range(n_steps):
-            # Mise à jour
             for k in range(K):
                 if np.random.rand() < p_vec[k]:
                     components[k] = b if np.random.rand() < 0.5 else 1.0
             vol = sigma_base * np.prod(components)
             results[sim, step] = vol
 
-    # On peut renvoyer la moyenne, médiane, etc.
     mean_forecast = results.mean(axis=0)
     median_forecast = np.median(results, axis=0)
     pct_05 = np.percentile(results, 5, axis=0)
@@ -150,46 +171,41 @@ def forecast_msm_volatility(n_steps, K=3, b=1.5, p_vec=[1.0, 0.5, 0.1],
 
     return mean_forecast, median_forecast, pct_05, pct_95
 
-# =============================================================================
-# 3. Téléchargement des données et calcul des indicateurs
-# =============================================================================
 
-# Exemple : téléchargement des données pour "^GSPC" (adaptable à un titre Russell 2000)
+
 ticker = "^RUT"
 data = pd.read_csv(f"{DATA_PATH}/russell_2000.csv", index_col=0, parse_dates=True)
 
-# Calcul des rendements journaliers en log puis mensuels
+
 returns = np.log(data).diff().dropna()
 r_m = returns.resample('M').last()
 
-# Paramètres MF-DFA
-window_size = 120  # par exemple 120 mois (10 ans)
+
+window_size = 120
 q_list = np.linspace(-5, 5, 21)
 scales = np.unique(np.floor(np.logspace(np.log10(10), np.log10(80), 10)).astype(int))
 
-# Calcul du Δα sur fenêtres roulantes
+
 alpha_width_series = mfdfa_rolling(r_m, window_size, q_list, scales, order=1)
 
-# Calcul de la Rolling Critical Value via la statistique modifiée R/S
+
 rolling_critical = r_m.rolling(window_size).apply(
     lambda window: ComputeRS.rs_modified_statistic(window, len(window), chin=False) / np.sqrt(len(window)),
     raw=False
 ).dropna()
 alpha_width_series.index = rolling_critical.index
 
-# Simulation de la volatilité MSM sur la série mensuelle
 T = len(r_m)
-np.random.seed(42)
+np.random.seed(43)
 msm_vol_series = simulate_msm_volatility(T, K=3, b=1.5, p_vec=[1.0, 0.5, 0.1], sigma_base=1.0)
 msm_vol = pd.Series(msm_vol_series, index=r_m.index)
 msm_vol.index = r_m.index
-# Lissage sur 12 mois pour obtenir une courbe plus lisse
 msm_vol_rolling = msm_vol.rolling(window=12, min_periods=1).mean()
 
-# Aligner les séries sur un index commun (ici, on utilise l'index de rolling_critical)
+
 common_index = rolling_critical.index.intersection(alpha_width_series.index).intersection(msm_vol_rolling.index)
 price_series_aligned = data[ticker]
-price_series_aligned = price_series_aligned / price_series_aligned.iloc[0]  # Normalisation
+price_series_aligned = price_series_aligned / price_series_aligned.iloc[0]
 price_series_aligned = price_series_aligned.loc["1997-08-31": "2025-02-28"]
 rolling_critical_aligned = rolling_critical.loc[common_index]
 rolling_critical_aligned = rolling_critical_aligned[ticker]
@@ -202,12 +218,12 @@ fig = make_subplots(
     vertical_spacing=0.06,
     specs=[
         [{"secondary_y": False}],
-        [{"secondary_y": True}]  # On utilise un second axe pour Δα
+        [{"secondary_y": True}]
     ],
     subplot_titles=("Price", "Rolling Critical Value, Δα et Volatilité MSM")
 )
 
-# Sous-graphe 1 : Cours
+
 fig.add_trace(go.Scatter(
     x=price_series_aligned.index,
     y=price_series_aligned.values,
@@ -217,14 +233,14 @@ fig.add_trace(go.Scatter(
 ), row=1, col=1)
 fig.update_yaxes(title_text="Price ($)", row=1, col=1)
 
-# Sous-graphe 2 (axe gauche) : Rolling Critical Value et MSM Volatility
-# fig.add_trace(go.Scatter(
-#     x=rolling_critical_aligned.index,
-#     y=rolling_critical_aligned.values,
-#     mode='lines',
-#     name='Rolling Critical Value (R/S mod.)',
-#     line=dict(color='green')
-# ), row=2, col=1, secondary_y=False)
+
+fig.add_trace(go.Scatter(
+    x=rolling_critical_aligned.index,
+    y=rolling_critical_aligned.values,
+    mode='lines',
+    name='Rolling Critical Value (R/S mod.)',
+    line=dict(color='green')
+), row=2, col=1, secondary_y=False)
 fig.add_trace(go.Scatter(
     x=msm_vol_aligned.index,
     y=msm_vol_aligned.values,
@@ -233,16 +249,15 @@ fig.add_trace(go.Scatter(
     line=dict(color='blue')
 ), row=2, col=1, secondary_y=False)
 
-# Tracer la ligne de seuil (pour Rolling Critical Value)
-# fig.add_trace(go.Scatter(
-#     x=rolling_critical.index,
-#     y=[1.620] * len(rolling_critical),
-#     mode='lines',
-#     name=f'Seuil = {1.620}',
-#     line=dict(color='red', dash='dash')
-# ), row=2, col=1, secondary_y=False)
 
-# Sous-graphe 2 (axe droite) : Δα issu du MF-DFA
+fig.add_trace(go.Scatter(
+    x=rolling_critical.index,
+    y=[1.620] * len(rolling_critical),
+    mode='lines',
+    name=f'Seuil = {1.620}',
+    line=dict(color='red', dash='dash')
+), row=2, col=1, secondary_y=False)
+
 fig.add_trace(go.Scatter(
     x=alpha_width_aligned.index,
     y=alpha_width_aligned.values,
@@ -251,7 +266,6 @@ fig.add_trace(go.Scatter(
     marker=dict(color='purple')
 ), row=2, col=1, secondary_y=True)
 
-# Mise en forme générale
 fig.update_layout(
     title="Comparaison : Price, Rolling Critical Value, Δα et Volatilité MSM",
     template="plotly_white",

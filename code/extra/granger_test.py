@@ -27,26 +27,14 @@ def compute_rolling_metric(series, window_size, method='modified', rolling_type=
     return roll
 
 
-# -----------------------------
-# 4. Inefficiency Index and Positioning Strategy
-# -----------------------------
 def compute_inefficiency_index_abs_value(delta_alpha_diff, rolling_hurst):
-    """
-    Combine la différence de largeur de spectre (delta_alpha_diff),
-    l'écart absolu (rolling Hurst - 0.5).
-    """
     return delta_alpha_diff * abs(rolling_hurst - 0.5)
 
 
 def compute_inefficiency_index(delta_alpha_diff, rolling_hurst):
-    """
-    Combine la différence de largeur de spectre (delta_alpha_diff),
-    l'écart absolu (rolling Hurst - 0.5).
-    """
     return delta_alpha_diff * (rolling_hurst - 0.5)
 
 def adf_test_and_diff(series, name):
-    """Test ADF ; retourne la série stationnaire (éventuellement différenciée)."""
     pval = adfuller(series.dropna())[1]
     if pval > 0.05:
         print(f"{name}: non stationnaire (p={pval:.3f}) → différenciation")
@@ -56,10 +44,6 @@ def adf_test_and_diff(series, name):
         return series, False
 
 def granger_pairwise(df, maxlags=10):
-    """
-    Pour chaque paire (i → j), ajuste un VAR et teste H0 : i ne cause pas j.
-    Retourne DataFrame p-values indexées [cause → effet].
-    """
     tickers = df.columns
     pvals = pd.DataFrame(index=tickers, columns=tickers, dtype=float)
 
@@ -90,7 +74,7 @@ if __name__ == "__main__":
     q_list = np.linspace(-3, 3, 13)
     scales = np.unique(np.logspace(np.log10(10),
                                    np.log10(50), 10, dtype=int))
-    np.random.seed(42)
+    np.random.seed(43)
     rolling_delta = {}
     rolling_hurst = {}
     for tic in tickers:

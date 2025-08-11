@@ -1,10 +1,7 @@
-import os
-import re
 from typing import List, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
-import time
 
 class ComputeMFDFA:
     @staticmethod
@@ -59,7 +56,6 @@ class ComputeMFDFA:
 
             for k, q in enumerate(q_list):
                 if abs(q) < 1e-8:
-                    # geometric mean for q -> 0
                     Fq[k, j] = np.exp(0.5 * np.mean(np.log(F_seg_arr)))
                 else:
                     Fq[k, j] = (np.mean(F_seg_arr ** (q / 2.0))) ** (1.0 / q)

@@ -1,66 +1,74 @@
-Hurst Estimation and Fractional Brownian Motion
-Project Overview
+# Multiscale Inefficiency Index
 
-This project is focused on estimating the Hurst exponent (H) for various financial time series data using different methods, such as the traditional R/S method and the modified R/S method. The main goal is to evaluate the long-term memory properties of financial markets and examine how momentum strategies might be influenced by these properties. We also simulate Fractional Brownian Motion (fBm) with different Hurst exponents to study their impact on financial modeling.
-Files and Directories
+Quantifying market inefficiency by combining **true multifractality** (spectrum width from MF-DFA surrogates) with **rolling Hurst deviations** (Lo’s modified R/S). Includes reproducible code to compute the index, plot figures, and backtest a simple long/short filter strategy.
 
-    code/
-        hurst_estimation.py: This script contains the code for estimating the Hurst exponent using the R/S and modified R/S methods.
-        mbf.py: This script implements the simulation of Fractional Brownian Motion (fBm) and its corresponding autocorrelation functions.
+---
 
-    data/
-        hurst_results.csv: A CSV file storing the results of Hurst exponent calculations for different financial time series.
+## Overview
 
-    hurst_estimation.tex: The LaTeX document summarizing the methodology, results, and analysis.
+This repo implements the pipeline from the paper *“Multiscale Inefficiency Index”*:
 
-Setup and Installation
+- Estimate the Hurst exponent using **R/S** and **Lo’s modified R/S**.  
+- Run **MF-DFA** to get \(h(q)\), Hölder exponents \(\alpha(q)\), and the multifractal spectrum \(f(\alpha)\).  
+- Build a **surrogate** series (phase randomization) to isolate **true** multifractality from distributional effects.  
+- Define the **Inefficiency Index**  
+  I = Delta Alpha surrogate (width of Multifractal spectrum surrogate transform) * |Rolling Hurst - 0.5|.
+- Use I to **filter Hurst signals** in a long/short strategy and compare to a Hurst-only baseline.
 
-    Clone the repository:
 
-git clone <repository_url>
+---
 
-Set up a virtual environment:
+## Data
 
-python3 -m venv venv
-source venv/bin/activate  # On Windows use venv\Scripts\activate
+- **Indices:** S&P 500, Russell 2000, FTSE 100, Nikkei 225, DAX, SSEC.  
+- **Sampling:** monthly (for the broad analysis) and daily for selected MF-DFA deep-dives and backtest.  
+- **Span:** September 10, 1987 → February 28, 2025 (exact span depends on index & frequency).  
+- **Pre-processing:** log prices → ADF test → first-difference (returns) for stationarity.
 
-Install required dependencies:
+---
 
-    pip install -r requirements.txt
+## Methods 
 
-Usage
-Hurst Exponent Estimation
+- **R/S & Modified R/S (Lo, 1991)**  
+  - R/S gives a scaling estimate. 
+  - **Modified R/S** accounts for short-term autocorrelation (Newey–West style denominator) and has known limits for testing long memory via statistic \(V\). Critical values (one-tailed): 10% = 1.620, 5% = 1.747, 0.5% = 2.098.
 
-To estimate the Hurst exponent for financial time series data:
+- **MF-DFA (Kantelhardt et al., 2002)**  
+  - Compute \(F_q(s)\) across scales; slopes on log-log give \(h(q)\).  
+  - Legendre transform → \(\alpha(q)\), \(f(\alpha)\).  
+  - **Surrogate & shuffled** series to separate correlation-driven multifractality from heavy-tails / finite-sample artifacts; \(\Delta\alpha_{\text{surrogate}}\) quantifies **true** multifractality. 
 
-    Run the hurst_estimation.py script:
+- **Inefficiency Index**  
+  - I = Delta Alpha surrogate (width of Multifractal spectrum surrogate transform) * |Rolling Hurst - 0.5|.
 
-    python code/hurst_estimation.py
+---
 
-    The script will calculate the Hurst exponent using both the traditional R/S method and the modified R/S method. Results will be saved in the hurst_results.csv file.
+## Results
 
-Fractional Brownian Motion Simulation
+The strategy uses the **Inefficiency Index** I as a filter on Hurst-based long/short signals.
 
-To simulate Fractional Brownian Motion (fBm) with different Hurst exponents:
+- **Signal rule**:  
+  - If I is above the rolling 6-month **1.5σ** threshold **and** \(H < 0.5\) → **short**  
+  - Else → **long**
+- Benchmarks:  
+  - **Long-Only**: always long  
+  - **Long/Short without inefficiency**: Hurst-only signal (no I filter). Long H > 0.5, short H < 0.5.
 
-    Run the mbf.py script:
+**Backtest parameters**:
+- Asset: SSEC (Shanghai Composite)
+- Frequency: daily
+- Horizon: same rolling window for H and I
+- Transactions Costs: zero
 
-    python code/mbf.py
+**Results**:
 
-    This will generate simulations of fBm and compute the autocorrelation functions for different Hurst exponents, which can be analyzed in the context of financial data.
+| Strategy                           | Ann. Return | Ann. Vol | Sharpe | MaxDD    |
+|------------------------------------|------------:|---------:|-------:|---------:|
+| Long/Short **with** inefficiency   | 9.521       | 23.307   | 0.409  | -56.474  |
+| Long-Only                          | 3.326       | 23.316   | 0.143  | -71.985  |
+| Long/Short **without** inefficiency| 5.075       | 23.314   | 0.218  | -62.687  |
 
-Results and Discussion
-Hurst Exponent and Momentum Strategies
+---
 
-Based on the results, only the GSPC (S&P500) stock index showed statistical persistence, with the Hurst exponent being greater than 0.5. This implies that for most financial time series, despite the apparent long-term memory, momentum strategies may not be reliable unless validated by more robust statistical methods.
-Fractional Brownian Motion
-
-Fractional Brownian Motion models are useful for simulating market behaviors with varying degrees of long-term dependence. The results provide insights into the behavior of financial assets under different Hurst exponent values.
-Contributing
-
-Feel free to fork the repository, create branches, and submit pull requests for any improvements or bug fixes.
-References
-
-    Lo, A.W., "Long-Term Memory in Stock Market Prices" 
-    Mignon, V., "Méthodes d'estimation de l'exposant de Hurst. Application aux rentabilités boursières", Économie & Prévision, 2003.
-
+**Conclusion:**  
+The Inefficiency Index acts as a **signal quality filter**, avoiding trades during periods where Hurst signals are less reliable. It improves both raw and risk-adjusted returns, while also reducing worst-case losses. The improvement is non-trivial, especially for volatile indices like SSEC

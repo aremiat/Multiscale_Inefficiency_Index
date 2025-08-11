@@ -106,7 +106,6 @@ class ScaledWindowedVariance(AbstractHurstEstimator):
         return mask
 
     def estimate(self):
-
         avg_sds = []
         valid_window_sizes = []
 

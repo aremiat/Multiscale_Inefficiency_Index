@@ -4,15 +4,24 @@ import plotly.subplots as sp
 from statsmodels.tsa.stattools import acf
 import plotly.io as pio
 import os
+import pandas as pd
 
 IMAGE_PATH = os.path.dirname(__file__) + "/../img"
 
-np.random.seed(42)
+np.random.seed(43)
 H_VALUES = [0.2, 0.35, 0.5, 0.65, 0.8]
 
-# Function to generate fBm using Cholesky increments
 def fbm(T, H, N=1000):
-    """   Generate fractional Brownian motion (fBm) using Cholesky decomposition."""
+    """  Generate fractional Brownian motion (fBm) using Cholesky decomposition.
+
+    Args:
+        T (float): Total time duration.
+        H (float): Hurst exponent (0 < H < 1).
+        N (int): Number of time steps.
+    Returns:
+        times (np.ndarray): Array of time points.
+        X (np.ndarray): Generated fBm values at those time points.
+    """
     times = np.linspace(0, T, N)
     cov_matrix = np.array(
         [[0.5 * (t1 ** (2 * H) + t2 ** (2 * H) - abs(t1 - t2) ** (2 * H)) for t1 in times] for t2 in times])
