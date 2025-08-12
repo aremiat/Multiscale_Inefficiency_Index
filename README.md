@@ -36,7 +36,7 @@ This repo implements the pipeline from the paper *“Multiscale Inefficiency Ind
 - **MF-DFA (Kantelhardt et al., 2002)**  
   - Compute \(F_q(s)\) across scales; slopes on log-log give \(h(q)\).  
   - Legendre transform → \(\alpha(q)\), \(f(\alpha)\).  
-  - **Surrogate & shuffled** series to separate correlation-driven multifractality from heavy-tails / finite-sample artifacts; \(\Delta\alpha_{\text{surrogate}}\) quantifies **true** multifractality. 
+  - **Surrogate & shuffled** series to separate correlation-driven multifractality from heavy-tails / finite-sample artifacts; Delta_alpha_surrogate quantifies **true** multifractality. 
 
 - **Inefficiency Index**  
   - I = Delta Alpha surrogate (width of Multifractal spectrum surrogate transform) * |Rolling Hurst - 0.5|.
