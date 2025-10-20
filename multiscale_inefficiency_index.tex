@@ -38,11 +38,22 @@
 
 \addbibresource{bib.tex}
 
+\newcommand{\checkvalue}[1]{\IfSubStr{#1}{.}{\IfSubStr{#1}{-}{\cellcolor{red!50}#1}{\cellcolor{green!50}#1}}{#1}}
+\newcolumntype{R}{>{\collectcell\checkvalue}r<{\endcollectcell}}
+
+
 \title{
+    \hspace*{-12cm}
+    \includegraphics[width=0.3\textwidth]{img/logo_kanopy}\\
+    \vspace*{3cm}
+    Kanopy Research Analysis\protect\\
+    \vspace*{1cm}
     \textbf{Multiscale Inefficiency Index}
 }
 
-\date{\today}
+\author{Alexandre Remiat}
+
+\date{October 20th, 2025}
 
 \graphicspath{{img/}}
 
