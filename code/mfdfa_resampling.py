@@ -107,7 +107,7 @@ if __name__ == "__main__":
             'sur_CI_high': hs
         })
 
-        results_df = pd.DataFrame(results.round(3))
+        results_df = pd.DataFrame(results)
         out_path = os.path.join(DATA_PATH, "mfdfa_confidence_results.csv")
         results_df.to_csv(out_path, index=False)
         print(f"\nResults saved to {out_path}")

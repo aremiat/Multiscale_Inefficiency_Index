@@ -4,7 +4,7 @@ pandas
 pytest
 seaborn
 yfinance
-# kaleido==0.1.0.post1
+kaleido
 statsmodels
 scipy
 plotly

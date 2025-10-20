@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import plotly.graph_objects as go
 from utils.MFDFA import ComputeMFDFA
 from utils.ADF import adf_test

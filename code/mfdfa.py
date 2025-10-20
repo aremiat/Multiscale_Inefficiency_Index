@@ -111,7 +111,7 @@ if __name__ == "__main__":
                             xaxis_title='α', yaxis_title='f(α)', template='plotly_white')
         fig_f.show()
 
-    #
+
         hq_q = pd.concat([pd.Series(q_list, name='q'), pd.Series(h_q, name='h(q)'), pd.Series(h_q_shuf, name='h(q) shuffled')], axis=1)
         hq_q.to_csv(f"{DATA_PATH}/multifractal_spectrum_daily_{name}.csv", index=False)
         df = pd.DataFrame({
